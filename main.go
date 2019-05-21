@@ -49,7 +49,6 @@ func run() {
 }
 
 func main() {
-	//	runc()
 	wf = aw.New()
 
 	const debugLogFile = "alfred-firefox-bookmarks.log"
