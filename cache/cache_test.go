@@ -170,7 +170,7 @@ func TestExpired(t *testing.T) {
 			t.Errorf("unexpected cache expired or error %+v", err)
 		}
 
-		if cache.Expired(c.expiredTime) && !cache.NotExpired(c.expiredTime) {
+		if cache.Expired() && !cache.NotExpired() {
 			t.Errorf("unexpected cache expired")
 		}
 	}

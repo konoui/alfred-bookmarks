@@ -3,6 +3,10 @@ package bookmark
 import (
 	"log"
 	"net/url"
+	"os"
+	"time"
+
+	"github.com/konoui/alfred-firefox-bookmarks/cache"
 
 	"github.com/sahilm/fuzzy"
 )
@@ -39,7 +43,30 @@ func (b Bookmarks) Filter(query string) Bookmarks {
 
 // LoadBookmarksFromCache return Bookmarks struct, loading cache file.
 func LoadBookmarksFromCache() (Bookmarks, error) {
-	return LoadBookmarks()
+	cacheFile := "alfred-firefox-bookmarks.cache"
+	expiredTime := 24 * time.Hour
+	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
+	if err != nil {
+		return Bookmarks{}, err
+	}
+
+	bookmarks := Bookmarks{}
+	if c.Exists() && c.NotExpired() {
+		if err = c.Load(&bookmarks); err != nil {
+			return Bookmarks{}, err
+		}
+		return bookmarks, nil
+	}
+
+	bookmarks, err = LoadBookmarks()
+	if err != nil {
+		return Bookmarks{}, nil
+	}
+	if err = c.Store(&bookmarks); err != nil {
+		return Bookmarks{}, err
+	}
+
+	return bookmarks, nil
 }
 
 // LoadBookmarks return Bookmarks struct, loading firefox bookmarks and parse them.
@@ -50,11 +77,11 @@ func LoadBookmarks() (Bookmarks, error) {
 	}
 
 	bookmarks := Bookmarks{}
-	entryToBookmarks(&entry, &bookmarks)
+	convertEntriesToBookmarks(&entry, &bookmarks)
 	return bookmarks, nil
 }
 
-func entryToBookmarks(entry *firefoxBookmarkEntry, bookmarks *Bookmarks) {
+func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, bookmarks *Bookmarks) {
 	if entry == nil {
 		return
 	}
@@ -76,13 +103,13 @@ func entryToBookmarks(entry *firefoxBookmarkEntry, bookmarks *Bookmarks) {
 				continue
 			}
 
-			bookmark := &Bookmark{
+			b := &Bookmark{
 				Title:  e.Title,
 				URI:    e.URI,
 				Domain: u.Host,
 			}
-			*bookmarks = append(*bookmarks, bookmark)
+			*bookmarks = append(*bookmarks, b)
 		}
-		entryToBookmarks(e, bookmarks)
+		convertEntriesToBookmarks(e, bookmarks)
 	}
 }

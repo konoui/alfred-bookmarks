@@ -24,7 +24,7 @@ func run() {
 		log.Printf("query: %s", query)
 	}
 
-	bookmarks, err := bookmark.LoadBookmarks()
+	bookmarks, err := bookmark.LoadBookmarksFromCache()
 	if err != nil {
 		wf.FatalError(err)
 	}

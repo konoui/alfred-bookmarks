@@ -16,20 +16,20 @@ func init() {
 
 // Cache implements a simple store/load API, saving data to specified directory.
 type Cache struct {
-	Dir         string
-	File        string
-	ExpiredTime time.Duration
+	Dir    string
+	File   string
+	maxAge time.Duration
 }
 
 // NewCache creates a new cache Instance
-func NewCache(dir, file string, expiredTime time.Duration) (*Cache, error) {
+func NewCache(dir, file string, maxAge time.Duration) (*Cache, error) {
 	if !pathExists(dir) {
 		return &Cache{}, fmt.Errorf("%s directory does not exist", dir)
 	}
 	return &Cache{
-		Dir:         dir,
-		File:        file,
-		ExpiredTime: expiredTime,
+		Dir:    dir,
+		File:   file,
+		maxAge: maxAge,
 	}, nil
 }
 
@@ -75,17 +75,17 @@ func (c Cache) Clear() error {
 }
 
 // NotExpired return true if cache is no expired
-func (c Cache) NotExpired(maxAge time.Duration) bool {
-	return !c.Expired(maxAge)
+func (c Cache) NotExpired() bool {
+	return !c.Expired()
 }
 
 // Expired return true if cache is expired
-func (c Cache) Expired(maxAge time.Duration) bool {
+func (c Cache) Expired() bool {
 	age, err := c.Age()
 	if err != nil {
 		return true
 	}
-	return age > maxAge
+	return age > c.maxAge
 }
 
 // Age return the time since the data is cached at
