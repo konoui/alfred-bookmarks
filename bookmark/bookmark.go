@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/konoui/alfred-firefox-bookmarks/cache"
-
 	"github.com/sahilm/fuzzy"
 )
 
