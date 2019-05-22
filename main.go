@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -37,10 +38,11 @@ func run() {
 	}
 
 	for _, b := range bookmarks {
-		wf.NewItem(b.Title).
+		title := fmt.Sprintf("%s/%s", b.Folder, b.Title)
+		wf.NewItem(title).
 			Subtitle(b.Domain).
 			Arg(b.URI).
-			Autocomplete(b.Title).
+			Autocomplete(title).
 			Valid(true)
 	}
 
