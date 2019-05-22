@@ -36,6 +36,8 @@ type firefoxBookmarkEntry struct {
 	Children []*firefoxBookmarkEntry `json:"children,omitempty"`
 }
 
+type firefoxBookmarkEntries []*firefoxBookmarkEntry
+
 // firefoxBookmarkEntry.TypeCode
 const (
 	typeURI = iota + 1

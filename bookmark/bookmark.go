@@ -1,6 +1,7 @@
 package bookmark
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 // Bookmark a instance of bookmark
 type Bookmark struct {
+	Folder string // Folder of Bookmarks
 	Title  string // Bookmark title
 	Domain string // Domain of URI
 	URI    string // Bookmark URI
@@ -21,7 +23,7 @@ type Bookmark struct {
 type Bookmarks []*Bookmark
 
 func (b Bookmarks) String(i int) string {
-	return b[i].Title
+	return fmt.Sprintf("%s/%s", b[i].Folder, b[i].Title)
 }
 
 // Len return length of Bookmarks for fuzzy interface
@@ -75,20 +77,22 @@ func LoadBookmarks() (Bookmarks, error) {
 		return Bookmarks{}, err
 	}
 
-	bookmarks := Bookmarks{}
-	convertEntriesToBookmarks(&entry, &bookmarks)
+	bookmarks := convertEntriesToBookmarks(&entry, "")
 	return bookmarks, nil
 }
 
-func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, bookmarks *Bookmarks) {
-	if entry == nil {
-		return
+func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, folder string) Bookmarks {
+	if entry.Children == nil {
+		return Bookmarks{}
 	}
 
+	bookmarks := Bookmarks{}
 	for _, e := range entry.Children {
 		switch e.TypeCode {
 		case typeFolder:
-			//fmt.Printf("Folder: %s\n", e.Title)
+			// If type of entry is folder, tell a entry of children the folder name of parent
+			folder = e.Title
+			break
 		case typeURI:
 			u, err := url.Parse(e.URI)
 			// Ignore invalid URLs
@@ -101,14 +105,16 @@ func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, bookmarks *Bookmarks
 				log.Printf("Domain is empty \"%s\" (%s)", e.URI, e.Title)
 				continue
 			}
-
 			b := &Bookmark{
+				Folder: folder,
 				Title:  e.Title,
 				URI:    e.URI,
 				Domain: u.Host,
 			}
-			*bookmarks = append(*bookmarks, b)
+			bookmarks = append(bookmarks, b)
 		}
-		convertEntriesToBookmarks(e, bookmarks)
+		// tell the folder name to children bookmark entry
+		bookmarks = append(bookmarks, convertEntriesToBookmarks(e, folder)...)
 	}
+	return bookmarks
 }
