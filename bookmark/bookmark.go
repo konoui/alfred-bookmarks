@@ -92,7 +92,6 @@ func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, folder string) Bookm
 		case typeFolder:
 			// If type of entry is folder, tell a entry of children the folder name of parent
 			folder = e.Title
-			break
 		case typeURI:
 			u, err := url.Parse(e.URI)
 			// Ignore invalid URLs
