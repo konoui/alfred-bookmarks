@@ -1,7 +1,6 @@
 package bookmark
 
 import (
-	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -23,7 +22,7 @@ type Bookmark struct {
 type Bookmarks []*Bookmark
 
 func (b Bookmarks) String(i int) string {
-	return fmt.Sprintf("%s/%s", b[i].Folder, b[i].Title)
+	return b[i].Title
 }
 
 // Len return length of Bookmarks for fuzzy interface

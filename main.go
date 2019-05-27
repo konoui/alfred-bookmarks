@@ -38,11 +38,11 @@ func run() {
 	}
 
 	for _, b := range bookmarks {
-		title := fmt.Sprintf("%s/%s", b.Folder, b.Title)
-		wf.NewItem(title).
-			Subtitle(b.Domain).
+		subTitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
+		wf.NewItem(b.Title).
+			Subtitle(subTitle).
 			Arg(b.URI).
-			Autocomplete(title).
+			Autocomplete(b.Title).
 			Valid(true)
 	}
 
