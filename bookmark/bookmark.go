@@ -1,6 +1,7 @@
 package bookmark
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -85,12 +86,17 @@ func convertEntriesToBookmarks(entry *firefoxBookmarkEntry, folder string) Bookm
 		return Bookmarks{}
 	}
 
+	// if entry type is folder, append folder name to current folder
+	if entry.TypeCode == typeFolder {
+		if entry.Title != "" {
+			folder = fmt.Sprintf("%s/%s", folder, entry.Title)
+		}
+	}
+
 	bookmarks := Bookmarks{}
 	for _, e := range entry.Children {
 		switch e.TypeCode {
 		case typeFolder:
-			// If type of entry is folder, tell a entry of children the folder name of parent
-			folder = e.Title
 		case typeURI:
 			u, err := url.Parse(e.URI)
 			// Ignore invalid URLs
