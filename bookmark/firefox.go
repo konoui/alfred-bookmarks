@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -61,6 +63,48 @@ func LoadFirefoxBookmarkEntries(entry *firefoxBookmarkEntry) error {
 	}
 
 	return json.NewDecoder(r).Decode(entry)
+}
+
+func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
+	if entry.Children == nil {
+		return Bookmarks{}
+	}
+
+	// if entry type is folder, append folder name to current folder
+	if entry.TypeCode == typeFolder {
+		if entry.Title != "" {
+			folder = fmt.Sprintf("%s/%s", folder, entry.Title)
+		}
+	}
+
+	bookmarks := Bookmarks{}
+	for _, e := range entry.Children {
+		switch e.TypeCode {
+		case typeFolder:
+		case typeURI:
+			u, err := url.Parse(e.URI)
+			// Ignore invalid URLs
+			if err != nil {
+				log.Printf("could not parse URL \"%s\" (%s): %v", e.URI, e.Title, err)
+				continue
+			}
+
+			if u.Host == "" {
+				log.Printf("Domain is empty \"%s\" (%s)", e.URI, e.Title)
+				continue
+			}
+			b := &Bookmark{
+				Folder: folder,
+				Title:  e.Title,
+				URI:    e.URI,
+				Domain: u.Host,
+			}
+			bookmarks = append(bookmarks, b)
+		}
+		// tell the folder name to children bookmark entry
+		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
+	}
+	return bookmarks
 }
 
 // GetBookmarkFile return firefox bookmarkbackups direcotory
