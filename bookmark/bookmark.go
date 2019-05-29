@@ -58,7 +58,7 @@ func LoadBookmarksFromCache() (Bookmarks, error) {
 
 	bookmarks, err = LoadBookmarks()
 	if err != nil {
-		return Bookmarks{}, nil
+		return Bookmarks{}, err
 	}
 	if err = c.Store(&bookmarks); err != nil {
 		return Bookmarks{}, err
