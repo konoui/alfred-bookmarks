@@ -7,7 +7,7 @@ BINARY := bin/alfred-firefox-bookmarks
 WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
 ASSETS_DIR := assets
 ARTIFACT_DIR := .artifact
-ARTIFACT := ${ARTIFACT_DIR}/alfred-aws.alfredworkflow
+ARTIFACT := ${ARTIFACT_DIR}/alfred-firefox-bookmarks.alfredworkflow
 
 ## Build binaries on your environment
 build: deps
@@ -62,6 +62,14 @@ init:
 install: build
 	@(cp ${BINARY} ${WORKFLOW_DIR}/)
 	@(cp ${ASSETS_DIR}/*  ${WORKFLOW_DIR}/)
+
+release: build
+	@(if [ ! -e ${ARTIFACT_DIR} ]; then mkdir ${ARTIFACT_DIR} ; fi)
+	@(cp ${BINARY} ${ARTIFACT_DIR})
+	@(cp ${ASSETS_DIR}/* ${ARTIFACT_DIR})
+	@(zip -j ${ARTIFACT} ${ARTIFACT_DIR}/*)
+	@(export GITHUB_TOKEN=$(shell aws secretsmanager get-secret-value --secret-id github_token --query 'SecretString' --output text) ;\
+	ghr -replace ${VERSION} ${ARTIFACT})
 
 ## Clean Binary
 clean:
