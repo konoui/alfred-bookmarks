@@ -37,12 +37,17 @@ lint: setup
 	golangci-lint run ./...
 
 ## Build linux binaries
-linux: setup
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o ${BINARY} ./${SRC_DIR}
+darwin: setup
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o ${BINARY} ./${SRC_DIR}
 
 ## Run tests for my project
 test: setup
 	go test -v ./...
+
+## Install Binary and Assets to Workflow Directory
+install: build
+	@(cp ${BINARY} ${WORKFLOW_DIR}/)
+	@(cp ${ASSETS_DIR}/*  ${WORKFLOW_DIR}/)
 
 ## Initialize directory
 init:
@@ -50,12 +55,7 @@ init:
 	@(if [ ! -e ${BIN_DIR} ]; then mkdir ${BIN_DIR}; fi)
 	@(if [ ! -e go.mod ]; then go mod init; fi)
 
-## Install Binary and Assets to Workflow Directory
-install: build
-	@(cp ${BINARY} ${WORKFLOW_DIR}/)
-	@(cp ${ASSETS_DIR}/*  ${WORKFLOW_DIR}/)
-
-release: build
+release: darwin
 	@(if [ ! -e ${ARTIFACT_DIR} ]; then mkdir ${ARTIFACT_DIR} ; fi)
 	@(cp ${BINARY} ${ARTIFACT_DIR})
 	@(cp ${ASSETS_DIR}/* ${ARTIFACT_DIR})
