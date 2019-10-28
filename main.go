@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/konoui/alfred-firefox-bookmarks/bookmark"
+	"github.com/konoui/alfred-firefox-bookmarks/pkg/bookmark"
 )
 
 var (
@@ -53,12 +54,13 @@ func run() {
 func main() {
 	wf = aw.New()
 
-	const debugLogFile = "alfred-firefox-bookmarks.log"
-	f, err := os.OpenFile(debugLogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
-	}
-	defer f.Close()
-	log.SetOutput(f)
+	// const debugLogFile = "alfred-firefox-bookmarks.log"
+	// f, err := os.OpenFile(debugLogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	// if err != nil {
+	// 	log.Fatalf("error opening file: %v", err)
+	// }
+	// defer f.Close()
+	// log.SetOutput(f)
+	log.SetOutput(ioutil.Discard)
 	wf.Run(run)
 }
