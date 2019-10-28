@@ -9,8 +9,10 @@ ASSETS_DIR := assets
 ARTIFACT_DIR := .artifact
 ARTIFACT := ${ARTIFACT_DIR}/alfred-firefox-bookmarks.alfredworkflow
 
+export GO111MODULE=on
+
 ## Build binaries on your environment
-build: deps
+build: setup
 	CGO_ENABLED=0 go build -ldflags "${LDFLAGS}" -o ${BINARY} ./${SRC_DIR}
 
 ## Setup
@@ -19,8 +21,6 @@ setup:
 	@(if ! type golint >/dev/null 2>&1; then go get -u golang.org/x/lint/golint ;fi)
 	#installing golangci-lint
 	@(if ! type golangci-lint >/dev/null 2>&1; then go get -u github.com/golangci/golangci-lint/cmd/golangci-lint ;fi)
-	#installing dep
-	@(if ! type dep >/dev/null 2>&1; then go get -u github.com/golang/dep/cmd/dep ;fi)
 	#installing goimports
 	@(if ! type goimports >/dev/null 2>&1; then go get -u golang.org/x/tools/cmd/goimports ;fi)
 	#installing ghr
@@ -28,35 +28,27 @@ setup:
 	#installing make2help
 	@(if ! type make2help >/dev/null 2>&1; then go get -u github.com/Songmu/make2help/cmd/make2help ;fi)
 
-## Install dependencies to vendor
-deps: setup
-	dep ensure #-vendor-only
-
-## Update dependencies
-update: setup
-	dep ensure -update
-
 ## Format source codes
-fmt: deps
+fmt: setup
 	goimports -w $$(go list -f {{.Dir}} ./... | grep -v /vendor/)
 
 ## Lint
-lint: deps
+lint: setup
 	golangci-lint run ./...
 
 ## Build linux binaries
-linux: deps
+linux: setup
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o ${BINARY} ./${SRC_DIR}
 
 ## Run tests for my project
-test: deps
+test: setup
 	go test -v ./...
 
 ## Initialize directory
 init:
 	@(if [ ! -e ${SRC_DIR} ]; then mkdir ${SRC_DIR}; fi)
 	@(if [ ! -e ${BIN_DIR} ]; then mkdir ${BIN_DIR}; fi)
-	@(if [ ! -e Gopkg.lock ]; then dep init; fi)
+	@(if [ ! -e go.mod ]; then go mod init; fi)
 
 ## Install Binary and Assets to Workflow Directory
 install: build
@@ -79,4 +71,4 @@ clean:
 help:
 	@make2help $(MAKEFILE_LIST)
 
-.PHONY: build setup deps update test lint fmt linux init clean help
+.PHONY: build setup test lint fmt linux init clean help
