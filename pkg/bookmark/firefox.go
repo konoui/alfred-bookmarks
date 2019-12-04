@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/frioux/leatherman/pkg/mozlz4"
+	"github.com/mitchellh/go-homedir"
 )
 
 // firefoxBookmarkEntry a bookmark structure of decompressed .jsonlz4
@@ -43,27 +43,6 @@ const (
 	typeURI = iota + 1
 	typeFolder
 )
-
-// LoadFirefoxBookmarkEntries Read data int entry from decompressed .jsonlz4 file of bookmarkbackups direcotory
-func LoadFirefoxBookmarkEntries(entry *firefoxBookmarkEntry) error {
-	bookmarkMozlz4File, err := GetBookmarkFile()
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Open(bookmarkMozlz4File)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	r, err := mozlz4.NewReader(f)
-	if err != nil {
-		return err
-	}
-
-	return json.NewDecoder(r).Decode(entry)
-}
 
 func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	if entry.Children == nil {
@@ -104,11 +83,33 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		// tell the folder name to children bookmark entry
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
+
 	return bookmarks
 }
 
-// GetBookmarkFile return firefox bookmarkbackups direcotory
-func GetBookmarkFile() (string, error) {
+// LoadBookmarkEntries Read data into entry from decompressed .jsonlz4 file of bookmarkbackups direcotory
+func (entry *firefoxBookmarkEntry) LoadBookmarkEntries() error {
+	bookmarkMozlz4File, err := GetFirefoxBookmarkFile()
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Open(bookmarkMozlz4File)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	r, err := mozlz4.NewReader(f)
+	if err != nil {
+		return err
+	}
+
+	return json.NewDecoder(r).Decode(entry)
+}
+
+// GetFirefoxBookmarkFile return firefox bookmarkbackups direcotory
+func GetFirefoxBookmarkFile() (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err

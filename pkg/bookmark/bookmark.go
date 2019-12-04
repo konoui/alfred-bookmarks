@@ -8,6 +8,12 @@ import (
 	"github.com/sahilm/fuzzy"
 )
 
+// Browsers determine which bookmark read from
+type Browsers struct {
+	firefox bool
+	chrome  bool
+}
+
 // Bookmark a instance of bookmark
 type Bookmark struct {
 	Folder string // Folder of Bookmarks
@@ -18,6 +24,67 @@ type Bookmark struct {
 
 // Bookmarks a slice of Bookmark struct
 type Bookmarks []*Bookmark
+
+// NewBrowsers return Browser
+func NewBrowsers(firefox, chrome bool) *Browsers {
+	return &Browsers{
+		chrome:  chrome,
+		firefox: firefox,
+	}
+}
+
+// LoadBookmarksFromCache return Bookmarks struct, loading cache file.
+func (b *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
+	cacheFile := "alfred-firefox-bookmarks.cache"
+	expiredTime := 24 * time.Hour
+	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
+	if err != nil {
+		return Bookmarks{}, err
+	}
+
+	bookmarks := Bookmarks{}
+	if c.Exists() && c.NotExpired() {
+		if err = c.Load(&bookmarks); err != nil {
+			return Bookmarks{}, err
+		}
+		return bookmarks, nil
+	}
+
+	bookmarks, err = b.LoadBookmarks()
+	if err != nil {
+		return Bookmarks{}, err
+	}
+	if err = c.Store(&bookmarks); err != nil {
+		return Bookmarks{}, err
+	}
+
+	return bookmarks, nil
+}
+
+// LoadBookmarks return Bookmarks struct, loading browser bookmarks and parse them.
+func (b *Browsers) LoadBookmarks() (Bookmarks, error) {
+	bookmarks := Bookmarks{}
+	// FIXME implement interface and loop LoadBookmarkEntries() and convertToBookmarks("")
+	if b.firefox {
+		entry := firefoxBookmarkEntry{}
+		if err := entry.LoadBookmarkEntries(); err != nil {
+			return Bookmarks{}, err
+		}
+
+		bookmarks = append(bookmarks, entry.convertToBookmarks("")...)
+	}
+
+	if b.chrome {
+		entries := chromeBookmarkEntries{}
+		if err := entries.LoadBookmarkEntries(); err != nil {
+			return Bookmarks{}, err
+		}
+
+		bookmarks = append(bookmarks, entries.convertToBookmarks("")...)
+	}
+
+	return bookmarks, nil
+}
 
 func (b Bookmarks) String(i int) string {
 	return b[i].Title
@@ -37,43 +104,4 @@ func (b Bookmarks) Filter(query string) Bookmarks {
 	}
 
 	return bookmarks
-}
-
-// LoadBookmarksFromCache return Bookmarks struct, loading cache file.
-func LoadBookmarksFromCache() (Bookmarks, error) {
-	cacheFile := "alfred-firefox-bookmarks.cache"
-	expiredTime := 24 * time.Hour
-	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
-	if err != nil {
-		return Bookmarks{}, err
-	}
-
-	bookmarks := Bookmarks{}
-	if c.Exists() && c.NotExpired() {
-		if err = c.Load(&bookmarks); err != nil {
-			return Bookmarks{}, err
-		}
-		return bookmarks, nil
-	}
-
-	bookmarks, err = LoadBookmarks()
-	if err != nil {
-		return Bookmarks{}, err
-	}
-	if err = c.Store(&bookmarks); err != nil {
-		return Bookmarks{}, err
-	}
-
-	return bookmarks, nil
-}
-
-// LoadBookmarks return Bookmarks struct, loading firefox bookmarks and parse them.
-func LoadBookmarks() (Bookmarks, error) {
-	entry := firefoxBookmarkEntry{}
-	if err := LoadFirefoxBookmarkEntries(&entry); err != nil {
-		return Bookmarks{}, err
-	}
-
-	bookmarks := entry.convertToBookmarks("")
-	return bookmarks, nil
 }

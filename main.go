@@ -9,6 +9,7 @@ import (
 
 	"github.com/konoui/alfred-bookmarks/pkg/bookmark"
 	"github.com/konoui/go-alfred"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -20,6 +21,32 @@ const (
 	emptySsubtitle = "There are no resources"
 	emptyTitle     = "No matching"
 )
+
+// Config configuration which browser bookmark read
+type Config struct {
+	Firefox struct {
+		Enable bool `json:"enable"`
+	} `json:"firefox"`
+	Chrome struct {
+		Enable bool `json:"enable"`
+	} `json:"chrome"`
+}
+
+// NewConfig return alfred bookmark configuration
+func newConfig() (*Config, error) {
+	var c Config
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(".alfred-bookmarks")
+	viper.AddConfigPath("$HOME/")
+	if err := viper.ReadInConfig(); err != nil {
+		return &Config{}, err
+	}
+	if err := viper.Unmarshal(&c); err != nil {
+		return &Config{}, err
+	}
+
+	return &c, nil
+}
 
 func run() {
 	awf := alfred.NewWorkflow()
@@ -33,7 +60,15 @@ func run() {
 		log.Printf("query: %s", query)
 	}
 
-	bookmarks, err := bookmark.LoadBookmarksFromCache()
+	c, err := newConfig()
+	if err != nil {
+		awf.Fatal(fmt.Sprintf("A Error Occurs: %s", err), "")
+		return
+
+	}
+
+	browsers := bookmark.NewBrowsers(c.Firefox.Enable, c.Chrome.Enable)
+	bookmarks, err := browsers.LoadBookmarks()
 	if err != nil {
 		awf.Fatal(fmt.Sprintf("A Error Occurs: %s", err), "")
 		return
