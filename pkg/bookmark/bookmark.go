@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/konoui/alfred-firefox-bookmarks/pkg/cache"
+	"github.com/konoui/alfred-bookmarks/pkg/cache"
 	"github.com/sahilm/fuzzy"
 )
 

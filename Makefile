@@ -3,11 +3,11 @@ REVISION := $(shell git rev-parse --short HEAD)
 LDFLAGS := -X 'main. version=$(VERSION)' -X 'main. revision=$(REVISION)'
 SRC_DIR := ./
 BIN_DIR := bin
-BINARY := bin/alfred-firefox-bookmarks
+BINARY := bin/alfred-bookmarks
 WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
 ASSETS_DIR := assets
 ARTIFACT_DIR := .artifact
-ARTIFACT := ${ARTIFACT_DIR}/alfred-firefox-bookmarks.alfredworkflow
+ARTIFACT := ${ARTIFACT_DIR}/alfred-bookmarks.alfredworkflow
 
 export GO111MODULE=on
 

@@ -7,7 +7,7 @@ import (
 	"os"
 
 	aw "github.com/deanishe/awgo"
-	"github.com/konoui/alfred-firefox-bookmarks/pkg/bookmark"
+	"github.com/konoui/alfred-bookmarks/pkg/bookmark"
 )
 
 var (

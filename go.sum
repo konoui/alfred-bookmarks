@@ -11,8 +11,8 @@ github.com/deanishe/go-env v0.4.0 h1:tpu14o16gJGTN/w2gxntwxu2l5Eby30jSrnlgOfjzwk
 github.com/deanishe/go-env v0.4.0/go.mod h1:RgEcGAqdRnt8ybQteAbv1Ys2lWIRE7TlgON/sbdjuaY=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3ebgob9U8Nd0kOddGdZWjyMGR8Wziv+TBNwSE=
 github.com/frankban/quicktest v1.4.0/go.mod h1:36zfPVQyHxymz4cH7wlDmVwDrJuljRB60qkgn7rorfQ=
-github.com/frioux/leatherman v0.0.0-20191013054410-d3ea6c587724 h1:gEvpboK0pADvyVTy1fV4+4Hpge8UOlASdzhZVZWv82s=
-github.com/frioux/leatherman v0.0.0-20191013054410-d3ea6c587724/go.mod h1:OTT1qF/2lE2Mw5QU4zqHm2LA8OGuzdKu6sT0zYBaSHY=
+github.com/frioux/leatherman v0.0.0-20191202145612-2c3326259669 h1:myrq5ZsSaU4CGzKwue6aCJW/M0paoAtkqVJn8NpwOck=
+github.com/frioux/leatherman v0.0.0-20191202145612-2c3326259669/go.mod h1:fsalaF8uyPV0n8QxGOBE61htVmKvkfejqR8JU9XKrqc=
 github.com/frioux/yaml v0.0.0-20191009230429-1d79e1a4120f/go.mod h1:YG995++5o4pY+dtMfaYY/sWBn/Qhj5rYQ7QaCnyTc+8=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
