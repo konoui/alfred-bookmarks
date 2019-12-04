@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 
-	aw "github.com/deanishe/awgo"
 	"github.com/konoui/alfred-bookmarks/pkg/bookmark"
+	"github.com/konoui/go-alfred"
 )
 
 var (
-	wf *aw.Workflow
+	outStream io.Writer = os.Stdout
+	errStream io.Writer = os.Stderr
 )
 
 const (
@@ -20,6 +22,11 @@ const (
 )
 
 func run() {
+	awf := alfred.NewWorkflow()
+	awf.SetStdStream(outStream)
+	awf.SetErrStream(outStream)
+	awf.EmptyWarning(emptyTitle, emptySsubtitle)
+
 	var query string
 	if args := os.Args; len(args) > 1 {
 		query = args[1]
@@ -28,7 +35,8 @@ func run() {
 
 	bookmarks, err := bookmark.LoadBookmarksFromCache()
 	if err != nil {
-		wf.FatalError(err)
+		awf.Fatal(fmt.Sprintf("A Error Occurs: %s", err), "")
+		return
 	}
 
 	log.Printf("%d total bookmark(s)", len(bookmarks))
@@ -40,27 +48,18 @@ func run() {
 
 	for _, b := range bookmarks {
 		subTitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
-		wf.NewItem(b.Title).
-			Subtitle(subTitle).
-			Arg(b.URI).
-			Autocomplete(b.Title).
-			Valid(true)
+		awf.Append(alfred.Item{
+			Title:        b.Title,
+			Subtitle:     subTitle,
+			Autocomplete: b.Title,
+			Arg:          b.URI,
+		})
 	}
 
-	wf.WarnEmpty(emptyTitle, emptySsubtitle)
-	wf.SendFeedback()
+	awf.Output()
 }
 
 func main() {
-	wf = aw.New()
-
-	// const debugLogFile = "alfred-firefox-bookmarks.log"
-	// f, err := os.OpenFile(debugLogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	// if err != nil {
-	// 	log.Fatalf("error opening file: %v", err)
-	// }
-	// defer f.Close()
-	// log.SetOutput(f)
 	log.SetOutput(ioutil.Discard)
-	wf.Run(run)
+	run()
 }
