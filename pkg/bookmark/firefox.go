@@ -7,11 +7,11 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/frioux/leatherman/pkg/mozlz4"
 )
 
@@ -109,11 +109,11 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 
 // GetBookmarkFile return firefox bookmarkbackups direcotory
 func GetBookmarkFile() (string, error) {
-	usr, err := user.Current()
+	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
-	profileDir := fmt.Sprintf("%s/Library/Application Support/Firefox/Profiles", usr.HomeDir)
+	profileDir := fmt.Sprintf("%s/Library/Application Support/Firefox/Profiles", home)
 	defaultDirName, err := searchSuffixDir(profileDir, "default")
 	if err != nil {
 		return "", err
