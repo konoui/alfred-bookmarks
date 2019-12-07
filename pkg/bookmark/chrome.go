@@ -37,15 +37,48 @@ type chromeBookmarkEntries struct {
 	Version int `json:"version"`
 }
 
+type chromeBookmark struct {
+	chromeBookmarkEntries chromeBookmarkEntries
+	bookmarkPath          string
+}
+
+// NewChromeBookmark return new instance
+func NewChromeBookmark(path string) Bookmarker {
+	return &chromeBookmark{
+		bookmarkPath: path,
+	}
+}
+
+// LoadBookmark load chrome bookmark to general bookmark structure
+func (b *chromeBookmark) LoadBookmarks() (Bookmarks, error) {
+	if err := b.unmarshal(); err != nil {
+		return Bookmarks{}, err
+	}
+
+	return b.chromeBookmarkEntries.convertToBookmarks(""), nil
+}
+
+func (b *chromeBookmark) unmarshal() error {
+	f, err := os.Open(b.bookmarkPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	return json.NewDecoder(f).Decode(&b.chromeBookmarkEntries)
+}
+
+// convertToBookmarks parse top of root entries which is array
 func (entries *chromeBookmarkEntries) convertToBookmarks(folder string) Bookmarks {
 	bookmarks := Bookmarks{}
-	for _, e := range entries.Roots.BookmarkBar.BookmarkEntries {
-		bookmarks = append(bookmarks, e.convertToBookmarks("")...)
+	for _, entry := range entries.Roots.BookmarkBar.BookmarkEntries {
+		bookmarks = append(bookmarks, entry.convertToBookmarks("")...)
 	}
 
 	return bookmarks
 }
 
+// convertToBookmarks parse a entry and the entry children
 func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	if entry.Type == "folder" && entry.Children == nil {
 		return Bookmarks{}
@@ -74,30 +107,17 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		return bookmarks
 	}
 
+	// loop folder wihch has children
 	for _, e := range entry.Children {
+		// entry.Name should be folder name
+		folder = fmt.Sprintf("%s/%s", folder, entry.Name)
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 
 	return bookmarks
 }
 
-// LoadBookmarkEntries read data into entry
-func (entry *chromeBookmarkEntries) LoadBookmarkEntries() error {
-	filename, err := GetChromeBookmarkFile()
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	return json.NewDecoder(f).Decode(entry)
-}
-
-// GetChromeBookmarkFile return firefox bookmarkbackups direcotory
+// GetChromeBookmarkFile return chrome bookmark direcotory file
 func GetChromeBookmarkFile() (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {

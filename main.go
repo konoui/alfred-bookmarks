@@ -25,10 +25,12 @@ const (
 // Config configuration which browser bookmark read
 type Config struct {
 	Firefox struct {
-		Enable bool `json:"enable"`
+		Enable bool   `json:"enable"`
+		Path   string `json:"path,omitempty"`
 	} `json:"firefox"`
 	Chrome struct {
-		Enable bool `json:"enable"`
+		Enable bool   `json:"enable"`
+		Path   string `json:"path,omitempty"`
 	} `json:"chrome"`
 }
 
@@ -38,9 +40,12 @@ func newConfig() (*Config, error) {
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(".alfred-bookmarks")
 	viper.AddConfigPath("$HOME/")
+	viper.AddConfigPath(".")
+
 	if err := viper.ReadInConfig(); err != nil {
 		return &Config{}, err
 	}
+
 	if err := viper.Unmarshal(&c); err != nil {
 		return &Config{}, err
 	}
@@ -62,15 +67,28 @@ func run() {
 
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("A Error Occurs: %s", err), "")
+		awf.Fatal(fmt.Sprintf("a error occurs: %s", err), "")
 		return
 
 	}
 
-	browsers := bookmark.NewBrowsers(c.Firefox.Enable, c.Chrome.Enable)
+	foption, coption := bookmark.OptionNone(), bookmark.OptionNone()
+	if c.Firefox.Enable {
+		foption = bookmark.OptionFirefox(c.Firefox.Path)
+	}
+
+	if c.Chrome.Enable {
+		coption = bookmark.OptionChrome(c.Chrome.Path)
+	}
+
+	browsers := bookmark.NewBrowsers(
+		foption,
+		coption,
+	)
+
 	bookmarks, err := browsers.LoadBookmarks()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("A Error Occurs: %s", err), "")
+		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
 		return
 	}
 
@@ -82,10 +100,10 @@ func run() {
 	}
 
 	for _, b := range bookmarks {
-		subTitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
+		subtitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
 		awf.Append(alfred.Item{
 			Title:        b.Title,
-			Subtitle:     subTitle,
+			Subtitle:     subtitle,
 			Autocomplete: b.Title,
 			Arg:          b.URI,
 		})

@@ -8,13 +8,7 @@ import (
 	"github.com/sahilm/fuzzy"
 )
 
-// Browsers determine which bookmark read from
-type Browsers struct {
-	firefox bool
-	chrome  bool
-}
-
-// Bookmark a instance of bookmark
+// Bookmark abstract each browser bookmark as the structure
 type Bookmark struct {
 	Folder string // Folder of Bookmarks
 	Title  string // Bookmark title
@@ -22,19 +16,76 @@ type Bookmark struct {
 	URI    string // Bookmark URI
 }
 
+// Bookmarker is interface to load each bookmark file
+type Bookmarker interface {
+	LoadBookmarks() (Bookmarks, error)
+}
+
 // Bookmarks a slice of Bookmark struct
 type Bookmarks []*Bookmark
 
-// NewBrowsers return Browser
-func NewBrowsers(firefox, chrome bool) *Browsers {
-	return &Browsers{
-		chrome:  chrome,
-		firefox: firefox,
+// Browsers determine which bookmark read from
+type Browsers struct {
+	bookmarkers []Bookmarker
+}
+
+// Option is the type to replace default parameters.
+type Option func(browsers *Browsers) error
+
+// OptionFirefox if called, search firefox bookmark
+func OptionFirefox(path string) Option {
+	return func(b *Browsers) error {
+		if path == "" {
+			var err error
+			if path, err = GetFirefoxBookmarkFile(); err != nil {
+				return err
+			}
+		}
+		b.bookmarkers = append(b.bookmarkers, NewFirefoxBookmark(path))
+
+		return nil
 	}
 }
 
+// OptionChrome if called, search chrome bookmark
+func OptionChrome(path string) Option {
+	return func(b *Browsers) error {
+		if path == "" {
+			var err error
+			if path, err = GetChromeBookmarkFile(); err != nil {
+				return err
+			}
+		}
+		b.bookmarkers = append(b.bookmarkers, NewChromeBookmark(path))
+
+		return nil
+	}
+}
+
+// OptionNone noop
+func OptionNone() Option {
+	return func(b *Browsers) error {
+		return nil
+	}
+}
+
+// NewBrowsers return Browsers
+func NewBrowsers(opts ...Option) *Browsers {
+	b := &Browsers{
+		bookmarkers: []Bookmarker{},
+	}
+
+	for _, opt := range opts {
+		if err := opt(b); err != nil {
+			panic(err)
+		}
+	}
+
+	return b
+}
+
 // LoadBookmarksFromCache return Bookmarks struct, loading cache file.
-func (b *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
+func (browsers *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
 	cacheFile := "alfred-firefox-bookmarks.cache"
 	expiredTime := 24 * time.Hour
 	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
@@ -50,7 +101,7 @@ func (b *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
 		return bookmarks, nil
 	}
 
-	bookmarks, err = b.LoadBookmarks()
+	bookmarks, err = browsers.LoadBookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
@@ -61,26 +112,16 @@ func (b *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
 	return bookmarks, nil
 }
 
-// LoadBookmarks return Bookmarks struct, loading browser bookmarks and parse them.
-func (b *Browsers) LoadBookmarks() (Bookmarks, error) {
+// LoadBookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
+func (browsers *Browsers) LoadBookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	// FIXME implement interface and loop LoadBookmarkEntries() and convertToBookmarks("")
-	if b.firefox {
-		entry := firefoxBookmarkEntry{}
-		if err := entry.LoadBookmarkEntries(); err != nil {
+	for _, e := range browsers.bookmarkers {
+		b, err := e.LoadBookmarks()
+		if err != nil {
+			// Note： not continue but return err if error occurs
 			return Bookmarks{}, err
 		}
-
-		bookmarks = append(bookmarks, entry.convertToBookmarks("")...)
-	}
-
-	if b.chrome {
-		entries := chromeBookmarkEntries{}
-		if err := entries.LoadBookmarkEntries(); err != nil {
-			return Bookmarks{}, err
-		}
-
-		bookmarks = append(bookmarks, entries.convertToBookmarks("")...)
+		bookmarks = append(bookmarks, b...)
 	}
 
 	return bookmarks, nil

@@ -38,12 +38,53 @@ type firefoxBookmarkEntry struct {
 	Children []*firefoxBookmarkEntry `json:"children,omitempty"`
 }
 
+type firefoxBookmark struct {
+	firefoxBookmarkEntry firefoxBookmarkEntry
+	bookmarkPath         string
+}
+
 // firefoxBookmarkEntry.TypeCode
 const (
 	typeURI = iota + 1
 	typeFolder
 )
 
+// NewFirefoxBookmark return new instance
+func NewFirefoxBookmark(path string) Bookmarker {
+	return &firefoxBookmark{
+		bookmarkPath: path,
+	}
+}
+
+// LoadBookmarkEntries load firefox bookmark to general bookmark structure
+func (b *firefoxBookmark) LoadBookmarks() (Bookmarks, error) {
+	if err := b.unmarshal(); err != nil {
+		return Bookmarks{}, err
+	}
+
+	return b.firefoxBookmarkEntry.convertToBookmarks(""), nil
+}
+
+// unmarshal read data into entry from decompressed .jsonlz4 file of bookmarkbackups direcotory
+func (b *firefoxBookmark) unmarshal() error {
+	bookmarkMozlz4File := b.bookmarkPath
+
+	f, err := os.Open(bookmarkMozlz4File)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	r, err := mozlz4.NewReader(f)
+	if err != nil {
+		return err
+	}
+
+	return json.NewDecoder(r).Decode(&b.firefoxBookmarkEntry)
+}
+
+// convertToBookmarks parse top of root entry
+// we assume firefox has one root entry that has many children
 func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	if entry.Children == nil {
 		return Bookmarks{}
@@ -87,27 +128,6 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// LoadBookmarkEntries Read data into entry from decompressed .jsonlz4 file of bookmarkbackups direcotory
-func (entry *firefoxBookmarkEntry) LoadBookmarkEntries() error {
-	bookmarkMozlz4File, err := GetFirefoxBookmarkFile()
-	if err != nil {
-		return err
-	}
-
-	f, err := os.Open(bookmarkMozlz4File)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	r, err := mozlz4.NewReader(f)
-	if err != nil {
-		return err
-	}
-
-	return json.NewDecoder(r).Decode(entry)
-}
-
 // GetFirefoxBookmarkFile return firefox bookmarkbackups direcotory
 func GetFirefoxBookmarkFile() (string, error) {
 	home, err := homedir.Dir()
@@ -124,6 +144,7 @@ func GetFirefoxBookmarkFile() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return bookmarkFile, nil
 }
 
@@ -142,6 +163,7 @@ func getLatestFile(dir string) (string, error) {
 			latestIndex = i
 		}
 	}
+
 	return filepath.Join(dir, files[latestIndex].Name()), nil
 }
 
@@ -157,5 +179,6 @@ func searchSuffixDir(dir, suffux string) (string, error) {
 			return name, nil
 		}
 	}
+
 	return "", fmt.Errorf("not found a directory of suffix (%s) in a directory (%s)", suffux, dir)
 }
