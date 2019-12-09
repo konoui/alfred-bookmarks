@@ -1,6 +1,7 @@
 package bookmark
 
 import (
+	"encoding/json"
 	"os"
 	"time"
 
@@ -17,16 +18,25 @@ type Bookmark struct {
 }
 
 // Bookmarker is interface to load each bookmark file
+// TODO add Marshal/Unmarshal
 type Bookmarker interface {
-	LoadBookmarks() (Bookmarks, error)
+	Bookmarks() (Bookmarks, error)
 }
 
 // Bookmarks a slice of Bookmark struct
 type Bookmarks []*Bookmark
 
+type browser string
+
+const (
+	firefox browser = "firefox"
+	chrome  browser = "chrome"
+)
+
 // Browsers determine which bookmark read from
 type Browsers struct {
-	bookmarkers []Bookmarker
+	bookmarkers map[browser]Bookmarker
+	bookmarks   Bookmarks
 }
 
 // Option is the type to replace default parameters.
@@ -41,8 +51,8 @@ func OptionFirefox(path string) Option {
 				return err
 			}
 		}
-		b.bookmarkers = append(b.bookmarkers, NewFirefoxBookmark(path))
 
+		b.bookmarkers[firefox] = NewFirefoxBookmark(path)
 		return nil
 	}
 }
@@ -56,8 +66,8 @@ func OptionChrome(path string) Option {
 				return err
 			}
 		}
-		b.bookmarkers = append(b.bookmarkers, NewChromeBookmark(path))
 
+		b.bookmarkers[chrome] = NewChromeBookmark(path)
 		return nil
 	}
 }
@@ -70,9 +80,10 @@ func OptionNone() Option {
 }
 
 // NewBrowsers return Browsers
+// TODO return bookmarker
 func NewBrowsers(opts ...Option) *Browsers {
 	b := &Browsers{
-		bookmarkers: []Bookmarker{},
+		bookmarkers: make(map[browser]Bookmarker),
 	}
 
 	for _, opt := range opts {
@@ -84,8 +95,8 @@ func NewBrowsers(opts ...Option) *Browsers {
 	return b
 }
 
-// LoadBookmarksFromCache return Bookmarks struct, loading cache file.
-func (browsers *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
+// BookmarksFromCache return Bookmarks struct, loading cache file.
+func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
 	cacheFile := "alfred-firefox-bookmarks.cache"
 	expiredTime := 24 * time.Hour
 	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
@@ -101,7 +112,7 @@ func (browsers *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
 		return bookmarks, nil
 	}
 
-	bookmarks, err = browsers.LoadBookmarks()
+	bookmarks, err = browsers.Bookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
@@ -112,11 +123,11 @@ func (browsers *Browsers) LoadBookmarksFromCache() (Bookmarks, error) {
 	return bookmarks, nil
 }
 
-// LoadBookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
-func (browsers *Browsers) LoadBookmarks() (Bookmarks, error) {
+// Bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
+func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	for _, e := range browsers.bookmarkers {
-		b, err := e.LoadBookmarks()
+	for _, bookmarker := range browsers.bookmarkers {
+		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
 			return Bookmarks{}, err
@@ -124,7 +135,28 @@ func (browsers *Browsers) LoadBookmarks() (Bookmarks, error) {
 		bookmarks = append(bookmarks, b...)
 	}
 
+	browsers.bookmarks = bookmarks
 	return bookmarks, nil
+}
+
+// MarshalJSON is used to serialize the type to json
+func (browsers *Browsers) MarshalJSON() ([]byte, error) {
+	return browsers.bookmarks.Marshal()
+}
+
+// UnmarshalJSON is used to deserialize json types into Conditional
+func (browsers *Browsers) UnmarshalJSON(jsonData []byte) error {
+	return browsers.bookmarks.Unmarshal(jsonData)
+}
+
+// Marshal is used to serialize the type to json
+func (b Bookmarks) Marshal() ([]byte, error) {
+	return json.Marshal(b)
+}
+
+// Unmarshal is used to deserialize json types into Conditional
+func (b Bookmarks) Unmarshal(jsonData []byte) error {
+	return json.Unmarshal(jsonData, &b)
 }
 
 func (b Bookmarks) String(i int) string {

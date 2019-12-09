@@ -1,0 +1,137 @@
+{
+   "checksum": "091f78e180d779522489bba763974d29",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13220373794117251",
+               "guid": "6868e071-77c1-4c1c-9f68-dcff44b709f2",
+               "id": "11",
+               "name": "Yahoo",
+               "type": "url",
+               "url": "https://www.yahoo.com/"
+            }, {
+               "children": [ {
+                  "date_added": "13220373838780213",
+                  "guid": "a2e1bd18-80df-48c1-b7f5-f050d42d0495",
+                  "id": "13",
+                  "name": "Facebook",
+                  "type": "url",
+                  "url": "https://www.facebook.com/"
+               }, {
+                  "date_added": "13220373880115111",
+                  "guid": "1d7752b1-e0cd-42f4-85f8-493000b661d4",
+                  "id": "15",
+                  "name": "Twitter",
+                  "type": "url",
+                  "url": "https://twitter.com/login"
+               } ],
+               "date_added": "13220373824468419",
+               "date_modified": "13220373886229897",
+               "guid": "d9bc34cd-dd38-4564-a111-036ffa359676",
+               "id": "12",
+               "name": "2-hierarchy-a",
+               "type": "folder"
+            }, {
+               "children": [ {
+                  "date_added": "13219333986972142",
+                  "guid": "f9ce7434-74cb-4478-a9e0-1b3daa1379ca",
+                  "id": "5",
+                  "name": "Amazon.com",
+                  "type": "url",
+                  "url": "https://www.amazon.com/"
+               } ],
+               "date_added": "13220374068202227",
+               "date_modified": "13220374103062568",
+               "guid": "d4f8628a-6db3-44a3-9d91-626e2470dc47",
+               "id": "19",
+               "name": "2-hierarchy-b",
+               "type": "folder"
+            } ],
+            "date_added": "13219940384969675",
+            "date_modified": "13220374068202311",
+            "guid": "df7586ad-6d20-47c8-acae-b0142932a59b",
+            "id": "8",
+            "name": "1-hierarchy-b",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13219940353553409",
+               "guid": "a569a5a3-71a6-427f-8cf9-558729e62f82",
+               "id": "7",
+               "name": "GitHub",
+               "type": "url",
+               "url": "https://github.com/"
+            }, {
+               "children": [ {
+                  "children": [ {
+                     "date_added": "13220373944696167",
+                     "guid": "33b15783-7cea-461c-bd59-bbebffa9c0a7",
+                     "id": "17",
+                     "name": "Stack Overflow",
+                     "type": "url",
+                     "url": "https://stackoverflow.com/"
+                  }, {
+                     "date_added": "13220374022835227",
+                     "guid": "0b62d918-3f97-4971-ab4c-ebcffb152a42",
+                     "id": "18",
+                     "name": "Amazon Web Services",
+                     "type": "url",
+                     "url": "https://aws.amazon.com/?nc1=h_ls"
+                  } ],
+                  "date_added": "13220373914870772",
+                  "date_modified": "13220374022835227",
+                  "guid": "80a076fd-3cb3-495c-bc58-886bf2cca1a2",
+                  "id": "16",
+                  "name": "3-hierarchy-a",
+                  "type": "folder"
+               } ],
+               "date_added": "13220373870080550",
+               "date_modified": "13220373944696167",
+               "guid": "91b68942-2b0b-4faa-888e-b96c9876a0c5",
+               "id": "14",
+               "name": "2-hierarchy-a",
+               "type": "folder"
+            } ],
+            "date_added": "13219940384970424",
+            "date_modified": "13220373880115111",
+            "guid": "a6a578c2-c0e2-42f3-a9c6-5263b27f25b9",
+            "id": "9",
+            "name": "1-hierarchy-a",
+            "type": "folder"
+         }, {
+            "date_added": "13220374103062568",
+            "guid": "065efd70-9e6d-4048-b931-8c9d64af196a",
+            "id": "20",
+            "name": "Google",
+            "type": "url",
+            "url": "https://www.google.com/"
+         } ],
+         "date_added": "13219333973029918",
+         "date_modified": "13220374107693600",
+         "guid": "00000000-0000-4000-A000-000000000002",
+         "id": "1",
+         "name": "Bookmarks Bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13219333973029991",
+         "date_modified": "0",
+         "guid": "00000000-0000-4000-A000-000000000003",
+         "id": "2",
+         "name": "Others",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13219333973029995",
+         "date_modified": "0",
+         "guid": "00000000-0000-4000-A000-000000000004",
+         "id": "3",
+         "name": "Mobile Bookmarks",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

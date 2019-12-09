@@ -86,7 +86,7 @@ func run() {
 		coption,
 	)
 
-	bookmarks, err := browsers.LoadBookmarks()
+	bookmarks, err := browsers.Bookmarks()
 	if err != nil {
 		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
 		return

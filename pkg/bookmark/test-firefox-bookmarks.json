@@ -1,0 +1,264 @@
+{
+    "guid": "root________",
+    "title": "",
+    "index": 0,
+    "dateAdded": 1509549868178000,
+    "lastModified": 1576399354960000,
+    "id": 1,
+    "typeCode": 2,
+    "type": "text/x-moz-place-container",
+    "root": "placesRoot",
+    "children": [
+        {
+            "guid": "menu________",
+            "title": "Bookmark Menu",
+            "index": 0,
+            "dateAdded": 1509549868178000,
+            "lastModified": 1576399354960000,
+            "id": 2,
+            "typeCode": 2,
+            "type": "text/x-moz-place-container",
+            "root": "bookmarksMenuFolder",
+            "children": [
+                {
+                    "guid": "rUHPSjsdKSlb",
+                    "title": "Latest Tag",
+                    "index": 0,
+                    "dateAdded": 1509549868319000,
+                    "lastModified": 1509549868330000,
+                    "id": 14,
+                    "typeCode": 1,
+                    "type": "text/x-moz-place",
+                    "root": "",
+                    "uri": "place:type=6\u0026sort=14\u0026maxResults=10"
+                },
+                {
+                    "guid": "SBIFNIuG4TMm",
+                    "title": "",
+                    "index": 1,
+                    "dateAdded": 1509549868332000,
+                    "lastModified": 1509549868332000,
+                    "id": 15,
+                    "typeCode": 3,
+                    "type": "text/x-moz-place-separator",
+                    "root": ""
+                },
+                {
+                    "guid": "MAQbirwS1pjI",
+                    "title": "1-hierarchy-a",
+                    "index": 5,
+                    "dateAdded": 1576398923789000,
+                    "lastModified": 1576399153353000,
+                    "id": 97,
+                    "typeCode": 2,
+                    "type": "text/x-moz-place-container",
+                    "root": "",
+                    "children": [
+                        {
+                            "guid": "xe4bp4cg9Ac-",
+                            "title": "2-hierarchy-a",
+                            "index": 0,
+                            "dateAdded": 1576398989392000,
+                            "lastModified": 1576399153353000,
+                            "id": 98,
+                            "typeCode": 2,
+                            "type": "text/x-moz-place-container",
+                            "root": "",
+                            "children": [
+                                {
+                                    "guid": "-le2dRXZP1Ix",
+                                    "title": "3-hierarchy-a",
+                                    "index": 0,
+                                    "dateAdded": 1576399012066000,
+                                    "lastModified": 1576399153353000,
+                                    "id": 99,
+                                    "typeCode": 2,
+                                    "type": "text/x-moz-place-container",
+                                    "root": "",
+                                    "children": [
+                                        {
+                                            "guid": "7uRvk8KKjKPm",
+                                            "title": "Stack Overflow",
+                                            "index": 0,
+                                            "dateAdded": 1576399090788000,
+                                            "lastModified": 1576399117274000,
+                                            "id": 102,
+                                            "typeCode": 1,
+                                            "type": "text/x-moz-place",
+                                            "root": "",
+                                            "iconuri": "https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d",
+                                            "uri": "https://stackoverflow.com/"
+                                        },
+                                        {
+                                            "guid": "irL3kAUwsO1R",
+                                            "title": "Amazon Web Services",
+                                            "index": 1,
+                                            "dateAdded": 1576399146144000,
+                                            "lastModified": 1576399153967000,
+                                            "id": 104,
+                                            "typeCode": 1,
+                                            "type": "text/x-moz-place",
+                                            "root": "",
+                                            "iconuri": "https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png",
+                                            "uri": "https://aws.amazon.com/?nc1=h_ls"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "guid": "TMhIbbqmZuQ5",
+                            "title": "GitHub",
+                            "index": 1,
+                            "dateAdded": 1576399048142000,
+                            "lastModified": 1576399072544000,
+                            "id": 101,
+                            "typeCode": 1,
+                            "type": "text/x-moz-place",
+                            "root": "",
+                            "iconuri": "https://github.githubassets.com/apple-touch-icon-180x180.png#tippytop",
+                            "uri": "https://github.com/"
+                        }
+                    ]
+                },
+                {
+                    "guid": "PiI2rUY2fB4G",
+                    "title": "Google",
+                    "index": 6,
+                    "dateAdded": 1576399022214000,
+                    "lastModified": 1576399028089000,
+                    "id": 100,
+                    "typeCode": 1,
+                    "type": "text/x-moz-place",
+                    "root": "",
+                    "uri": "https://www.google.com/"
+                },
+                {
+                    "guid": "wyd9oS6p-0lK",
+                    "title": "1-hierarchy-b",
+                    "index": 7,
+                    "dateAdded": 1576399184404000,
+                    "lastModified": 1576399354960000,
+                    "id": 105,
+                    "typeCode": 2,
+                    "type": "text/x-moz-place-container",
+                    "root": "",
+                    "children": [
+                        {
+                            "guid": "HkEHFDU8y1nx",
+                            "title": "Yahoo",
+                            "index": 0,
+                            "dateAdded": 1576399204422000,
+                            "lastModified": 1576399211441000,
+                            "id": 106,
+                            "typeCode": 1,
+                            "type": "text/x-moz-place",
+                            "root": "",
+                            "iconuri": "https://s.yimg.com/rz/l/favicon.ico",
+                            "uri": "https://www.yahoo.com/"
+                        },
+                        {
+                            "guid": "NajyLzTQqDIt",
+                            "title": "2-hierarchy-a",
+                            "index": 1,
+                            "dateAdded": 1576399245488000,
+                            "lastModified": 1576399326843000,
+                            "id": 107,
+                            "typeCode": 2,
+                            "type": "text/x-moz-place-container",
+                            "root": "",
+                            "children": [
+                                {
+                                    "guid": "YstPQ09r-5rm",
+                                    "title": "Facebook",
+                                    "index": 0,
+                                    "dateAdded": 1576399272073000,
+                                    "lastModified": 1576399298564000,
+                                    "id": 109,
+                                    "typeCode": 1,
+                                    "type": "text/x-moz-place",
+                                    "root": "",
+                                    "iconuri": "https://static.xx.fbcdn.net/rsrc.php/yo/r/iRmz9lCMBD2.ico",
+                                    "uri": "https://www.facebook.com/"
+                                },
+                                {
+                                    "guid": "K1ONXeTKyu5A",
+                                    "title": "Twitter",
+                                    "index": 1,
+                                    "dateAdded": 1576399315460000,
+                                    "lastModified": 1576399327618000,
+                                    "id": 110,
+                                    "typeCode": 1,
+                                    "type": "text/x-moz-place",
+                                    "root": "",
+                                    "iconuri": "https://abs.twimg.com/icons/apple-touch-icon-192x192.png",
+                                    "uri": "https://twitter.com/login"
+                                }
+                            ]
+                        },
+                        {
+                            "guid": "feZYxa4F8BAi",
+                            "title": "2-hierarchy-b",
+                            "index": 2,
+                            "dateAdded": 1576399256410000,
+                            "lastModified": 1576399354960000,
+                            "id": 108,
+                            "typeCode": 2,
+                            "type": "text/x-moz-place-container",
+                            "root": "",
+                            "children": [
+                                {
+                                    "guid": "oCtRqDMBnaFJ",
+                                    "title": "Amazon.com",
+                                    "index": 0,
+                                    "dateAdded": 1576399341996000,
+                                    "lastModified": 1576399354960000,
+                                    "id": 111,
+                                    "typeCode": 1,
+                                    "type": "text/x-moz-place",
+                                    "root": "",
+                                    "uri": "https://www.amazon.com/"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "guid": "toolbar_____",
+            "title": "Bookmark Tookbar",
+            "index": 1,
+            "dateAdded": 1509549868178000,
+            "lastModified": 1576399072544000,
+            "id": 3,
+            "typeCode": 2,
+            "type": "text/x-moz-place-container",
+            "root": "toolbarFolder",
+            "children": []
+        },
+        {
+            "guid": "unfiled_____",
+            "title": "Other Bookmark",
+            "index": 3,
+            "dateAdded": 1509549868178000,
+            "lastModified": 1576399354960000,
+            "id": 5,
+            "typeCode": 2,
+            "type": "text/x-moz-place-container",
+            "root": "unfiledBookmarksFolder",
+            "children": []
+        },
+        {
+            "guid": "mobile______",
+            "title": "Mobile Bookmark",
+            "index": 4,
+            "dateAdded": 1509549868179000,
+            "lastModified": 1509549868179000,
+            "id": 6,
+            "typeCode": 2,
+            "type": "text/x-moz-place-container",
+            "root": "mobileFolder"
+        }
+    ]
+}

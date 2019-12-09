@@ -49,13 +49,13 @@ func NewChromeBookmark(path string) Bookmarker {
 	}
 }
 
-// LoadBookmark load chrome bookmark to general bookmark structure
-func (b *chromeBookmark) LoadBookmarks() (Bookmarks, error) {
+// Bookmarks load chrome bookmark to general bookmark structure
+func (b *chromeBookmark) Bookmarks() (Bookmarks, error) {
 	if err := b.unmarshal(); err != nil {
 		return Bookmarks{}, err
 	}
 
-	return b.chromeBookmarkEntries.convertToBookmarks(""), nil
+	return b.chromeBookmarkEntries.convertToBookmarks(), nil
 }
 
 func (b *chromeBookmark) unmarshal() error {
@@ -69,7 +69,7 @@ func (b *chromeBookmark) unmarshal() error {
 }
 
 // convertToBookmarks parse top of root entries which is array
-func (entries *chromeBookmarkEntries) convertToBookmarks(folder string) Bookmarks {
+func (entries *chromeBookmarkEntries) convertToBookmarks() Bookmarks {
 	bookmarks := Bookmarks{}
 	for _, entry := range entries.Roots.BookmarkBar.BookmarkEntries {
 		bookmarks = append(bookmarks, entry.convertToBookmarks("")...)
@@ -107,10 +107,13 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		return bookmarks
 	}
 
+	if entry.Type == "folder" {
+		// we append folder name to parent folder name
+		folder = fmt.Sprintf("%s/%s", folder, entry.Name)
+	}
+
 	// loop folder wihch has children
 	for _, e := range entry.Children {
-		// entry.Name should be folder name
-		folder = fmt.Sprintf("%s/%s", folder, entry.Name)
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 

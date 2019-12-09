@@ -56,8 +56,8 @@ func NewFirefoxBookmark(path string) Bookmarker {
 	}
 }
 
-// LoadBookmarkEntries load firefox bookmark to general bookmark structure
-func (b *firefoxBookmark) LoadBookmarks() (Bookmarks, error) {
+// Bookmarks load firefox bookmark to general bookmark structure
+func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
 	if err := b.unmarshal(); err != nil {
 		return Bookmarks{}, err
 	}
