@@ -1,0 +1,52 @@
+{
+	"items": [
+		{
+			"title": "Yahoo",
+			"subtitle": "[/1-hierarchy-b] www.yahoo.com",
+			"arg": "https://www.yahoo.com/",
+			"autocomplete": "Yahoo"
+		},
+		{
+			"title": "Amazon Web Services",
+			"subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] aws.amazon.com",
+			"arg": "https://aws.amazon.com/?nc1=h_ls",
+			"autocomplete": "Amazon Web Services"
+		},
+		{
+			"title": "Stack Overflow",
+			"subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] stackoverflow.com",
+			"arg": "https://stackoverflow.com/",
+			"autocomplete": "Stack Overflow"
+		},
+		{
+			"title": "GitHub",
+			"subtitle": "[/1-hierarchy-a] github.com",
+			"arg": "https://github.com/",
+			"autocomplete": "GitHub"
+		},
+		{
+			"title": "Amazon.com",
+			"subtitle": "[/1-hierarchy-b/2-hierarchy-b] www.amazon.com",
+			"arg": "https://www.amazon.com/",
+			"autocomplete": "Amazon.com"
+		},
+		{
+			"title": "Twitter",
+			"subtitle": "[/1-hierarchy-b/2-hierarchy-a] twitter.com",
+			"arg": "https://twitter.com/login",
+			"autocomplete": "Twitter"
+		},
+		{
+			"title": "Facebook",
+			"subtitle": "[/1-hierarchy-b/2-hierarchy-a] www.facebook.com",
+			"arg": "https://www.facebook.com/",
+			"autocomplete": "Facebook"
+		},
+		{
+			"title": "Google",
+			"subtitle": "[] www.google.com",
+			"arg": "https://www.google.com/",
+			"autocomplete": "Google"
+		}
+	]
+}
