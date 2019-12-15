@@ -1,0 +1,7 @@
+firefox:
+    enable: true
+    path: '../pkg/bookmark/test-firefox-bookmarks.jsonlz4'
+chrome:
+    enable: true
+    path: '../pkg/bookmark/test-chrome-bookmarks.json'
+removeDuplicate: true
