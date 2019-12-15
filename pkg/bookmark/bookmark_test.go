@@ -1,7 +1,6 @@
 package bookmark
 
 import (
-	"fmt"
 	"sort"
 	"testing"
 
@@ -9,24 +8,59 @@ import (
 )
 
 func TestBrowsersBookmarks(t *testing.T) {
-}
-
-func TestBookmarksMarshaUnmarshalJson(t *testing.T) {
 	tests := []struct {
 		description string
+		options     []Option
+		want        Bookmarks
 		expectErr   bool
 	}{
 		{
-			description: "",
-			expectErr:   false,
+			description: "enable firefox bookmark",
+			options: []Option{
+				OptionFirefox(testFirefoxBookmarkJsonlz4File),
+			},
+			want:      testFirefoxBookmarks,
+			expectErr: false,
+		},
+		{
+			description: "enable chrome bookmark",
+			options: []Option{
+				OptionChrome(testChromeBookmarkJSONFile),
+			},
+			want:      testChromeBookmarks,
+			expectErr: false,
+		},
+		{
+			description: "enable firefox, chrome remove dupulication. return return firefox bookmark",
+			options: []Option{
+				OptionFirefox(testFirefoxBookmarkJsonlz4File),
+				OptionChrome(testChromeBookmarkJSONFile),
+				OptionRemoveDuplicate(),
+			},
+			want:      testChromeBookmarks,
+			expectErr: false,
 		},
 	}
 
 	for _, tt := range tests {
-		fmt.Println(tt)
-	}
+		t.Run(tt.description, func(t *testing.T) {
+			browsers := NewBrowsers(tt.options...)
+			bookmarks, err := browsers.Bookmarks()
+			if tt.expectErr && err == nil {
+				t.Errorf("expect error happens, but got response")
+			}
+			if !tt.expectErr && err != nil {
+				t.Errorf("unexpected error got: %+v", err.Error())
+			}
 
+			diff := DiffBookmark(bookmarks, tt.want)
+			if diff != "" {
+				t.Errorf("unexpected response: (+want -got)\n%+v", diff)
+			}
+		})
+	}
 }
+
 func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 	tests := []struct {
 		description string
@@ -34,9 +68,24 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 		expectErr   bool
 	}{
 		{
+			description: "enable firefox bookmark",
+			options: []Option{
+				OptionFirefox(testFirefoxBookmarkJsonlz4File),
+			},
+			expectErr: false,
+		},
+		{
 			description: "enable chrome bookmark",
 			options: []Option{
-				OptionChrome("test-chrome-bookmarks.json"),
+				OptionChrome(testChromeBookmarkJSONFile),
+			},
+			expectErr: false,
+		},
+		{
+			description: "enable firefox and chrome bookmark",
+			options: []Option{
+				OptionFirefox(testFirefoxBookmarkJsonlz4File),
+				OptionChrome(testChromeBookmarkJSONFile),
 			},
 			expectErr: false,
 		},
@@ -69,10 +118,10 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 
 func DiffBookmark(got, want Bookmarks) string {
 	sort.Slice(got, func(i, j int) bool {
-		return got[i].Domain < got[j].Domain
+		return got[i].URI < got[j].URI
 	})
 	sort.Slice(want, func(i, j int) bool {
-		return want[i].Domain < want[j].Domain
+		return want[i].URI < want[j].URI
 	})
 	diff := cmp.Diff(got, want)
 

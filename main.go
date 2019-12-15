@@ -32,6 +32,7 @@ type Config struct {
 		Enable bool   `json:"enable"`
 		Path   string `json:"path,omitempty"`
 	} `json:"chrome"`
+	RemoveDuplicate bool `json:"remove_duplicate"`
 }
 
 // NewConfig return alfred bookmark configuration
@@ -73,17 +74,21 @@ func run() {
 	}
 
 	foption, coption := bookmark.OptionNone(), bookmark.OptionNone()
+	duplicate := bookmark.OptionNone()
 	if c.Firefox.Enable {
 		foption = bookmark.OptionFirefox(c.Firefox.Path)
 	}
-
 	if c.Chrome.Enable {
 		coption = bookmark.OptionChrome(c.Chrome.Path)
+	}
+	if c.RemoveDuplicate {
+		duplicate = bookmark.OptionRemoveDuplicate()
 	}
 
 	browsers := bookmark.NewBrowsers(
 		foption,
 		coption,
+		duplicate,
 	)
 
 	bookmarks, err := browsers.Bookmarks()

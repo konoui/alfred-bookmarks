@@ -14,6 +14,70 @@ import (
 	"github.com/pierrec/lz4"
 )
 
+const (
+	testFirefoxBookmarkJsonlz4File = "test-firefox-bookmarks.jsonlz4"
+	testFirefoxBookmarkJSONFile    = "test-firefox-bookmarks.json"
+)
+
+var testFirefoxBookmarks = Bookmarks{
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu",
+		Title:   "Google",
+		Domain:  "www.google.com",
+		URI:     "https://www.google.com/",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-a",
+		Title:   "GitHub",
+		Domain:  "github.com",
+		URI:     "https://github.com/",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
+		Title:   "Stack Overflow",
+		Domain:  "stackoverflow.com",
+		URI:     "https://stackoverflow.com/",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
+		Title:   "Amazon Web Services",
+		Domain:  "aws.amazon.com",
+		URI:     "https://aws.amazon.com/?nc1=h_ls",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-b",
+		Title:   "Yahoo",
+		Domain:  "www.yahoo.com",
+		URI:     "https://www.yahoo.com/",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
+		Title:   "Facebook",
+		Domain:  "www.facebook.com",
+		URI:     "https://www.facebook.com/",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
+		Title:   "Twitter",
+		Domain:  "twitter.com",
+		URI:     "https://twitter.com/login",
+	},
+	&Bookmark{
+		Browser: "firefox",
+		Folder:  "/Bookmark Menu/1-hierarchy-b/2-hierarchy-b",
+		Title:   "Amazon.com",
+		Domain:  "www.amazon.com",
+		URI:     "https://www.amazon.com/",
+	},
+}
+
 func TestFirefoxBookmarks(t *testing.T) {
 	tests := []struct {
 		description  string
@@ -23,58 +87,9 @@ func TestFirefoxBookmarks(t *testing.T) {
 	}{
 		{
 			description:  "correct bookmark file",
-			bookmarkPath: "test-firefox-bookmarks.jsonlz4",
-			want: Bookmarks{
-				&Bookmark{
-					Folder: "/Bookmark Menu",
-					Title:  "Google",
-					Domain: "www.google.com",
-					URI:    "https://www.google.com/",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-a",
-					Title:  "GitHub",
-					Domain: "github.com",
-					URI:    "https://github.com/",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
-					Title:  "Stack Overflow",
-					Domain: "stackoverflow.com",
-					URI:    "https://stackoverflow.com/",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
-					Title:  "Amazon Web Services",
-					Domain: "aws.amazon.com",
-					URI:    "https://aws.amazon.com/?nc1=h_ls",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-b",
-					Title:  "Yahoo",
-					Domain: "www.yahoo.com",
-					URI:    "https://www.yahoo.com/",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
-					Title:  "Facebook",
-					Domain: "www.facebook.com",
-					URI:    "https://www.facebook.com/",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
-					Title:  "Twitter",
-					Domain: "twitter.com",
-					URI:    "https://twitter.com/login",
-				},
-				&Bookmark{
-					Folder: "/Bookmark Menu/1-hierarchy-b/2-hierarchy-b",
-					Title:  "Amazon.com",
-					Domain: "www.amazon.com",
-					URI:    "https://www.amazon.com/",
-				},
-			},
-			expectErr: false,
+			bookmarkPath: testFirefoxBookmarkJsonlz4File,
+			want:         testFirefoxBookmarks,
+			expectErr:    false,
 		},
 		{
 			description:  "invalid bookmark file",
@@ -131,7 +146,7 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 }
 
 func readTestFirefoxBookmarkJSON() (string, error) {
-	jsonData, err := ioutil.ReadFile("test-firefox-bookmarks.json")
+	jsonData, err := ioutil.ReadFile(testFirefoxBookmarkJSONFile)
 
 	return string(jsonData), err
 }
@@ -146,7 +161,7 @@ func TestCreateTestFirefoxJsonlz4(t *testing.T) {
 	}
 
 	r := strings.NewReader(str)
-	w, err := os.Create("test-firefox-bookmarks.jsonlz4")
+	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
 	if err != nil {
 		t.Fatal(err)
 	}

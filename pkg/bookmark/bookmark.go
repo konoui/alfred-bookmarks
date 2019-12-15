@@ -3,6 +3,7 @@ package bookmark
 import (
 	"encoding/json"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/konoui/alfred-bookmarks/pkg/cache"
@@ -11,10 +12,11 @@ import (
 
 // Bookmark abstract each browser bookmark as the structure
 type Bookmark struct {
-	Folder string // Folder of Bookmarks
-	Title  string // Bookmark title
-	Domain string // Domain of URI
-	URI    string // Bookmark URI
+	Browser string // Source Browser
+	Folder  string // Folder of Bookmarks
+	Title   string // Bookmark title
+	Domain  string // Domain of URI
+	URI     string // Bookmark URI
 }
 
 // Bookmarker is interface to load each bookmark file
@@ -35,8 +37,9 @@ const (
 
 // Browsers determine which bookmark read from
 type Browsers struct {
-	bookmarkers map[browser]Bookmarker
-	bookmarks   Bookmarks
+	bookmarkers     map[browser]Bookmarker
+	bookmarks       Bookmarks
+	removeDuplicate bool
 }
 
 // Option is the type to replace default parameters.
@@ -72,6 +75,14 @@ func OptionChrome(path string) Option {
 	}
 }
 
+// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browser
+func OptionRemoveDuplicate() Option {
+	return func(b *Browsers) error {
+		b.removeDuplicate = true
+		return nil
+	}
+}
+
 // OptionNone noop
 func OptionNone() Option {
 	return func(b *Browsers) error {
@@ -97,7 +108,7 @@ func NewBrowsers(opts ...Option) *Browsers {
 
 // BookmarksFromCache return Bookmarks struct, loading cache file.
 func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
-	cacheFile := "alfred-firefox-bookmarks.cache"
+	cacheFile := "alfred-bookmarks.json"
 	expiredTime := 24 * time.Hour
 	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
 	if err != nil {
@@ -135,8 +146,31 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 		bookmarks = append(bookmarks, b...)
 	}
 
+	if browsers.removeDuplicate {
+		bookmarks = bookmarks.uniqByURI()
+	}
+
 	browsers.bookmarks = bookmarks
 	return bookmarks, nil
+}
+
+func (b Bookmarks) uniqByURI() Bookmarks {
+	m := make(map[string]bool)
+	uniq := Bookmarks{}
+
+	sort.Slice(b, func(i, j int) bool {
+		return b[i].Browser < b[j].Browser
+	})
+
+	for _, e := range b {
+		if !m[e.URI] {
+			m[e.URI] = true
+			uniq = append(uniq, e)
+		}
+	}
+
+	b = uniq
+	return uniq
 }
 
 // MarshalJSON is used to serialize the type to json
