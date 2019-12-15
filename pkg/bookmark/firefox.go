@@ -49,8 +49,8 @@ const (
 	typeFolder
 )
 
-// NewFirefoxBookmark return new instance
-func NewFirefoxBookmark(path string) Bookmarker {
+// NewFirefox return new instance
+func NewFirefox(path string) Bookmarker {
 	return &firefoxBookmark{
 		bookmarkPath: path,
 	}

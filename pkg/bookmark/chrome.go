@@ -42,8 +42,8 @@ type chromeBookmark struct {
 	bookmarkPath          string
 }
 
-// NewChromeBookmark return new instance
-func NewChromeBookmark(path string) Bookmarker {
+// NewChrome return new instance
+func NewChrome(path string) Bookmarker {
 	return &chromeBookmark{
 		bookmarkPath: path,
 	}

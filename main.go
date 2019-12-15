@@ -68,7 +68,7 @@ func run() {
 
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("a error occurs: %s", err), "")
+		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
 		return
 
 	}

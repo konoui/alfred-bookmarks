@@ -55,7 +55,7 @@ func OptionFirefox(path string) Option {
 			}
 		}
 
-		b.bookmarkers[firefox] = NewFirefoxBookmark(path)
+		b.bookmarkers[firefox] = NewFirefox(path)
 		return nil
 	}
 }
@@ -70,7 +70,7 @@ func OptionChrome(path string) Option {
 			}
 		}
 
-		b.bookmarkers[chrome] = NewChromeBookmark(path)
+		b.bookmarkers[chrome] = NewChrome(path)
 		return nil
 	}
 }
