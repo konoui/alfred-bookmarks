@@ -74,11 +74,6 @@ func run(query string) error {
 		duplicateOption = bookmark.OptionRemoveDuplicate()
 	}
 
-	if err != nil {
-		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
-		return err
-	}
-
 	browsers := bookmark.NewBrowsers(
 		firefoxOption,
 		chromeOption,
@@ -86,7 +81,7 @@ func run(query string) error {
 		bookmark.OptionCacheMaxAge(c.MaxCacheAge),
 	)
 
-	bookmarks, err := browsers.Bookmarks()
+	bookmarks, err := browsers.BookmarksFromCache()
 	if err != nil {
 		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
 		return err

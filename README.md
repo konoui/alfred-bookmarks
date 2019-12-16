@@ -4,6 +4,16 @@ Alfred workflow to search bookmarks in Firefox and Google Chrome.
 ## Install
 Download the workflow form [latest release](https://github.com/konoui/alfred-bookmarks/releases).
 
+## Configuration
+Please create configuration file as `.alfred-bookmarks` in home directory (`~/`).
+```
+firefox:
+    enable: true
+chrome:
+    enable: true
+remove_duplicate: true
+```
+
 ## Usage
 Please type `bs <query>` and select your desired bookmark to open on default web browser.
 
