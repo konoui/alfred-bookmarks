@@ -21,7 +21,7 @@ var (
 func Execute(rootCmd *cobra.Command) {
 	rootCmd.SetOutput(outStream)
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(errStream, err)
+		log.Printf("command execution failed: %+v", err)
 		os.Exit(1)
 	}
 }
@@ -29,12 +29,15 @@ func Execute(rootCmd *cobra.Command) {
 // NewRootCmd create a new cmd for root
 func NewRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:   "tldr <cmd>",
+		Use:   "alfred-bookmarks <query>",
 		Short: "search bookmarks",
 		Args:  cobra.MinimumNArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			query := strings.Join(args, " ")
-			return run(query)
+			if err := run(query); err != nil {
+				log.Printf("run failed: %+v", err)
+			}
+			return nil
 		},
 		SilenceUsage: true,
 	}
