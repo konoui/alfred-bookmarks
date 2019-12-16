@@ -20,6 +20,7 @@ func TestNewConfig(t *testing.T) {
 			description: "all enable",
 			want: &Config{
 				RemoveDuplicate: true,
+				MaxCacheAge:     -1,
 				Firefox: Firefox{
 					Enable: true,
 					Path:   "../pkg/bookmark/test-firefox-bookmarks.jsonlz4",

@@ -6,21 +6,22 @@ import (
 
 // Config configuration which browser bookmark read
 type Config struct {
-	Firefox         Firefox `json:"firefox"`
-	Chrome          Chrome  `json:"chrome"`
-	RemoveDuplicate bool    `json:"removeDuplicate"`
+	Firefox         Firefox `mapstructure:"firefox"`
+	Chrome          Chrome  `mapstructure:"chrome"`
+	RemoveDuplicate bool    `mapstructure:"remove_duplicate"`
+	MaxCacheAge     int     `mapstructure:"cache_age_hours"`
 }
 
 // Firefox Configuration
 type Firefox struct {
-	Enable bool   `json:"enable"`
-	Path   string `json:"path,omitempty"`
+	Enable bool   `mapstructure:"enable"`
+	Path   string `mapstructure:"path,omitempty"`
 }
 
 // Chrome Configuration
 type Chrome struct {
-	Enable bool   `json:"enable"`
-	Path   string `json:"path,omitempty"`
+	Enable bool   `mapstructure:"enable"`
+	Path   string `mapstructure:"path,omitempty"`
 }
 
 // NewConfig return alfred bookmark configuration

@@ -4,4 +4,5 @@ firefox:
 chrome:
     enable: true
     path: '../pkg/bookmark/test-chrome-bookmarks.json'
-removeDuplicate: true
+remove_duplicate: true
+cache_age_hours: -1

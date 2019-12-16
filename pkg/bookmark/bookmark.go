@@ -40,6 +40,7 @@ type Browsers struct {
 	bookmarkers     map[browser]Bookmarker
 	bookmarks       Bookmarks
 	removeDuplicate bool
+	cacheMaxAge     time.Duration
 }
 
 // Option is the type to replace default parameters.
@@ -83,6 +84,20 @@ func OptionRemoveDuplicate() Option {
 	}
 }
 
+// OptionCacheMaxAge bookmark cache time. unit indicate hours
+// if passed arg is zero, set 24 hours. if passed arg is minus, set 0 hours
+func OptionCacheMaxAge(age int) Option {
+	return func(b *Browsers) error {
+		if age < 0 {
+			age = 0
+		} else if age == 0 {
+			age = 24
+		}
+		b.cacheMaxAge = time.Duration(age) * time.Hour
+		return nil
+	}
+}
+
 // OptionNone noop
 func OptionNone() Option {
 	return func(b *Browsers) error {
@@ -108,22 +123,20 @@ func NewBrowsers(opts ...Option) *Browsers {
 
 // BookmarksFromCache return Bookmarks struct, loading cache file.
 func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
-	cacheFile := "alfred-bookmarks.json"
-	expiredTime := 24 * time.Hour
-	c, err := cache.NewCache(os.TempDir(), cacheFile, expiredTime)
+	cacheFile := "alfred-bookmarks.cache"
+	c, err := cache.NewCache(os.TempDir(), cacheFile, browsers.cacheMaxAge)
 	if err != nil {
 		return Bookmarks{}, err
 	}
 
-	bookmarks := Bookmarks{}
 	if c.Exists() && c.NotExpired() {
-		if err = c.Load(&bookmarks); err != nil {
+		if err = c.Load(&browsers.bookmarks); err != nil {
 			return Bookmarks{}, err
 		}
-		return bookmarks, nil
+		return browsers.bookmarks, nil
 	}
 
-	bookmarks, err = browsers.Bookmarks()
+	bookmarks, err := browsers.Bookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
@@ -131,6 +144,7 @@ func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
 		return Bookmarks{}, err
 	}
 
+	browsers.bookmarks = bookmarks
 	return bookmarks, nil
 }
 

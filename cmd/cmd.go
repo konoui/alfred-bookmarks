@@ -62,22 +62,28 @@ func run(query string) error {
 		return err
 	}
 
-	foption, coption := bookmark.OptionNone(), bookmark.OptionNone()
-	duplicate := bookmark.OptionNone()
+	firefoxOption, chromeOption := bookmark.OptionNone(), bookmark.OptionNone()
+	duplicateOption := bookmark.OptionNone()
 	if c.Firefox.Enable {
-		foption = bookmark.OptionFirefox(c.Firefox.Path)
+		firefoxOption = bookmark.OptionFirefox(c.Firefox.Path)
 	}
 	if c.Chrome.Enable {
-		coption = bookmark.OptionChrome(c.Chrome.Path)
+		chromeOption = bookmark.OptionChrome(c.Chrome.Path)
 	}
 	if c.RemoveDuplicate {
-		duplicate = bookmark.OptionRemoveDuplicate()
+		duplicateOption = bookmark.OptionRemoveDuplicate()
+	}
+
+	if err != nil {
+		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
+		return err
 	}
 
 	browsers := bookmark.NewBrowsers(
-		foption,
-		coption,
-		duplicate,
+		firefoxOption,
+		chromeOption,
+		duplicateOption,
+		bookmark.OptionCacheMaxAge(c.MaxCacheAge),
 	)
 
 	bookmarks, err := browsers.Bookmarks()

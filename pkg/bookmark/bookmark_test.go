@@ -3,6 +3,7 @@ package bookmark
 import (
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -31,11 +32,22 @@ func TestBrowsersBookmarks(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			description: "enable firefox, chrome remove dupulication. return return firefox bookmark",
+			description: "enable firefox, chrome, remove dupulication. return return chrome bookmark",
 			options: []Option{
 				OptionFirefox(testFirefoxBookmarkJsonlz4File),
 				OptionChrome(testChromeBookmarkJSONFile),
 				OptionRemoveDuplicate(),
+			},
+			want:      testChromeBookmarks,
+			expectErr: false,
+		},
+		{
+			description: "enable firefox, chrome, remove dupulication, cacheOption. return chrome bookmark",
+			options: []Option{
+				OptionFirefox(testFirefoxBookmarkJsonlz4File),
+				OptionChrome(testChromeBookmarkJSONFile),
+				OptionRemoveDuplicate(),
+				OptionCacheMaxAge(0),
 			},
 			want:      testChromeBookmarks,
 			expectErr: false,
@@ -56,6 +68,37 @@ func TestBrowsersBookmarks(t *testing.T) {
 			diff := DiffBookmark(bookmarks, tt.want)
 			if diff != "" {
 				t.Errorf("unexpected response: (+want -got)\n%+v", diff)
+			}
+		})
+	}
+}
+
+func TestOptionCacheMaxAge(t *testing.T) {
+	tests := []struct {
+		description string
+		options     []Option
+		want        time.Duration
+	}{
+		{
+			description: "age eq 0 then cache is 24 hours",
+			options: []Option{
+				OptionCacheMaxAge(0),
+			},
+			want: 24 * time.Hour,
+		},
+		{
+			description: "age eq -1 cache is 0 hours",
+			options: []Option{
+				OptionCacheMaxAge(-1),
+			},
+			want: 0 * time.Hour,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.description, func(t *testing.T) {
+			b := NewBrowsers(tt.options...)
+			if b.cacheMaxAge != tt.want {
+				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, b.cacheMaxAge)
 			}
 		})
 	}
