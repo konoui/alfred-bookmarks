@@ -7,42 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/mattn/go-shellwords"
 )
-
-func TestNewConfig(t *testing.T) {
-	tests := []struct {
-		description string
-		want        *Config
-	}{
-		{
-			description: "all enable",
-			want: &Config{
-				RemoveDuplicate: true,
-				MaxCacheAge:     -1,
-				Firefox: Firefox{
-					Enable: true,
-					Path:   "../pkg/bookmark/test-firefox-bookmarks.jsonlz4",
-				},
-				Chrome: Chrome{
-					Enable: true,
-					Path:   "../pkg/bookmark/test-chrome-bookmarks.json",
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		c, err := newConfig()
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if !cmp.Equal(c, tt.want) {
-			t.Errorf("unexpected response: want: \n%+v, got: \n%+v", tt.want, c)
-		}
-	}
-}
 
 func TestExecute(t *testing.T) {
 	tests := []struct {

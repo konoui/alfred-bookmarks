@@ -26,7 +26,6 @@ github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZm
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
 github.com/frankban/quicktest v1.4.0 h1:rCSCih1FnSWJEel/eub9wclBSqpF2F/PuvxUWGWnbO8=
 github.com/frankban/quicktest v1.4.0/go.mod h1:36zfPVQyHxymz4cH7wlDmVwDrJuljRB60qkgn7rorfQ=
-github.com/frioux/leatherman v0.0.0-20191013054410-d3ea6c587724/go.mod h1:OTT1qF/2lE2Mw5QU4zqHm2LA8OGuzdKu6sT0zYBaSHY=
 github.com/frioux/leatherman v0.0.0-20191202145612-2c3326259669 h1:myrq5ZsSaU4CGzKwue6aCJW/M0paoAtkqVJn8NpwOck=
 github.com/frioux/leatherman v0.0.0-20191202145612-2c3326259669/go.mod h1:fsalaF8uyPV0n8QxGOBE61htVmKvkfejqR8JU9XKrqc=
 github.com/frioux/yaml v0.0.0-20191009230429-1d79e1a4120f/go.mod h1:YG995++5o4pY+dtMfaYY/sWBn/Qhj5rYQ7QaCnyTc+8=
@@ -71,8 +70,6 @@ github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvW
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/konoui/go-alfred v0.0.0-20191205115922-c731f1dc0a1a h1:YMhXAbaSE38NL46rYBIT2ZhJw5XUV4E2/Frq2adr3J4=
 github.com/konoui/go-alfred v0.0.0-20191205115922-c731f1dc0a1a/go.mod h1:SLDa7rjWTLpw5wFgT3llNASS5yexRSamyiPDtNfTwuY=
-github.com/konoui/tldr v0.0.0-20191204151718-1a842f20d88b h1:EmdOtJUMekNV8NQBEzYjNJudZD6dvfMElcccx403WLk=
-github.com/konoui/tldr v0.0.0-20191204151718-1a842f20d88b/go.mod h1:ZHKHxyx8AfL9y/MhIUMKu2SNTh/UiFAslO/a/jctWDw=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
