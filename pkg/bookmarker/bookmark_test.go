@@ -1,4 +1,4 @@
-package bookmark
+package bookmarker
 
 import (
 	"sort"

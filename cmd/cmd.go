@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/konoui/alfred-bookmarks/pkg/bookmark"
+	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
 	"github.com/konoui/go-alfred"
 	"github.com/spf13/cobra"
 )
@@ -62,26 +62,26 @@ func run(query string) error {
 		return err
 	}
 
-	firefoxOption, chromeOption := bookmark.OptionNone(), bookmark.OptionNone()
-	duplicateOption := bookmark.OptionNone()
+	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
+	duplicateOption := bookmarker.OptionNone()
 	if c.Firefox.Enable {
-		firefoxOption = bookmark.OptionFirefox(c.Firefox.Path)
+		firefoxOption = bookmarker.OptionFirefox(c.Firefox.Path)
 	}
 	if c.Chrome.Enable {
-		chromeOption = bookmark.OptionChrome(c.Chrome.Path)
+		chromeOption = bookmarker.OptionChrome(c.Chrome.Path)
 	}
 	if c.RemoveDuplicate {
-		duplicateOption = bookmark.OptionRemoveDuplicate()
+		duplicateOption = bookmarker.OptionRemoveDuplicate()
 	}
 
-	browsers := bookmark.NewBrowsers(
+	browsers := bookmarker.NewBrowsers(
 		firefoxOption,
 		chromeOption,
 		duplicateOption,
-		bookmark.OptionCacheMaxAge(c.MaxCacheAge),
+		bookmarker.OptionCacheMaxAge(c.MaxCacheAge),
 	)
 
-	bookmarks, err := browsers.BookmarksFromCache()
+	bookmarks, err := browsers.Bookmarks()
 	if err != nil {
 		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
 		return err

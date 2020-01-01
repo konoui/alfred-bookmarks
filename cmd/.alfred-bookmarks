@@ -1,8 +1,8 @@
 firefox:
     enable: true
-    path: '../pkg/bookmark/test-firefox-bookmarks.jsonlz4'
+    path: '../pkg/bookmarker/test-firefox-bookmarks.jsonlz4'
 chrome:
     enable: true
-    path: '../pkg/bookmark/test-chrome-bookmarks.json'
+    path: '../pkg/bookmarker/test-chrome-bookmarks.json'
 remove_duplicate: true
 cache_age_hours: -1

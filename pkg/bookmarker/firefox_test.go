@@ -1,4 +1,4 @@
-package bookmark
+package bookmarker
 
 import (
 	"encoding/binary"
@@ -78,6 +78,31 @@ var testFirefoxBookmarks = Bookmarks{
 	},
 }
 
+//Create Jsonlz4 from jsonfile
+func TestCreateTestFirefoxJsonlz4(t *testing.T) {
+	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
+	_, _ = readDefaultFirefoxBookmarksJSON()
+	str, err := readTestFirefoxBookmarkJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := strings.NewReader(str)
+	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+
+	err = compress(r, w, len(str))
+	if err != nil {
+		t.Logf("Failed to compress data: %s\n", err)
+		t.Fail()
+		return
+	}
+
+}
+
 func TestFirefoxBookmarks(t *testing.T) {
 	tests := []struct {
 		description  string
@@ -149,31 +174,6 @@ func readTestFirefoxBookmarkJSON() (string, error) {
 	jsonData, err := ioutil.ReadFile(testFirefoxBookmarkJSONFile)
 
 	return string(jsonData), err
-}
-
-//Create Jsonlz4 from jsonfile
-func TestCreateTestFirefoxJsonlz4(t *testing.T) {
-	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
-	_, _ = readDefaultFirefoxBookmarksJSON()
-	str, err := readTestFirefoxBookmarkJSON()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	r := strings.NewReader(str)
-	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer w.Close()
-
-	err = compress(r, w, len(str))
-	if err != nil {
-		t.Logf("Failed to compress data: %s\n", err)
-		t.Fail()
-		return
-	}
-
 }
 
 func compress(src io.Reader, dst io.Writer, intendedSize int) error {

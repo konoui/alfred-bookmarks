@@ -1,4 +1,4 @@
-package bookmark
+package bookmarker
 
 import (
 	"testing"
@@ -93,9 +93,10 @@ func TestOptionCacheMaxAge(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			b := NewBrowsers(tt.options...)
-			if b.cacheMaxAge != tt.want {
-				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, b.cacheMaxAge)
+			bookmarker := NewBrowsers(tt.options...)
+			browsers := bookmarker.(*Browsers)
+			if browsers.cacheMaxAge != tt.want {
+				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, browsers.cacheMaxAge)
 			}
 		})
 	}
@@ -133,13 +134,14 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			browsers := NewBrowsers(tt.options...)
-			jsonData, err := browsers.MarshalJSON()
+			bookmarker := NewBrowsers(tt.options...)
+			browsers := bookmarker.(*Browsers)
+			jsonData, err := browsers.Marshal()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if err := browsers.UnmarshalJSON(jsonData); err != nil {
+			if err := browsers.Unmarshal(jsonData); err != nil {
 				t.Fatal(err)
 			}
 		})

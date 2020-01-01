@@ -18,11 +18,11 @@ func TestNewConfig(t *testing.T) {
 				MaxCacheAge:     -1,
 				Firefox: Firefox{
 					Enable: true,
-					Path:   "../pkg/bookmark/test-firefox-bookmarks.jsonlz4",
+					Path:   "../pkg/bookmarker/test-firefox-bookmarks.jsonlz4",
 				},
 				Chrome: Chrome{
 					Enable: true,
-					Path:   "../pkg/bookmark/test-chrome-bookmarks.json",
+					Path:   "../pkg/bookmarker/test-chrome-bookmarks.json",
 				},
 			},
 		},

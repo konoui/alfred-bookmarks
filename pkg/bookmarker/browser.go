@@ -1,4 +1,4 @@
-package bookmark
+package bookmarker
 
 import (
 	"os"
@@ -84,8 +84,7 @@ func OptionNone() Option {
 }
 
 // NewBrowsers return Browsers
-// TODO return bookmarker
-func NewBrowsers(opts ...Option) *Browsers {
+func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
 		bookmarkers: make(map[browser]Bookmarker),
 	}
@@ -99,8 +98,8 @@ func NewBrowsers(opts ...Option) *Browsers {
 	return b
 }
 
-// BookmarksFromCache return Bookmarks struct, loading cache file.
-func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
+// Bookmarks return Bookmarks struct, loading cache file.
+func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	cacheFile := "alfred-bookmarks.cache"
 	bookmarks := Bookmarks{}
 	c, err := cache.NewCache(os.TempDir(), cacheFile, browsers.cacheMaxAge)
@@ -115,7 +114,7 @@ func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
 		return bookmarks, nil
 	}
 
-	bookmarks, err = browsers.Bookmarks()
+	bookmarks, err = browsers.bookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
@@ -126,8 +125,8 @@ func (browsers *Browsers) BookmarksFromCache() (Bookmarks, error) {
 	return bookmarks, nil
 }
 
-// Bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
-func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
+// bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
+func (browsers *Browsers) bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
 	for _, bookmarker := range browsers.bookmarkers {
 		b, err := bookmarker.Bookmarks()
@@ -145,8 +144,8 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	return bookmarks, nil
 }
 
-// MarshalJSON is used to serialize the type to json
-func (browsers *Browsers) MarshalJSON() ([]byte, error) {
+// Marshal is used to serialize the type to json
+func (browsers *Browsers) Marshal() ([]byte, error) {
 	b, err := browsers.Bookmarks()
 	if err != nil {
 		return []byte{}, err
@@ -154,8 +153,8 @@ func (browsers *Browsers) MarshalJSON() ([]byte, error) {
 	return b.Marshal()
 }
 
-// UnmarshalJSON is used to deserialize json types into Conditional
-func (browsers *Browsers) UnmarshalJSON(jsonData []byte) error {
+// Unmarshal is used to deserialize json types into Conditional
+func (browsers *Browsers) Unmarshal(jsonData []byte) error {
 	b, err := browsers.Bookmarks()
 	if err != nil {
 		return err

@@ -19,7 +19,7 @@ func TestExecute(t *testing.T) {
 		errMsg      string
 	}{
 		{
-			description: "list all bookmarks. config file which enbale all setting exists in current directory",
+			description: "list all bookmarks. config file exists in current directory",
 			expectErr:   false,
 			command:     "",
 			filepath:    "test-rm-duplicate-firefox-chrome.json",
