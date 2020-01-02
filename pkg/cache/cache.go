@@ -21,8 +21,8 @@ type Cache struct {
 	maxAge time.Duration
 }
 
-// NewCache creates a new cache Instance
-func NewCache(dir, file string, maxAge time.Duration) (*Cache, error) {
+// New creates a new cache Instance
+func New(dir, file string, maxAge time.Duration) (*Cache, error) {
 	if !pathExists(dir) {
 		return &Cache{}, fmt.Errorf("%s directory does not exist", dir)
 	}

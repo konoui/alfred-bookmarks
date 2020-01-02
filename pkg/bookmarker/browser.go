@@ -102,7 +102,7 @@ func NewBrowsers(opts ...Option) Bookmarker {
 func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	cacheFile := "alfred-bookmarks.cache"
 	bookmarks := Bookmarks{}
-	c, err := cache.NewCache(os.TempDir(), cacheFile, browsers.cacheMaxAge)
+	c, err := cache.New(os.TempDir(), cacheFile, browsers.cacheMaxAge)
 	if err != nil {
 		return Bookmarks{}, err
 	}

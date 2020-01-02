@@ -19,7 +19,7 @@ func TestNewCache(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		_, err := NewCache(c.dir, c.file, c.expiredTime)
+		_, err := New(c.dir, c.file, c.expiredTime)
 		if c.expectErr && err == nil {
 			t.Errorf("%s: expect error happens, but got response", c.description)
 		}
@@ -56,7 +56,7 @@ func TestStore(t *testing.T) {
 				"33333",
 			},
 		}
-		cache, err := NewCache(c.dir, c.file, c.expiredTime)
+		cache, err := New(c.dir, c.file, c.expiredTime)
 		if err != nil {
 			t.Errorf("cannot create cache instance. error %+v", err)
 		}
@@ -103,7 +103,7 @@ func TestLoad(t *testing.T) {
 				"33333",
 			},
 		}
-		cache, err := NewCache(c.dir, c.file, c.expiredTime)
+		cache, err := New(c.dir, c.file, c.expiredTime)
 		if err != nil {
 			t.Errorf("cannot create cache instance. error %+v", err)
 		}
@@ -156,7 +156,7 @@ func TestExpired(t *testing.T) {
 				"33333",
 			},
 		}
-		cache, err := NewCache(c.dir, c.file, c.expiredTime)
+		cache, err := New(c.dir, c.file, c.expiredTime)
 		if err != nil {
 			t.Errorf("cannot create cache instance. error %+v", err)
 		}
