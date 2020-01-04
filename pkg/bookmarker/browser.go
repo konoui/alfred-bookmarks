@@ -13,16 +13,23 @@ const (
 	firefox browser = "firefox"
 	chrome  browser = "chrome"
 )
+const cacheFile = "alfred-bookmarks.cache"
+
+var cacheDir string
 
 // Browsers determine which bookmark read from
 type Browsers struct {
 	bookmarkers     map[browser]Bookmarker
 	removeDuplicate bool
-	cacheMaxAge     time.Duration
+	cache           cache.Cacher
 }
 
 // Option is the type to replace default parameters.
 type Option func(browsers *Browsers) error
+
+func init() {
+	cacheDir = os.TempDir()
+}
 
 // OptionFirefox if called, search firefox bookmark
 func OptionFirefox(path string) Option {
@@ -66,12 +73,20 @@ func OptionRemoveDuplicate() Option {
 // if passed arg is zero, set 24 hours. if passed arg is minus, set 0 hours
 func OptionCacheMaxAge(age int) Option {
 	return func(b *Browsers) error {
-		if age < 0 {
-			age = 0
-		} else if age == 0 {
+		if age == 0 {
 			age = 24
+		} else if age < 0 {
+			age = 0
 		}
-		b.cacheMaxAge = time.Duration(age) * time.Hour
+
+		c, err := cache.New(
+			cacheDir, cacheFile,
+			time.Duration(age)*time.Hour)
+		if err != nil {
+			return err
+		}
+
+		b.cache = c
 		return nil
 	}
 }
@@ -87,6 +102,7 @@ func OptionNone() Option {
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
 		bookmarkers: make(map[browser]Bookmarker),
+		cache:       cache.NewNilCache(),
 	}
 
 	for _, opt := range opts {
@@ -100,25 +116,19 @@ func NewBrowsers(opts ...Option) Bookmarker {
 
 // Bookmarks return Bookmarks struct, loading cache file.
 func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
-	cacheFile := "alfred-bookmarks.cache"
 	bookmarks := Bookmarks{}
-	c, err := cache.New(os.TempDir(), cacheFile, browsers.cacheMaxAge)
-	if err != nil {
-		return Bookmarks{}, err
-	}
-
-	if c.Exists() && c.NotExpired() {
-		if err = c.Load(&bookmarks); err != nil {
+	if !browsers.cache.Expired() {
+		if err := browsers.cache.Load(&bookmarks); err != nil {
 			return Bookmarks{}, err
 		}
 		return bookmarks, nil
 	}
 
-	bookmarks, err = browsers.bookmarks()
+	bookmarks, err := browsers.bookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
-	if err = c.Store(&bookmarks); err != nil {
+	if err := browsers.cache.Store(&bookmarks); err != nil {
 		return Bookmarks{}, err
 	}
 

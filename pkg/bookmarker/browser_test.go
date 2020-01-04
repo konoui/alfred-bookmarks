@@ -2,7 +2,6 @@ package bookmarker
 
 import (
 	"testing"
-	"time"
 )
 
 func TestBrowsersBookmarks(t *testing.T) {
@@ -74,29 +73,29 @@ func TestOptionCacheMaxAge(t *testing.T) {
 	tests := []struct {
 		description string
 		options     []Option
-		want        time.Duration
+		want        bool
 	}{
 		{
 			description: "age eq 0 then cache is 24 hours",
 			options: []Option{
 				OptionCacheMaxAge(0),
 			},
-			want: 24 * time.Hour,
+			want: false,
 		},
 		{
 			description: "age eq -1 cache is 0 hours",
 			options: []Option{
 				OptionCacheMaxAge(-1),
 			},
-			want: 0 * time.Hour,
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			bookmarker := NewBrowsers(tt.options...)
 			browsers := bookmarker.(*Browsers)
-			if browsers.cacheMaxAge != tt.want {
-				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, browsers.cacheMaxAge)
+			if got := browsers.cache.Expired(); got != tt.want {
+				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, got)
 			}
 		})
 	}

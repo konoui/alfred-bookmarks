@@ -8,7 +8,15 @@ import (
 	"time"
 )
 
-// Cache implements a simple store/load API, saving data to specified directory.
+// Cacher implements a simple store/load API, saving data to specified directory.
+type Cacher interface {
+	Load(interface{}) error
+	Store(interface{}) error
+	Clear() error
+	Expired() bool
+}
+
+// Cache implements a simple APIs
 type Cache struct {
 	Dir    string
 	File   string
@@ -16,7 +24,7 @@ type Cache struct {
 }
 
 // New creates a new cache Instance
-func New(dir, file string, maxAge time.Duration) (*Cache, error) {
+func New(dir, file string, maxAge time.Duration) (Cacher, error) {
 	if !pathExists(dir) {
 		return &Cache{}, fmt.Errorf("%s directory does not exist", dir)
 	}
@@ -25,21 +33,6 @@ func New(dir, file string, maxAge time.Duration) (*Cache, error) {
 		File:   file,
 		maxAge: maxAge,
 	}, nil
-}
-
-// Store save data into cache
-func (c Cache) Store(v interface{}) error {
-	p := c.path()
-	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	if err = gob.NewEncoder(f).Encode(v); err != nil {
-		return fmt.Errorf("cannot save data into cache (%s). error %+v", p, err)
-	}
-
-	return nil
 }
 
 // Load read data saved cache into v
@@ -53,6 +46,21 @@ func (c Cache) Load(v interface{}) error {
 	if err = gob.NewDecoder(f).Decode(v); err != nil {
 		return fmt.Errorf("cannot read data from cache (%s). error %+v", p, err)
 
+	}
+
+	return nil
+}
+
+// Store save data into cache
+func (c Cache) Store(v interface{}) error {
+	p := c.path()
+	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if err = gob.NewEncoder(f).Encode(v); err != nil {
+		return fmt.Errorf("cannot save data into cache (%s). error %+v", p, err)
 	}
 
 	return nil
