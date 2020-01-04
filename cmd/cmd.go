@@ -52,8 +52,7 @@ const (
 
 func run(query string) error {
 	awf := alfred.NewWorkflow()
-	awf.SetStdStream(outStream)
-	awf.SetErrStream(outStream)
+	awf.SetStreams(outStream, errStream)
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 
 	c, err := newConfig()

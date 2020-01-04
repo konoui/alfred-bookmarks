@@ -1,4 +1,4 @@
-## alfred-bookmarks
+## alfred bookmarks
 Alfred workflow to search bookmarks in Firefox and Google Chrome.
 
 ## Install
