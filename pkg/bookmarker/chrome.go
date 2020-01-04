@@ -3,7 +3,6 @@ package bookmarker
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 
@@ -89,12 +88,10 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		u, err := url.Parse(entry.URL)
 		// Ignore invalid URLs
 		if err != nil {
-			log.Printf("could not parse URL \"%s\" (%s): %v", entry.URL, entry.Name, err)
 			return Bookmarks{}
 		}
 
 		if u.Host == "" {
-			log.Printf("Domain is empty \"%s\" (%s)", entry.URL, entry.Name)
 			return Bookmarks{}
 		}
 		b := &Bookmark{

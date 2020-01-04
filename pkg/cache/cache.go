@@ -3,16 +3,10 @@ package cache
 import (
 	"encoding/gob"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"time"
 )
-
-func init() {
-	log.SetOutput(ioutil.Discard)
-}
 
 // Cache implements a simple store/load API, saving data to specified directory.
 type Cache struct {
@@ -42,10 +36,9 @@ func (c Cache) Store(v interface{}) error {
 	}
 	defer f.Close()
 	if err = gob.NewEncoder(f).Encode(v); err != nil {
-		log.Printf("cannot save data into cache (%s). error %+v", p, err)
-		return err
+		return fmt.Errorf("cannot save data into cache (%s). error %+v", p, err)
 	}
-	log.Printf("saving data into cache (%s) is success", p)
+
 	return nil
 }
 
@@ -58,10 +51,10 @@ func (c Cache) Load(v interface{}) error {
 	}
 	defer f.Close()
 	if err = gob.NewDecoder(f).Decode(v); err != nil {
-		log.Printf("cannot read data from cache (%s). error %+v", p, err)
-		return err
+		return fmt.Errorf("cannot read data from cache (%s). error %+v", p, err)
+
 	}
-	log.Printf("reading data from cache %s is success", p)
+
 	return nil
 }
 

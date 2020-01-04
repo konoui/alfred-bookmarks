@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -105,12 +104,10 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 			u, err := url.Parse(e.URI)
 			// Ignore invalid URLs
 			if err != nil {
-				log.Printf("could not parse URL \"%s\" (%s): %v", e.URI, e.Title, err)
 				continue
 			}
 
 			if u.Host == "" {
-				log.Printf("Domain is empty \"%s\" (%s)", e.URI, e.Title)
 				continue
 			}
 			b := &Bookmark{
