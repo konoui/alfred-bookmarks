@@ -64,10 +64,24 @@ func run(query string) error {
 	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
 	duplicateOption := bookmarker.OptionNone()
 	if c.Firefox.Enable {
-		firefoxOption = bookmarker.OptionFirefox(c.Firefox.Path)
+		path := c.Firefox.Path
+		if path == "" {
+			path, err = bookmarker.GetFirefoxBookmarkFile()
+			if err != nil {
+				return err
+			}
+		}
+		firefoxOption = bookmarker.OptionFirefox(path)
 	}
 	if c.Chrome.Enable {
-		chromeOption = bookmarker.OptionChrome(c.Chrome.Path)
+		path := c.Chrome.Path
+		if path == "" {
+			path, err = bookmarker.GetChromeBookmarkFile()
+			if err != nil {
+				return err
+			}
+		}
+		chromeOption = bookmarker.OptionChrome(path)
 	}
 	if c.RemoveDuplicate {
 		duplicateOption = bookmarker.OptionRemoveDuplicate()

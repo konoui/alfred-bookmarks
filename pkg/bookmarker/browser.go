@@ -34,13 +34,6 @@ func init() {
 // OptionFirefox if called, search firefox bookmark
 func OptionFirefox(path string) Option {
 	return func(b *Browsers) error {
-		if path == "" {
-			var err error
-			if path, err = GetFirefoxBookmarkFile(); err != nil {
-				return err
-			}
-		}
-
 		b.bookmarkers[firefox] = NewFirefox(path)
 		return nil
 	}
@@ -49,13 +42,6 @@ func OptionFirefox(path string) Option {
 // OptionChrome if called, search chrome bookmark
 func OptionChrome(path string) Option {
 	return func(b *Browsers) error {
-		if path == "" {
-			var err error
-			if path, err = GetChromeBookmarkFile(); err != nil {
-				return err
-			}
-		}
-
 		b.bookmarkers[chrome] = NewChrome(path)
 		return nil
 	}
