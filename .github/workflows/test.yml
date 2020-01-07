@@ -20,6 +20,7 @@ jobs:
       run: |
         export GOBIN=$(go env GOPATH)/bin
         export PATH=$GOBIN:$PATH
+        ./setup-test-dir.sh
         make fmt
         make lint
         make test

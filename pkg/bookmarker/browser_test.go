@@ -1,27 +1,10 @@
 package bookmarker
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
-
-	"github.com/mitchellh/go-homedir"
 )
 
-func testOptionChrome(path string) Option {
-	return func(b *Browsers) error {
-		b.bookmarkers[chrome] = NewChrome(path)
-		return nil
-	}
-}
-
-func testOptionFirefox(path string) Option {
-	return func(b *Browsers) error {
-		b.bookmarkers[firefox] = NewFirefox(path)
-		return nil
-	}
-}
+var testProfile = "default"
 
 func TestBrowsersBookmarks(t *testing.T) {
 	tests := []struct {
@@ -33,7 +16,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 		{
 			description: "enable firefox bookmark",
 			options: []Option{
-				testOptionFirefox(testFirefoxBookmarkJsonlz4File),
+				OptionFirefox(testProfile),
 			},
 			want:      testFirefoxBookmarks,
 			expectErr: false,
@@ -41,7 +24,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 		{
 			description: "enable chrome bookmark",
 			options: []Option{
-				testOptionChrome(testChromeBookmarkJSONFile),
+				OptionChrome(testProfile),
 			},
 			want:      testChromeBookmarks,
 			expectErr: false,
@@ -49,8 +32,8 @@ func TestBrowsersBookmarks(t *testing.T) {
 		{
 			description: "enable firefox, chrome, remove dupulication. return chrome bookmark",
 			options: []Option{
-				testOptionFirefox(testFirefoxBookmarkJsonlz4File),
-				testOptionChrome(testChromeBookmarkJSONFile),
+				OptionFirefox(testProfile),
+				OptionChrome(testProfile),
 				OptionRemoveDuplicate(),
 			},
 			want:      testChromeBookmarks,
@@ -59,8 +42,8 @@ func TestBrowsersBookmarks(t *testing.T) {
 		{
 			description: "enable firefox, chrome, remove dupulication, cacheOption. return chrome bookmark",
 			options: []Option{
-				testOptionFirefox(testFirefoxBookmarkJsonlz4File),
-				testOptionChrome(testChromeBookmarkJSONFile),
+				OptionFirefox(testProfile),
+				OptionChrome(testProfile),
 				OptionRemoveDuplicate(),
 				OptionCacheMaxAge(0),
 			},
@@ -72,7 +55,9 @@ func TestBrowsersBookmarks(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			browsers := NewBrowsers(tt.options...)
-			browsers.(*Browsers).cache.Clear()
+			if err := browsers.(*Browsers).cache.Clear(); err != nil {
+				t.Fatal(err)
+			}
 
 			bookmarks, err := browsers.Bookmarks()
 			if tt.expectErr && err == nil {
@@ -165,22 +150,22 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 		{
 			description: "enable firefox bookmark",
 			options: []Option{
-				testOptionFirefox(testFirefoxBookmarkJsonlz4File),
+				OptionFirefox(testProfile),
 			},
 			expectErr: false,
 		},
 		{
 			description: "enable chrome bookmark",
 			options: []Option{
-				testOptionChrome(testChromeBookmarkJSONFile),
+				OptionChrome(testProfile),
 			},
 			expectErr: false,
 		},
 		{
 			description: "enable firefox and chrome bookmark",
 			options: []Option{
-				testOptionFirefox(testFirefoxBookmarkJsonlz4File),
-				testOptionChrome(testChromeBookmarkJSONFile),
+				OptionFirefox(testProfile),
+				OptionChrome(testProfile),
 			},
 			expectErr: false,
 		},
@@ -200,39 +185,4 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 			}
 		})
 	}
-}
-
-func makeBrowserProfileDirectory(profile string) error {
-	home, err := homedir.Dir()
-	if err != nil {
-		return err
-	}
-	bs := map[browser]map[string]string{
-		chrome: {
-			"dir":  fmt.Sprintf("%s/Library/Application Support/Google/Chrome/%s/", home, profile),
-			"file": "Bookmarks",
-		},
-		firefox: {
-			"dir":  fmt.Sprintf("%s/Library/Application Support/Firefox/Profiles/%s/bookmarkbackups", home, profile),
-			"file": "test..jsonlz4",
-		},
-	}
-
-	for _, b := range bs {
-		dir := b["dir"]
-		if !pathExists(dir) {
-			if err := os.Mkdir(dir, 0755); err != nil {
-				return err
-			}
-		}
-		if path := filepath.Join(dir, b["file"]); !pathExists(path) {
-
-		}
-	}
-	return nil
-}
-
-func pathExists(path string) bool {
-	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
 }

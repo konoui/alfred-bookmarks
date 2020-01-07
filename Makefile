@@ -43,6 +43,9 @@ darwin: setup
 test: setup
 	go test -v ./...
 
+docker-test: setup
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.13 bash -c "./setup-test-dir.sh && make test"
+
 ## Install Binary and Assets to Workflow Directory
 install: build
 	@(cp ${BINARY} ${WORKFLOW_DIR}/)
