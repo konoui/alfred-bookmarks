@@ -34,10 +34,7 @@ func NewRootCmd() *cobra.Command {
 		Args:  cobra.MinimumNArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			query := strings.Join(args, " ")
-			if err := run(query); err != nil {
-				log.Printf("run failed: %+v", err)
-			}
-			return nil
+			return run(query)
 		},
 		SilenceUsage: true,
 	}
@@ -64,24 +61,10 @@ func run(query string) error {
 	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
 	duplicateOption := bookmarker.OptionNone()
 	if c.Firefox.Enable {
-		path := c.Firefox.Path
-		if path == "" {
-			path, err = bookmarker.GetFirefoxBookmarkFile()
-			if err != nil {
-				return err
-			}
-		}
-		firefoxOption = bookmarker.OptionFirefox(path)
+		firefoxOption = bookmarker.OptionFirefox(c.Firefox.Profile)
 	}
 	if c.Chrome.Enable {
-		path := c.Chrome.Path
-		if path == "" {
-			path, err = bookmarker.GetChromeBookmarkFile()
-			if err != nil {
-				return err
-			}
-		}
-		chromeOption = bookmarker.OptionChrome(path)
+		chromeOption = bookmarker.OptionChrome(c.Chrome.Profile)
 	}
 	if c.RemoveDuplicate {
 		duplicateOption = bookmarker.OptionRemoveDuplicate()

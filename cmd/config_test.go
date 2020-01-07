@@ -17,12 +17,12 @@ func TestNewConfig(t *testing.T) {
 				RemoveDuplicate: true,
 				MaxCacheAge:     -1,
 				Firefox: Firefox{
-					Enable: true,
-					Path:   "../pkg/bookmarker/test-firefox-bookmarks.jsonlz4",
+					Enable:  true,
+					Profile: "default",
 				},
 				Chrome: Chrome{
-					Enable: true,
-					Path:   "../pkg/bookmarker/test-chrome-bookmarks.json",
+					Enable:  true,
+					Profile: "Default",
 				},
 			},
 		},

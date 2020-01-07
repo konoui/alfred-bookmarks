@@ -118,13 +118,18 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// GetChromeBookmarkFile return chrome bookmark direcotory file
-func GetChromeBookmarkFile() (string, error) {
+// GetChromeBookmarkFile return chrome bookmark filepath
+func GetChromeBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
-	bookmarkFile := fmt.Sprintf("%s/Library/Application Support/Google/Chrome/Default/Bookmarks", home)
+	chromeDir := fmt.Sprintf("%s/Library/Application Support/Google/Chrome", home)
+	profileDirName, err := searchSuffixDir(chromeDir, profile)
+	if err != nil {
+		return "", err
+	}
 
+	bookmarkFile := fmt.Sprintf("%s/%s/Bookmarks", chromeDir, profileDirName)
 	return bookmarkFile, nil
 }

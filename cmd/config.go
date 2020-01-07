@@ -14,14 +14,14 @@ type Config struct {
 
 // Firefox Configuration
 type Firefox struct {
-	Enable bool   `mapstructure:"enable"`
-	Path   string `mapstructure:"path,omitempty"`
+	Enable  bool   `mapstructure:"enable"`
+	Profile string `mapstructure:"profile,omitempty"`
 }
 
 // Chrome Configuration
 type Chrome struct {
-	Enable bool   `mapstructure:"enable"`
-	Path   string `mapstructure:"path,omitempty"`
+	Enable  bool   `mapstructure:"enable"`
+	Profile string `mapstructure:"profile,omitempty"`
 }
 
 // NewConfig return alfred bookmark configuration
@@ -32,6 +32,9 @@ func newConfig() (*Config, error) {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/")
 
+	// Set Default Value this is overwritten with config file
+	viper.SetDefault("firefox.profile", "default")
+	viper.SetDefault("chrome.profile", "default")
 	if err := viper.ReadInConfig(); err != nil {
 		return &Config{}, err
 	}

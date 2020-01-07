@@ -147,7 +147,7 @@ func TestFirefoxBookmarks(t *testing.T) {
 
 // return json string from .jsonlz4
 func readDefaultFirefoxBookmarksJSON() (string, error) {
-	path, err := GetFirefoxBookmarkFile()
+	path, err := GetFirefoxBookmarkFile("default")
 	if err != nil {
 		return "", err
 	}

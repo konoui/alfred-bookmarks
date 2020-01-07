@@ -127,17 +127,17 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 }
 
 // GetFirefoxBookmarkFile return firefox bookmarkbackups direcotory
-func GetFirefoxBookmarkFile() (string, error) {
+func GetFirefoxBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
 	profileDir := fmt.Sprintf("%s/Library/Application Support/Firefox/Profiles", home)
-	defaultDirName, err := searchSuffixDir(profileDir, "default")
+	profileDirName, err := searchSuffixDir(profileDir, profile)
 	if err != nil {
 		return "", err
 	}
-	bookmarkDir := fmt.Sprintf("%s/%s/bookmarkbackups/", profileDir, defaultDirName)
+	bookmarkDir := fmt.Sprintf("%s/%s/bookmarkbackups/", profileDir, profileDirName)
 	bookmarkFile, err := getLatestFile(bookmarkDir)
 	if err != nil {
 		return "", err
@@ -173,7 +173,8 @@ func searchSuffixDir(dir, suffux string) (string, error) {
 	}
 
 	for _, file := range files {
-		if name := file.Name(); file.IsDir() && strings.HasSuffix(name, suffux) {
+		if name := file.Name(); file.IsDir() &&
+			strings.HasSuffix(strings.ToLower(name), strings.ToLower(suffux)) {
 			return name, nil
 		}
 	}
