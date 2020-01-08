@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  release:
+  test:
     runs-on: macos-latest
     steps:
     - name: set up go
@@ -13,14 +13,43 @@ jobs:
         go-version: 1.13.x
     - name: checkout
       uses: actions/checkout@v1
-    - name: test
-      env:
-        GO111MODULE: on
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: set GOPATH
+      # temporary fix
+      # see https://github.com/actions/setup-go/issues/14
       run: |
-        export GOBIN=$(go env GOPATH)/bin
-        export PATH=$GOBIN:$PATH
-        ./setup-test-dir.sh
+        echo "##[set-env name=GOPATH;]$(dirname $GITHUB_WORKSPACE)"
+        echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
+
+    - name: lint
+      run: |
         make fmt
         make lint
+
+    - name: test
+      run: |
+        ./setup-test-dir.sh
         make test
+
+  release:
+    name: release by ghr
+    needs: [test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: macos-latest
+    steps:
+    - name: set up go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13.x
+    - name: checkout
+      uses: actions/checkout@master
+    - name: set GOPATH
+      # temporary fix
+      # see https://github.com/actions/setup-go/issues/14
+      run: |
+        echo "##[set-env name=GOPATH;]$(dirname $GITHUB_WORKSPACE)"
+        echo "##[add-path]$(dirname $GITHUB_WORKSPACE)/bin"
+    - name: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        make release
