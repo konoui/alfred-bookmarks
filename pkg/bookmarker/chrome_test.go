@@ -100,7 +100,7 @@ func TestChromeBookmarks(t *testing.T) {
 
 			diff := DiffBookmark(bookmarks, tt.want)
 			if !tt.expectErr && diff != "" {
-				t.Errorf("unexpected response: (+want -got)\n%+v", diff)
+				t.Errorf("+want -got\n%+v", diff)
 			}
 		})
 	}

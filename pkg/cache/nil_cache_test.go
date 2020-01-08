@@ -20,7 +20,7 @@ func TestNewNilCache(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			got := NewNilCache()
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("unexpected response want: %+v\ngot: %+v", tt.want, got)
+				t.Errorf("want: %+v\ngot: %+v", tt.want, got)
 			}
 		})
 	}
@@ -45,15 +45,15 @@ func TestNilCache(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			c := NewNilCache()
 			if got := c.Expired(); got != tt.expiredResult {
-				t.Errorf("unexpected response want: %+v\ngot: %+v", tt.expiredResult, got)
+				t.Errorf("want: %+v\ngot: %+v", tt.expiredResult, got)
 			}
 
 			if got := c.Load(tt.storeResult); got != tt.loadResult {
-				t.Errorf("unexpected response want: %+v\ngot: %+v", tt.loadResult, got)
+				t.Errorf("want: %+v\ngot: %+v", tt.loadResult, got)
 			}
 
 			if got := c.Store(tt.storeResult); got != tt.storeResult {
-				t.Errorf("unexpected response want: %+v\ngot: %+v", tt.storeResult, got)
+				t.Errorf("want: %+v\ngot: %+v", tt.storeResult, got)
 			}
 		})
 	}

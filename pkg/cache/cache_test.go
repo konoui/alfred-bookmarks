@@ -63,12 +63,12 @@ func TestStore(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			cache, err := New(tt.dir, tt.file, tt.expiredTime)
 			if err != nil {
-				t.Errorf("cannot create cache instance. error %+v", err)
+				t.Fatal(err)
 			}
 
 			// remove cache file before test
 			if err = cache.Clear(); err != nil {
-				t.Errorf("unexpected error %+v", err)
+				t.Fatal(err)
 			}
 
 			err = cache.Store(&storedValue)
@@ -98,17 +98,17 @@ func TestLoad(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			cache, err := New(tt.dir, tt.file, tt.expiredTime)
 			if err != nil {
-				t.Errorf("cannot create cache instance. error %+v", err)
+				t.Fatal(err)
 			}
 
 			// remove cache file before test
 			if err = cache.Clear(); err != nil {
-				t.Errorf("unexpected error %+v", err)
+				t.Fatal(err)
 			}
 
 			err = cache.Store(&storedValue)
 			if err != nil {
-				t.Errorf("cannot store data into cache. error %+v", err)
+				t.Fatal(err)
 			}
 
 			loadedValue := example{}
@@ -139,13 +139,13 @@ func TestExpired(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			cacher, err := New(tt.dir, tt.file, tt.expiredTime)
 			if err != nil {
-				t.Errorf("cannot create cache instance. error %+v", err)
+				t.Fatal(err)
 			}
 			cache := cacher.(*Cache)
 
 			err = cache.Store(&storedValue)
 			if err != nil {
-				t.Errorf("cannot store data into cache. error %+v", err)
+				t.Fatal(err)
 			}
 
 			if age, err := cache.Age(); err != nil && 0 <= age {

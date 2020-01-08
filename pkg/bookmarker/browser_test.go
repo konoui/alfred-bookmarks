@@ -69,7 +69,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 
 			diff := DiffBookmark(bookmarks, tt.want)
 			if diff != "" {
-				t.Errorf("unexpected response: (+want -got)\n%+v", diff)
+				t.Errorf("+want -got\n%+v", diff)
 			}
 		})
 	}
@@ -135,7 +135,7 @@ func TestOptionCacheMaxAge(t *testing.T) {
 			bookmarker := NewBrowsers(tt.options...)
 			browsers := bookmarker.(*Browsers)
 			if got := browsers.cache.Expired(); got != tt.want {
-				t.Errorf("unexpected response \nwant: %+v\ngot: %+v", tt.want, got)
+				t.Errorf("want: %+v\n, got: %+v\n", tt.want, got)
 			}
 		})
 	}

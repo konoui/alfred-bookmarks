@@ -34,7 +34,7 @@ func TestNewConfig(t *testing.T) {
 		}
 
 		if !cmp.Equal(c, tt.want) {
-			t.Errorf("unexpected response: want: \n%+v, got: \n%+v", tt.want, c)
+			t.Errorf("want: \n%+v, got: \n%+v", tt.want, c)
 		}
 	}
 }
