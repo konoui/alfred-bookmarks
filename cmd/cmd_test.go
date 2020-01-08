@@ -2,11 +2,10 @@ package cmd
 
 import (
 	"bytes"
-	"encoding/json"
 	"io/ioutil"
-	"reflect"
 	"testing"
 
+	"github.com/konoui/go-alfred"
 	"github.com/mattn/go-shellwords"
 )
 
@@ -50,27 +49,13 @@ func TestExecute(t *testing.T) {
 			}
 
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error want: got: %+v", err.Error())
+				t.Errorf("unexpected error happens %+v", err.Error())
 			}
 
-			got := outBuf.String()
-			if !EqualJSON(want, []byte(got)) {
-				t.Errorf("unexpected response: want: \n%+v, got: \n%+v", string(want), string(got))
+			got := outBuf.Bytes()
+			if diff := alfred.DiffScriptFilter(want, got); diff != "" {
+				t.Errorf("+want -got\n%+v", diff)
 			}
 		})
 	}
-}
-
-func EqualJSON(a, b []byte) bool {
-	var ao interface{}
-	var bo interface{}
-
-	if err := json.Unmarshal(a, &ao); err != nil {
-		return false
-	}
-	if err := json.Unmarshal(b, &bo); err != nil {
-		return false
-	}
-
-	return reflect.DeepEqual(ao, bo)
 }
