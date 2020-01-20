@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Cacher implements a simple store/load API, saving data to specified directory.
@@ -44,8 +46,7 @@ func (c Cache) Load(v interface{}) error {
 	}
 	defer f.Close()
 	if err = gob.NewDecoder(f).Decode(v); err != nil {
-		return fmt.Errorf("cannot read data from cache (%s). error %+v", p, err)
-
+		return errors.Wrapf(err, "failed to load data from cache (%s).", p)
 	}
 
 	return nil
@@ -60,7 +61,7 @@ func (c Cache) Store(v interface{}) error {
 	}
 	defer f.Close()
 	if err = gob.NewEncoder(f).Encode(v); err != nil {
-		return fmt.Errorf("cannot save data into cache (%s). error %+v", p, err)
+		return errors.Wrapf(err, "failed to save data into cache (%s)", p)
 	}
 
 	return nil

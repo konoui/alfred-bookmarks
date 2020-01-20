@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/konoui/alfred-bookmarks/pkg/cache"
+	"github.com/pkg/errors"
 )
 
 type browser string
@@ -115,7 +116,7 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
 	if !browsers.cache.Expired() {
 		if err := browsers.cache.Load(&bookmarks); err != nil {
-			return Bookmarks{}, err
+			return Bookmarks{}, errors.Wrap(err, "failed to load cache data")
 		}
 		return bookmarks, nil
 	}
@@ -125,7 +126,7 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 		return Bookmarks{}, err
 	}
 	if err := browsers.cache.Store(&bookmarks); err != nil {
-		return Bookmarks{}, err
+		return Bookmarks{}, errors.Wrap(err, "failed to save data into cache")
 	}
 
 	return bookmarks, nil
@@ -134,11 +135,11 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 // bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
 func (browsers *Browsers) bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	for _, bookmarker := range browsers.bookmarkers {
+	for browser, bookmarker := range browsers.bookmarkers {
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
-			return Bookmarks{}, err
+			return Bookmarks{}, errors.Wrapf(err, "failed to load bookmarks in %s", browser)
 		}
 		bookmarks = append(bookmarks, b...)
 	}

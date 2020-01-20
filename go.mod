@@ -9,6 +9,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.6
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pierrec/lz4 v2.4.0+incompatible
+	github.com/pkg/errors v0.8.1
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.1
