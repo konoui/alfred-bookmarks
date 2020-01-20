@@ -45,6 +45,8 @@ func NewRootCmd() *cobra.Command {
 const (
 	emptySsubtitle = "There are no resources"
 	emptyTitle     = "No matching"
+	firefoxImage   = "firefox.png"
+	chromeImage    = "chrome.png"
 )
 
 func run(query string) error {
@@ -91,12 +93,21 @@ func run(query string) error {
 	}
 
 	for _, b := range bookmarks {
+		var image string
+		if b.Browser == "firefox" {
+			image = firefoxImage
+		} else {
+			image = chromeImage
+		}
 		subtitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
 		awf.Append(alfred.Item{
 			Title:        b.Title,
 			Subtitle:     subtitle,
 			Autocomplete: b.Title,
 			Arg:          b.URI,
+			Icon: &alfred.Icon{
+				Path: image,
+			},
 		})
 	}
 
