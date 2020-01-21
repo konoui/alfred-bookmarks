@@ -11,10 +11,10 @@ import (
 type browser string
 
 const (
-	firefox browser = "firefox"
-	chrome  browser = "chrome"
+	firefox   browser = "firefox"
+	chrome    browser = "chrome"
+	cacheFile string  = "alfred-bookmarks.cache"
 )
-const cacheFile = "alfred-bookmarks.cache"
 
 var cacheDir string
 
@@ -58,7 +58,7 @@ func OptionChrome(profile string) Option {
 	}
 }
 
-// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browser
+// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browsers
 func OptionRemoveDuplicate() Option {
 	return func(b *Browsers) error {
 		b.removeDuplicate = true
@@ -67,18 +67,18 @@ func OptionRemoveDuplicate() Option {
 }
 
 // OptionCacheMaxAge bookmark cache time. unit indicate hours
-// if passed arg is zero, set 24 hours. if passed arg is minus, set 0 hours
-func OptionCacheMaxAge(age int) Option {
+// if passed arg is zero, set 24 hours. if passed arg is minus, disable cache
+func OptionCacheMaxAge(hour int) Option {
 	return func(b *Browsers) error {
-		if age == 0 {
-			age = 24
-		} else if age < 0 {
-			age = 0
+		if hour == 0 {
+			hour = 24
+		} else if hour < 0 {
+			hour = 0
 		}
 
 		c, err := cache.New(
 			cacheDir, cacheFile,
-			time.Duration(age)*time.Hour)
+			time.Duration(hour)*time.Hour)
 		if err != nil {
 			return err
 		}
@@ -95,7 +95,7 @@ func OptionNone() Option {
 	}
 }
 
-// NewBrowsers return Browsers
+// NewBrowsers is instance to get Bookmarks of multi browser
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
 		bookmarkers: make(map[browser]Bookmarker),
@@ -111,7 +111,7 @@ func NewBrowsers(opts ...Option) Bookmarker {
 	return b
 }
 
-// Bookmarks return Bookmarks struct, loading cache file.
+// Bookmarks return Bookmarks struct by loading cache file
 func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
 	if !browsers.cache.Expired() {
@@ -132,7 +132,7 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	return bookmarks, nil
 }
 
-// bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
+// bookmarks return Bookmarks struct by loading each browser
 func (browsers *Browsers) bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
 	for browser, bookmarker := range browsers.bookmarkers {

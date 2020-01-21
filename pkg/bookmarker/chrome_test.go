@@ -95,7 +95,7 @@ func TestChromeBookmarks(t *testing.T) {
 				t.Errorf("expect error happens, but got response")
 			}
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error got: %+v", err.Error())
+				t.Errorf("unexpected error got: %+v", err)
 			}
 
 			diff := DiffBookmark(bookmarks, tt.want)
@@ -134,7 +134,7 @@ func TestUnmarshal(t *testing.T) {
 				t.Errorf("expect error happens, but got response")
 			}
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error got: %+v", err.Error())
+				t.Errorf("unexpected error got: %+v", err)
 			}
 		})
 	}

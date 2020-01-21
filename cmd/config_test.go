@@ -12,10 +12,11 @@ func TestNewConfig(t *testing.T) {
 		want        *Config
 	}{
 		{
-			description: "all enable",
+			description: "enable all settings",
 			want: &Config{
 				RemoveDuplicate: true,
-				MaxCacheAge:     -1,
+				// disable cache
+				MaxCacheAge: -1,
 				Firefox: Firefox{
 					Enable:  true,
 					Profile: "default",

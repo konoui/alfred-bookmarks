@@ -78,31 +78,6 @@ var testFirefoxBookmarks = Bookmarks{
 	},
 }
 
-//Create Jsonlz4 from jsonfile
-func TestCreateTestFirefoxJsonlz4(t *testing.T) {
-	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
-	_, _ = readDefaultFirefoxBookmarksJSON()
-	str, err := readTestFirefoxBookmarkJSON()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	r := strings.NewReader(str)
-	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer w.Close()
-
-	err = compress(r, w, len(str))
-	if err != nil {
-		t.Logf("Failed to compress data: %s\n", err)
-		t.Fail()
-		return
-	}
-
-}
-
 func TestFirefoxBookmarks(t *testing.T) {
 	tests := []struct {
 		description  string
@@ -134,7 +109,7 @@ func TestFirefoxBookmarks(t *testing.T) {
 				t.Errorf("expect error happens, but got response")
 			}
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error got: %+v", err.Error())
+				t.Errorf("unexpected error got: %+v", err)
 			}
 
 			diff := DiffBookmark(bookmarks, tt.want)
@@ -142,6 +117,28 @@ func TestFirefoxBookmarks(t *testing.T) {
 				t.Errorf("+want -got\n%+v", diff)
 			}
 		})
+	}
+}
+
+//Create Jsonlz4 from jsonfile
+func TestCreateTestFirefoxJsonlz4(t *testing.T) {
+	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
+	_, _ = readDefaultFirefoxBookmarksJSON()
+	str, err := readTestFirefoxBookmarkJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := strings.NewReader(str)
+	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+
+	err = compress(r, w, len(str))
+	if err != nil {
+		t.Fatalf("Failed to compress data: %s\n", err)
 	}
 }
 

@@ -41,14 +41,14 @@ type chromeBookmark struct {
 	bookmarkPath          string
 }
 
-// NewChrome return new instance
+// NewChrome return a new chrome instance to get bookmarks
 func NewChrome(path string) Bookmarker {
 	return &chromeBookmark{
 		bookmarkPath: path,
 	}
 }
 
-// Bookmarks load chrome bookmark to general bookmark structure
+// Bookmarks load chrome bookmark entries and return general bookmark structure
 func (b *chromeBookmark) Bookmarks() (Bookmarks, error) {
 	if err := b.unmarshal(); err != nil {
 		return Bookmarks{}, err
@@ -67,7 +67,7 @@ func (b *chromeBookmark) unmarshal() error {
 	return json.NewDecoder(f).Decode(&b.chromeBookmarkEntries)
 }
 
-// convertToBookmarks parse top of root entries which is array
+// convertToBookmarks parse a top of root entries which is array
 func (entries *chromeBookmarkEntries) convertToBookmarks() Bookmarks {
 	bookmarks := Bookmarks{}
 	for _, entry := range entries.Roots.BookmarkBar.BookmarkEntries {
@@ -77,7 +77,7 @@ func (entries *chromeBookmarkEntries) convertToBookmarks() Bookmarks {
 	return bookmarks
 }
 
-// convertToBookmarks parse a entry and the entry children
+// convertToBookmarks parse a entry and children of the entry
 func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	if entry.Type == "folder" && entry.Children == nil {
 		return Bookmarks{}
@@ -86,14 +86,13 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	bookmarks := Bookmarks{}
 	if entry.Type == "url" {
 		u, err := url.Parse(entry.URL)
-		// Ignore invalid URLs
 		if err != nil {
 			return Bookmarks{}
 		}
-
 		if u.Host == "" {
 			return Bookmarks{}
 		}
+
 		b := &Bookmark{
 			Browser: "chrome",
 			Folder:  folder,
@@ -110,7 +109,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		folder = fmt.Sprintf("%s/%s", folder, entry.Name)
 	}
 
-	// loop folder wihch has children
+	// loop folder type wihch has children
 	for _, e := range entry.Children {
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
@@ -118,7 +117,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// GetChromeBookmarkFile return chrome bookmark filepath
+// GetChromeBookmarkFile return a chrome bookmark filepath
 func GetChromeBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
