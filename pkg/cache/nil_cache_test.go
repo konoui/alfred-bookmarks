@@ -11,7 +11,7 @@ func TestNewNilCache(t *testing.T) {
 		want        *NilCache
 	}{
 		{
-			description: "exists cache dir",
+			description: "valid directory",
 			want:        &NilCache{},
 		},
 	}
@@ -34,7 +34,7 @@ func TestNilCache(t *testing.T) {
 		storeResult   error
 	}{
 		{
-			description:   "exists cache dir",
+			description:   "cacher interface",
 			expiredResult: true,
 			loadResult:    nil,
 			storeResult:   nil,
@@ -46,6 +46,10 @@ func TestNilCache(t *testing.T) {
 			c := NewNilCache()
 			if got := c.Expired(); got != tt.expiredResult {
 				t.Errorf("want: %+v\ngot: %+v", tt.expiredResult, got)
+			}
+
+			if err := c.Clear(); err != nil {
+				t.Errorf("unexpected error got: %+v", err)
 			}
 
 			if got := c.Load(tt.storeResult); got != tt.loadResult {

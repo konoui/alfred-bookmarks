@@ -48,14 +48,14 @@ const (
 	typeFolder
 )
 
-// NewFirefox return new instance
+// NewFirefox return a new firefox instance to get bookmarks
 func NewFirefox(path string) Bookmarker {
 	return &firefoxBookmark{
 		bookmarkPath: path,
 	}
 }
 
-// Bookmarks load firefox bookmark to general bookmark structure
+// Bookmarks load firefox bookmark entry and return general bookmark structure
 func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
 	if err := b.unmarshal(); err != nil {
 		return Bookmarks{}, err
@@ -64,7 +64,7 @@ func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
 	return b.firefoxBookmarkEntry.convertToBookmarks(""), nil
 }
 
-// unmarshal read data into entry from decompressed .jsonlz4 file of bookmarkbackups direcotory
+// unmarshal load a bookmark compressed as .jsonlz4 file
 func (b *firefoxBookmark) unmarshal() error {
 	bookmarkMozlz4File := b.bookmarkPath
 
@@ -82,7 +82,7 @@ func (b *firefoxBookmark) unmarshal() error {
 	return json.NewDecoder(r).Decode(&b.firefoxBookmarkEntry)
 }
 
-// convertToBookmarks parse top of root entry
+// convertToBookmarks parse a top of root entry
 // we assume firefox has one root entry that has many children
 func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	if entry.Children == nil {
@@ -106,10 +106,10 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 			if err != nil {
 				continue
 			}
-
 			if u.Host == "" {
 				continue
 			}
+
 			b := &Bookmark{
 				Browser: "firefox",
 				Folder:  folder,
@@ -126,7 +126,7 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// GetFirefoxBookmarkFile return firefox bookmarkbackups direcotory
+// GetFirefoxBookmarkFile return a firefox bookmark filepath in bookmarkbackups direcotory
 func GetFirefoxBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
@@ -146,7 +146,7 @@ func GetFirefoxBookmarkFile(profile string) (string, error) {
 	return bookmarkFile, nil
 }
 
-// getLatestFile return the path to latest files of dir.
+// getLatestFile return a path to latest files in dir
 func getLatestFile(dir string) (string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -165,7 +165,7 @@ func getLatestFile(dir string) (string, error) {
 	return filepath.Join(dir, files[latestIndex].Name()), nil
 }
 
-// searchSuffixDir return directory name of suffix
+// searchSuffixDir return a directory name of suffix ignoring case-sensitive
 func searchSuffixDir(dir, suffux string) (string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -179,5 +179,5 @@ func searchSuffixDir(dir, suffux string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("not found a directory of suffix (%s) in a directory (%s)", suffux, dir)
+	return "", fmt.Errorf("not found a directory of suffix (%s) in %s directory", suffux, dir)
 }

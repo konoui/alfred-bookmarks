@@ -30,6 +30,7 @@ func New(dir, file string, maxAge time.Duration) (Cacher, error) {
 	if !pathExists(dir) {
 		return &Cache{}, fmt.Errorf("%s directory does not exist", dir)
 	}
+
 	return &Cache{
 		Dir:    dir,
 		File:   file,
@@ -45,6 +46,7 @@ func (c Cache) Load(v interface{}) error {
 		return err
 	}
 	defer f.Close()
+
 	if err = gob.NewDecoder(f).Decode(v); err != nil {
 		return errors.Wrapf(err, "failed to load data from cache (%s).", p)
 	}
@@ -73,36 +75,29 @@ func (c Cache) Clear() error {
 	if pathExists(p) {
 		return os.Remove(p)
 	}
-	return nil
-}
 
-// NotExpired return true if cache is no expired
-func (c Cache) NotExpired() bool {
-	return !c.Expired()
+	return nil
 }
 
 // Expired return true if cache is expired
 func (c Cache) Expired() bool {
-	age, err := c.Age()
+	age, err := c.age()
 	if err != nil {
 		return true
 	}
+
 	return age > c.maxAge
 }
 
-// Age return the time since the data is cached at
-func (c Cache) Age() (time.Duration, error) {
+// age return the time since the data is cached at
+func (c Cache) age() (time.Duration, error) {
 	p := c.path()
 	fi, err := os.Stat(p)
 	if err != nil {
 		return time.Duration(0), err
 	}
-	return time.Since(fi.ModTime()), nil
-}
 
-// Exists return true if the cache file exists
-func (c Cache) Exists() bool {
-	return pathExists(c.path())
+	return time.Since(fi.ModTime()), nil
 }
 
 // path return the path of cache file

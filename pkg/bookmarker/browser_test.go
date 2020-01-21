@@ -64,7 +64,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 				t.Errorf("expect error happens, but got response")
 			}
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error got: %+v", err.Error())
+				t.Errorf("unexpected error got: %+v", err)
 			}
 
 			diff := DiffBookmark(bookmarks, tt.want)
@@ -79,34 +79,28 @@ func TestOptionFirefoxChrome(t *testing.T) {
 	tests := []struct {
 		description string
 		options     []Option
-		want        bool
 	}{
 		{
-			description: "Lower default profile",
+			description: "Lower default profile name",
 			options: []Option{
 				OptionFirefox("default"),
 				OptionChrome("default"),
 			},
-			want: false,
 		},
 		{
-			description: "Upper dirname",
+			description: "Upper default profile name",
 			options: []Option{
 				OptionFirefox("Default"),
 				OptionChrome("Default"),
 			},
-			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
+			// panic if error occurs
 			NewBrowsers(tt.options...)
 		})
 	}
-}
-
-func TestOptionChrome(t *testing.T) {
-
 }
 
 func TestOptionCacheMaxAge(t *testing.T) {

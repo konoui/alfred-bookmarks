@@ -1,6 +1,6 @@
 package cache
 
-// NilCache no-op cache which does nothing useful
+// NilCache noop cache which does nothing useful
 type NilCache struct{}
 
 // NewNilCache creates a new noop cache Instance

@@ -56,7 +56,7 @@ func run(query string) error {
 
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
+		awf.Fatal("fatal error occurs", err.Error())
 		return err
 	}
 
@@ -81,7 +81,7 @@ func run(query string) error {
 
 	bookmarks, err := browsers.Bookmarks()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
+		awf.Fatal("fatal error occurs", err.Error())
 		return err
 	}
 
@@ -99,10 +99,9 @@ func run(query string) error {
 		} else {
 			image = chromeImage
 		}
-		subtitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
 		awf.Append(alfred.Item{
 			Title:        b.Title,
-			Subtitle:     subtitle,
+			Subtitle:     fmt.Sprintf("[%s] %s", b.Folder, b.Domain),
 			Autocomplete: b.Title,
 			Arg:          b.URI,
 			Icon: &alfred.Icon{
