@@ -129,7 +129,7 @@ func TestUnmarshal(t *testing.T) {
 				bookmarkPath: tt.bookmarkPath,
 			}
 
-			err := b.unmarshal()
+			err := b.load()
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}

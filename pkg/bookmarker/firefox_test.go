@@ -120,7 +120,7 @@ func TestFirefoxBookmarks(t *testing.T) {
 	}
 }
 
-//Create Jsonlz4 from jsonfile
+// Create Jsonlz4 from jsonfile
 func TestCreateTestFirefoxJsonlz4(t *testing.T) {
 	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
 	_, _ = readDefaultFirefoxBookmarksJSON()
@@ -154,7 +154,7 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 		firefoxBookmarkEntry: firefoxBookmarkEntry{},
 	}
 
-	err = b.unmarshal()
+	err = b.load()
 	if err != nil {
 		return "", err
 	}

@@ -25,7 +25,7 @@ const (
 type Browsers struct {
 	bookmarkers     map[Browser]Bookmarker
 	removeDuplicate bool
-	cacher           cacher.Cacher
+	cacher          cacher.Cacher
 }
 
 // Option is the type to replace default parameters.
@@ -102,7 +102,7 @@ func OptionNone() Option {
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
 		bookmarkers: make(map[Browser]Bookmarker),
-		cacher:       cacher.NewNilCache(),
+		cacher:      cacher.NewNilCache(),
 	}
 
 	for _, opt := range opts {

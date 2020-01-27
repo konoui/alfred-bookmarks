@@ -57,15 +57,15 @@ func NewFirefox(path string) Bookmarker {
 
 // Bookmarks load firefox bookmark entry and return general bookmark structure
 func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
-	if err := b.unmarshal(); err != nil {
+	if err := b.load(); err != nil {
 		return Bookmarks{}, err
 	}
 
 	return b.firefoxBookmarkEntry.convertToBookmarks(""), nil
 }
 
-// unmarshal load a bookmark compressed as .jsonlz4 file
-func (b *firefoxBookmark) unmarshal() error {
+// load a compressed as .jsonlz4 file
+func (b *firefoxBookmark) load() error {
 	bookmarkMozlz4File := b.bookmarkPath
 
 	f, err := os.Open(bookmarkMozlz4File)

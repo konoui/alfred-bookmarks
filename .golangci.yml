@@ -52,7 +52,7 @@ linters:
     - lll 
     - maligned 
     - goconst
-#    - gocritic 
+    - gocritic 
   disable-all: true
 run:
   skip-dirs:
