@@ -99,7 +99,7 @@ func run(query string) error {
 		} else {
 			image = chromeImage
 		}
-		awf.Append(alfred.Item{
+		awf.Append(&alfred.Item{
 			Title:        b.Title,
 			Subtitle:     fmt.Sprintf("[%s] %s", b.Folder, b.Domain),
 			Autocomplete: b.Title,
