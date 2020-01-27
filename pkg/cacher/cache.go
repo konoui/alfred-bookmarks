@@ -1,4 +1,4 @@
-package cache
+package cacher
 
 import (
 	"encoding/gob"

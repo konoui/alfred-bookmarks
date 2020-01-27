@@ -1,4 +1,4 @@
-package cache
+package cacher
 
 // NilCache noop cache which does nothing useful
 type NilCache struct{}

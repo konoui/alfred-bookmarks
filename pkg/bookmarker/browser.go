@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/konoui/alfred-bookmarks/pkg/cache"
+	"github.com/konoui/alfred-bookmarks/pkg/cacher"
 	"github.com/pkg/errors"
 )
 
@@ -25,7 +25,7 @@ const (
 type Browsers struct {
 	bookmarkers     map[Browser]Bookmarker
 	removeDuplicate bool
-	cache           cache.Cacher
+	cacher           cacher.Cacher
 }
 
 // Option is the type to replace default parameters.
@@ -69,7 +69,7 @@ func OptionRemoveDuplicate() Option {
 	}
 }
 
-// OptionCacheMaxAge bookmark cache time. unit indicate hours
+// OptionCacheMaxAge is bookmark cache time. unit indicate hours
 // if passed arg is zero, set 24 hours. if passed arg is minus, disable cache
 func OptionCacheMaxAge(hour int) Option {
 	return func(b *Browsers) error {
@@ -79,14 +79,14 @@ func OptionCacheMaxAge(hour int) Option {
 			hour = 0
 		}
 
-		c, err := cache.New(
+		c, err := cacher.New(
 			cacheDir, cacheFile,
 			time.Duration(hour)*time.Hour)
 		if err != nil {
 			return err
 		}
 
-		b.cache = c
+		b.cacher = c
 		return nil
 	}
 }
@@ -102,7 +102,7 @@ func OptionNone() Option {
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
 		bookmarkers: make(map[Browser]Bookmarker),
-		cache:       cache.NewNilCache(),
+		cacher:       cacher.NewNilCache(),
 	}
 
 	for _, opt := range opts {
@@ -117,8 +117,8 @@ func NewBrowsers(opts ...Option) Bookmarker {
 // Bookmarks return Bookmarks struct by loading cache file
 func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	if !browsers.cache.Expired() {
-		if err := browsers.cache.Load(&bookmarks); err != nil {
+	if !browsers.cacher.Expired() {
+		if err := browsers.cacher.Load(&bookmarks); err != nil {
 			return Bookmarks{}, errors.Wrap(err, "failed to load cache data")
 		}
 		return bookmarks, nil
@@ -128,7 +128,7 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	if err != nil {
 		return Bookmarks{}, err
 	}
-	if err := browsers.cache.Store(&bookmarks); err != nil {
+	if err := browsers.cacher.Store(&bookmarks); err != nil {
 		return Bookmarks{}, errors.Wrap(err, "failed to save data into cache")
 	}
 

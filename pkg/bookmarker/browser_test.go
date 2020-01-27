@@ -55,7 +55,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			browsers := NewBrowsers(tt.options...)
-			if err := browsers.(*Browsers).cache.Clear(); err != nil {
+			if err := browsers.(*Browsers).cacher.Clear(); err != nil {
 				t.Fatal(err)
 			}
 
@@ -128,7 +128,7 @@ func TestOptionCacheMaxAge(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			bookmarker := NewBrowsers(tt.options...)
 			browsers := bookmarker.(*Browsers)
-			if got := browsers.cache.Expired(); got != tt.want {
+			if got := browsers.cacher.Expired(); got != tt.want {
 				t.Errorf("want: %+v\n, got: %+v\n", tt.want, got)
 			}
 		})
