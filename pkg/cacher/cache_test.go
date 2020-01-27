@@ -1,9 +1,11 @@
-package cache
+package cacher
 
 import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 type example struct {
@@ -30,8 +32,19 @@ func TestNewCache(t *testing.T) {
 		expiredTime time.Duration
 		expectErr   bool
 	}{
-		{description: "exists cache dir", dir: os.TempDir(), file: "test1", expiredTime: 3 * time.Minute, expectErr: false},
-		{description: "no exists cache dir", dir: "/unk", file: "test2", expiredTime: 0 * time.Minute, expectErr: true},
+		{
+			description: "valid directory",
+			dir:         os.TempDir(),
+			file:        "test1", expiredTime: 3 * time.Minute,
+			expectErr: false,
+		},
+		{
+			description: "invalid directory",
+			dir:         "/unk",
+			file:        "test2",
+			expiredTime: 0 * time.Minute,
+			expectErr:   true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -42,7 +55,7 @@ func TestNewCache(t *testing.T) {
 			}
 
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error %s", err.Error())
+				t.Errorf("unexpected error %+v", err)
 			}
 		})
 	}
@@ -56,7 +69,13 @@ func TestStore(t *testing.T) {
 		expiredTime time.Duration
 		expectErr   bool
 	}{
-		{description: "create cache file on temp dir", dir: os.TempDir(), file: "test1", expiredTime: 3 * time.Minute, expectErr: false},
+		{
+			description: "create cache file on temp dir",
+			dir:         os.TempDir(),
+			file:        "test1",
+			expiredTime: 3 * time.Minute,
+			expectErr:   false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -77,7 +96,7 @@ func TestStore(t *testing.T) {
 			}
 
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error %s", err.Error())
+				t.Errorf("unexpected error %v", err)
 			}
 		})
 	}
@@ -91,7 +110,13 @@ func TestLoad(t *testing.T) {
 		expiredTime time.Duration
 		expectErr   bool
 	}{
-		{description: "create cache file on temp dir", dir: os.TempDir(), file: "test1", expiredTime: 3 * time.Minute, expectErr: false},
+		{
+			description: "load cache file on temp dir",
+			dir:         os.TempDir(),
+			file:        "test1",
+			expiredTime: 3 * time.Minute,
+			expectErr:   false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -118,7 +143,11 @@ func TestLoad(t *testing.T) {
 			}
 
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error %s", err.Error())
+				t.Errorf("unexpected error %+v", err)
+			}
+
+			if diff := cmp.Diff(storedValue, loadedValue); diff != "" {
+				t.Errorf("+want -got\n%+v", diff)
 			}
 		})
 	}
@@ -131,29 +160,38 @@ func TestExpired(t *testing.T) {
 		file        string
 		expiredTime time.Duration
 		expectErr   bool
+		want        bool
 	}{
-		{description: "create cache file on temp dir", dir: os.TempDir(), file: "test1", expiredTime: 3 * time.Minute, expectErr: false},
+		{
+			description: "expired cache test",
+			dir:         os.TempDir(),
+			file:        "test1",
+			expiredTime: 3 * time.Minute,
+			want:        false,
+		},
+		{
+			description: "not expired cache test",
+			dir:         os.TempDir(),
+			file:        "test1",
+			expiredTime: 0 * time.Minute,
+			want:        true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			cacher, err := New(tt.dir, tt.file, tt.expiredTime)
-			if err != nil {
-				t.Fatal(err)
-			}
-			cache := cacher.(*Cache)
-
-			err = cache.Store(&storedValue)
+			c, err := New(tt.dir, tt.file, tt.expiredTime)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if age, err := cache.Age(); err != nil && 0 <= age {
-				t.Errorf("unexpected cache expired or error %+v", err)
+			err = c.Store(&storedValue)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			if cache.Expired() && !cache.NotExpired() {
-				t.Errorf("unexpected cache expired")
+			if c.Expired() != tt.want {
+				t.Errorf("unexpected cache expired or not expired")
 			}
 		})
 	}

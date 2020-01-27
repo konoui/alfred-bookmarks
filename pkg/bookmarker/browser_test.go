@@ -55,7 +55,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			browsers := NewBrowsers(tt.options...)
-			if err := browsers.(*Browsers).cache.Clear(); err != nil {
+			if err := browsers.(*Browsers).cacher.Clear(); err != nil {
 				t.Fatal(err)
 			}
 
@@ -64,7 +64,7 @@ func TestBrowsersBookmarks(t *testing.T) {
 				t.Errorf("expect error happens, but got response")
 			}
 			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error got: %+v", err.Error())
+				t.Errorf("unexpected error got: %+v", err)
 			}
 
 			diff := DiffBookmark(bookmarks, tt.want)
@@ -79,34 +79,28 @@ func TestOptionFirefoxChrome(t *testing.T) {
 	tests := []struct {
 		description string
 		options     []Option
-		want        bool
 	}{
 		{
-			description: "Lower default profile",
+			description: "Lower default profile name",
 			options: []Option{
 				OptionFirefox("default"),
 				OptionChrome("default"),
 			},
-			want: false,
 		},
 		{
-			description: "Upper dirname",
+			description: "Upper default profile name",
 			options: []Option{
 				OptionFirefox("Default"),
 				OptionChrome("Default"),
 			},
-			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
+			// panic if error occurs
 			NewBrowsers(tt.options...)
 		})
 	}
-}
-
-func TestOptionChrome(t *testing.T) {
-
 }
 
 func TestOptionCacheMaxAge(t *testing.T) {
@@ -134,7 +128,7 @@ func TestOptionCacheMaxAge(t *testing.T) {
 		t.Run(tt.description, func(t *testing.T) {
 			bookmarker := NewBrowsers(tt.options...)
 			browsers := bookmarker.(*Browsers)
-			if got := browsers.cache.Expired(); got != tt.want {
+			if got := browsers.cacher.Expired(); got != tt.want {
 				t.Errorf("want: %+v\n, got: %+v\n", tt.want, got)
 			}
 		})

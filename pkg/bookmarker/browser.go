@@ -4,24 +4,28 @@ import (
 	"os"
 	"time"
 
-	"github.com/konoui/alfred-bookmarks/pkg/cache"
+	"github.com/konoui/alfred-bookmarks/pkg/cacher"
+	"github.com/pkg/errors"
 )
-
-type browser string
-
-const (
-	firefox browser = "firefox"
-	chrome  browser = "chrome"
-)
-const cacheFile = "alfred-bookmarks.cache"
 
 var cacheDir string
 
+// Browser　 is a type of supported engine
+type Browser string
+
+const (
+	// Firefox is supported
+	Firefox Browser = "firefox"
+	// Chrome is supported
+	Chrome    Browser = "chrome"
+	cacheFile string  = "alfred-bookmarks.cache"
+)
+
 // Browsers determine which bookmark read from
 type Browsers struct {
-	bookmarkers     map[browser]Bookmarker
+	bookmarkers     map[Browser]Bookmarker
 	removeDuplicate bool
-	cache           cache.Cacher
+	cacher          cacher.Cacher
 }
 
 // Option is the type to replace default parameters.
@@ -39,7 +43,7 @@ func OptionFirefox(profile string) Option {
 			return err
 		}
 
-		b.bookmarkers[firefox] = NewFirefox(path)
+		b.bookmarkers[Firefox] = NewFirefox(path)
 		return nil
 	}
 }
@@ -52,12 +56,12 @@ func OptionChrome(profile string) Option {
 			return err
 		}
 
-		b.bookmarkers[chrome] = NewChrome(path)
+		b.bookmarkers[Chrome] = NewChrome(path)
 		return nil
 	}
 }
 
-// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browser
+// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browsers
 func OptionRemoveDuplicate() Option {
 	return func(b *Browsers) error {
 		b.removeDuplicate = true
@@ -65,24 +69,24 @@ func OptionRemoveDuplicate() Option {
 	}
 }
 
-// OptionCacheMaxAge bookmark cache time. unit indicate hours
-// if passed arg is zero, set 24 hours. if passed arg is minus, set 0 hours
-func OptionCacheMaxAge(age int) Option {
+// OptionCacheMaxAge is bookmark cache time. unit indicate hours
+// if passed arg is zero, set 24 hours. if passed arg is minus, disable cache
+func OptionCacheMaxAge(hour int) Option {
 	return func(b *Browsers) error {
-		if age == 0 {
-			age = 24
-		} else if age < 0 {
-			age = 0
+		if hour == 0 {
+			hour = 24
+		} else if hour < 0 {
+			hour = 0
 		}
 
-		c, err := cache.New(
+		c, err := cacher.New(
 			cacheDir, cacheFile,
-			time.Duration(age)*time.Hour)
+			time.Duration(hour)*time.Hour)
 		if err != nil {
 			return err
 		}
 
-		b.cache = c
+		b.cacher = c
 		return nil
 	}
 }
@@ -94,11 +98,11 @@ func OptionNone() Option {
 	}
 }
 
-// NewBrowsers return Browsers
+// NewBrowsers is instance to get Bookmarks of multi browser
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
-		bookmarkers: make(map[browser]Bookmarker),
-		cache:       cache.NewNilCache(),
+		bookmarkers: make(map[Browser]Bookmarker),
+		cacher:      cacher.NewNilCache(),
 	}
 
 	for _, opt := range opts {
@@ -110,12 +114,12 @@ func NewBrowsers(opts ...Option) Bookmarker {
 	return b
 }
 
-// Bookmarks return Bookmarks struct, loading cache file.
+// Bookmarks return Bookmarks struct by loading cache file
 func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	if !browsers.cache.Expired() {
-		if err := browsers.cache.Load(&bookmarks); err != nil {
-			return Bookmarks{}, err
+	if !browsers.cacher.Expired() {
+		if err := browsers.cacher.Load(&bookmarks); err != nil {
+			return Bookmarks{}, errors.Wrap(err, "failed to load cache data")
 		}
 		return bookmarks, nil
 	}
@@ -124,21 +128,21 @@ func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
 	if err != nil {
 		return Bookmarks{}, err
 	}
-	if err := browsers.cache.Store(&bookmarks); err != nil {
-		return Bookmarks{}, err
+	if err := browsers.cacher.Store(&bookmarks); err != nil {
+		return Bookmarks{}, errors.Wrap(err, "failed to save data into cache")
 	}
 
 	return bookmarks, nil
 }
 
-// bookmarks return Bookmarks struct, loading each browser bookmarks and parse them.
+// bookmarks return Bookmarks struct by loading each browser
 func (browsers *Browsers) bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	for _, bookmarker := range browsers.bookmarkers {
+	for browser, bookmarker := range browsers.bookmarkers {
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
-			return Bookmarks{}, err
+			return Bookmarks{}, errors.Wrapf(err, "failed to load bookmarks in %s", browser)
 		}
 		bookmarks = append(bookmarks, b...)
 	}

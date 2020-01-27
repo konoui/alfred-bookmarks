@@ -32,7 +32,7 @@ func newConfig() (*Config, error) {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/")
 
-	// Set Default Value this is overwritten with config file
+	// Set Default Value overwritten with config file
 	viper.SetDefault("firefox.profile", "default")
 	viper.SetDefault("chrome.profile", "default")
 	if err := viper.ReadInConfig(); err != nil {

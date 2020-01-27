@@ -9,11 +9,11 @@ import (
 
 // Bookmark abstract each browser bookmark as the structure
 type Bookmark struct {
-	Browser string // Source Browser
-	Folder  string // Folder of Bookmarks
-	Title   string // Bookmark title
-	Domain  string // Domain of URI
-	URI     string // Bookmark URI
+	Browser Browser
+	Folder  string
+	Title   string
+	Domain  string
+	URI     string
 }
 
 // Bookmarker is interface to load each bookmark file
@@ -54,6 +54,7 @@ func (b Bookmarks) Unmarshal(jsonData []byte) error {
 	return json.Unmarshal(jsonData, &b)
 }
 
+// String retrun a bookmark title of index for fuzzy interface
 func (b Bookmarks) String(i int) string {
 	return b[i].Title
 }
@@ -63,7 +64,7 @@ func (b Bookmarks) Len() int {
 	return len(b)
 }
 
-// Filter fuzzy search bookmarks using query
+// Filter fuzzy search Bookmarks using query
 func (b Bookmarks) Filter(query string) Bookmarks {
 	bookmarks := Bookmarks{}
 	results := fuzzy.FindFrom(query, b)

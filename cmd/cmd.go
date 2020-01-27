@@ -45,6 +45,8 @@ func NewRootCmd() *cobra.Command {
 const (
 	emptySsubtitle = "There are no resources"
 	emptyTitle     = "No matching"
+	firefoxImage   = "firefox.png"
+	chromeImage    = "chrome.png"
 )
 
 func run(query string) error {
@@ -54,7 +56,7 @@ func run(query string) error {
 
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
+		awf.Fatal("fatal error occurs", err.Error())
 		return err
 	}
 
@@ -79,7 +81,7 @@ func run(query string) error {
 
 	bookmarks, err := browsers.Bookmarks()
 	if err != nil {
-		awf.Fatal(fmt.Sprintf("an error occurs: %s", err), "")
+		awf.Fatal("fatal error occurs", err.Error())
 		return err
 	}
 
@@ -91,12 +93,20 @@ func run(query string) error {
 	}
 
 	for _, b := range bookmarks {
-		subtitle := fmt.Sprintf("[%s] %s", b.Folder, b.Domain)
+		var image string
+		if b.Browser == bookmarker.Firefox {
+			image = firefoxImage
+		} else {
+			image = chromeImage
+		}
 		awf.Append(alfred.Item{
 			Title:        b.Title,
-			Subtitle:     subtitle,
+			Subtitle:     fmt.Sprintf("[%s] %s", b.Folder, b.Domain),
 			Autocomplete: b.Title,
 			Arg:          b.URI,
+			Icon: &alfred.Icon{
+				Path: image,
+			},
 		})
 	}
 
