@@ -1,3 +1,4 @@
+![Generic badge](https://github.com/konoui/alfred-bookmarks/workflows/test/badge.svg)
 ## alfred bookmarks
 Alfred workflow to search bookmarks in Firefox and Google Chrome.
 
