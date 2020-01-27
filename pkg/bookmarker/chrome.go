@@ -94,7 +94,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		}
 
 		b := &Bookmark{
-			Browser: "chrome",
+			Browser: Chrome,
 			Folder:  folder,
 			Title:   entry.Name,
 			URI:     entry.URL,

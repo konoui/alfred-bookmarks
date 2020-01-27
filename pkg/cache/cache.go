@@ -25,7 +25,7 @@ type Cache struct {
 	maxAge time.Duration
 }
 
-// New creates a new cache Instance
+// New create a new cache Instance
 func New(dir, file string, maxAge time.Duration) (Cacher, error) {
 	if !pathExists(dir) {
 		return &Cache{}, fmt.Errorf("%s directory does not exist", dir)
@@ -69,7 +69,7 @@ func (c Cache) Store(v interface{}) error {
 	return nil
 }
 
-// Clear remove cache file if exists
+// Clear remove cache file if exist
 func (c Cache) Clear() error {
 	p := c.path()
 	if pathExists(p) {

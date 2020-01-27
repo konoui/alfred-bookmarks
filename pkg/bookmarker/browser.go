@@ -8,19 +8,22 @@ import (
 	"github.com/pkg/errors"
 )
 
-type browser string
+var cacheDir string
+
+// Browser　 is a type of supported engine
+type Browser string
 
 const (
-	firefox   browser = "firefox"
-	chrome    browser = "chrome"
+	// Firefox is supported
+	Firefox Browser = "firefox"
+	// Chrome is supported
+	Chrome    Browser = "chrome"
 	cacheFile string  = "alfred-bookmarks.cache"
 )
 
-var cacheDir string
-
 // Browsers determine which bookmark read from
 type Browsers struct {
-	bookmarkers     map[browser]Bookmarker
+	bookmarkers     map[Browser]Bookmarker
 	removeDuplicate bool
 	cache           cache.Cacher
 }
@@ -40,7 +43,7 @@ func OptionFirefox(profile string) Option {
 			return err
 		}
 
-		b.bookmarkers[firefox] = NewFirefox(path)
+		b.bookmarkers[Firefox] = NewFirefox(path)
 		return nil
 	}
 }
@@ -53,7 +56,7 @@ func OptionChrome(profile string) Option {
 			return err
 		}
 
-		b.bookmarkers[chrome] = NewChrome(path)
+		b.bookmarkers[Chrome] = NewChrome(path)
 		return nil
 	}
 }
@@ -98,7 +101,7 @@ func OptionNone() Option {
 // NewBrowsers is instance to get Bookmarks of multi browser
 func NewBrowsers(opts ...Option) Bookmarker {
 	b := &Browsers{
-		bookmarkers: make(map[browser]Bookmarker),
+		bookmarkers: make(map[Browser]Bookmarker),
 		cache:       cache.NewNilCache(),
 	}
 

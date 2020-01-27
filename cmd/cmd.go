@@ -94,7 +94,7 @@ func run(query string) error {
 
 	for _, b := range bookmarks {
 		var image string
-		if b.Browser == "firefox" {
+		if b.Browser == bookmarker.Firefox {
 			image = firefoxImage
 		} else {
 			image = chromeImage

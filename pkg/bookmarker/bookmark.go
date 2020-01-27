@@ -9,7 +9,7 @@ import (
 
 // Bookmark abstract each browser bookmark as the structure
 type Bookmark struct {
-	Browser string
+	Browser Browser
 	Folder  string
 	Title   string
 	Domain  string
@@ -54,6 +54,7 @@ func (b Bookmarks) Unmarshal(jsonData []byte) error {
 	return json.Unmarshal(jsonData, &b)
 }
 
+// String retrun a bookmark title of index for fuzzy interface
 func (b Bookmarks) String(i int) string {
 	return b[i].Title
 }
