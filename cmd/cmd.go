@@ -72,7 +72,7 @@ func run(query string) error {
 		duplicateOption = bookmarker.OptionRemoveDuplicate()
 	}
 
-	browsers := bookmarker.NewBrowsers(
+	browsers := bookmarker.New(
 		firefoxOption,
 		chromeOption,
 		duplicateOption,
@@ -94,7 +94,7 @@ func run(query string) error {
 
 	for _, b := range bookmarks {
 		var image string
-		if b.Browser == bookmarker.Firefox {
+		if b.Bookmarker == bookmarker.Firefox {
 			image = firefoxImage
 		} else {
 			image = chromeImage
