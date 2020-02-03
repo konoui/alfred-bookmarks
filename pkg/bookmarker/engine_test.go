@@ -54,8 +54,12 @@ func TestEngineBookmarks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			e := New(tt.options...)
-			if err := e.(*engine).cacher.Clear(); err != nil {
+			e, err := New(tt.options...)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err = e.(*engine).cacher.Clear(); err != nil {
 				t.Fatal(err)
 			}
 
@@ -98,7 +102,9 @@ func TestOptionFirefoxChrome(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			// panic if error occurs
-			New(tt.options...)
+			if _, err := New(tt.options...); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -126,7 +132,11 @@ func TestOptionCacheMaxAge(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			bookmarker := New(tt.options...)
+			bookmarker, err := New(tt.options...)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			e := bookmarker.(*engine)
 			if got := e.cacher.Expired(); got != tt.want {
 				t.Errorf("want: %+v\n, got: %+v\n", tt.want, got)
@@ -167,7 +177,11 @@ func TestEngineMarshaUnmarshalJson(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			bookmarker := New(tt.options...)
+			bookmarker, err := New(tt.options...)
+			if err != nil {
+				t.Fatal(err)
+			}
+
 			engine := bookmarker.(*engine)
 			jsonData, err := engine.Marshal()
 			if err != nil {

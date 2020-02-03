@@ -86,7 +86,7 @@ func OptionNone() Option {
 }
 
 // New is instance to get Bookmarks of each bookmarker
-func New(opts ...Option) Bookmarker {
+func New(opts ...Option) (Bookmarker, error) {
 	e := &engine{
 		bookmarkers: make(map[name]Bookmarker),
 		cacher:      cacher.NewNilCache(),
@@ -94,11 +94,11 @@ func New(opts ...Option) Bookmarker {
 
 	for _, opt := range opts {
 		if err := opt(e); err != nil {
-			panic(err)
+			return e, err
 		}
 	}
 
-	return e
+	return e, nil
 }
 
 // Bookmarks return Bookmarks struct by loading cache file
