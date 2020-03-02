@@ -6,7 +6,7 @@ import (
 
 var testProfile = "default"
 
-func TestBrowsersBookmarks(t *testing.T) {
+func TestEngineBookmarks(t *testing.T) {
 	tests := []struct {
 		description string
 		options     []Option
@@ -54,12 +54,16 @@ func TestBrowsersBookmarks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			browsers := NewBrowsers(tt.options...)
-			if err := browsers.(*Browsers).cacher.Clear(); err != nil {
+			e, err := New(tt.options...)
+			if err != nil {
 				t.Fatal(err)
 			}
 
-			bookmarks, err := browsers.Bookmarks()
+			if err = e.(*engine).cacher.Clear(); err != nil {
+				t.Fatal(err)
+			}
+
+			bookmarks, err := e.Bookmarks()
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}
@@ -98,7 +102,9 @@ func TestOptionFirefoxChrome(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			// panic if error occurs
-			NewBrowsers(tt.options...)
+			if _, err := New(tt.options...); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -126,16 +132,20 @@ func TestOptionCacheMaxAge(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			bookmarker := NewBrowsers(tt.options...)
-			browsers := bookmarker.(*Browsers)
-			if got := browsers.cacher.Expired(); got != tt.want {
+			bookmarker, err := New(tt.options...)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			e := bookmarker.(*engine)
+			if got := e.cacher.Expired(); got != tt.want {
 				t.Errorf("want: %+v\n, got: %+v\n", tt.want, got)
 			}
 		})
 	}
 }
 
-func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
+func TestEngineMarshaUnmarshalJson(t *testing.T) {
 	tests := []struct {
 		description string
 		options     []Option
@@ -167,14 +177,18 @@ func TestBrowsersMarshaUnmarshalJson(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			bookmarker := NewBrowsers(tt.options...)
-			browsers := bookmarker.(*Browsers)
-			jsonData, err := browsers.Marshal()
+			bookmarker, err := New(tt.options...)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if err := browsers.Unmarshal(jsonData); err != nil {
+			engine := bookmarker.(*engine)
+			jsonData, err := engine.Marshal()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := engine.Unmarshal(jsonData); err != nil {
 				t.Fatal(err)
 			}
 		})

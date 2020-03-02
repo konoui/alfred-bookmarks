@@ -7,13 +7,23 @@ import (
 	"github.com/sahilm/fuzzy"
 )
 
+// name is a type of supported browser name
+type name string
+
+const (
+	// Firefox is supported
+	Firefox name = "firefox"
+	// Chrome is supported
+	Chrome name = "chrome"
+)
+
 // Bookmark abstract each browser bookmark as the structure
 type Bookmark struct {
-	Browser Browser
-	Folder  string
-	Title   string
-	Domain  string
-	URI     string
+	Bookmarker name
+	Folder     string
+	Title      string
+	Domain     string
+	URI        string
 }
 
 // Bookmarker is interface to load each bookmark file
@@ -30,7 +40,7 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 	uniq := Bookmarks{}
 
 	sort.Slice(b, func(i, j int) bool {
-		return b[i].Browser < b[j].Browser
+		return b[i].Bookmarker < b[j].Bookmarker
 	})
 
 	for _, e := range b {

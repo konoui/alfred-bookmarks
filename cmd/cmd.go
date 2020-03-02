@@ -19,7 +19,8 @@ var (
 
 // Execute Execute root cmd
 func Execute(rootCmd *cobra.Command) {
-	rootCmd.SetOutput(outStream)
+	// Note: result of RunE redirects etderr
+	rootCmd.SetOutput(errStream)
 	if err := rootCmd.Execute(); err != nil {
 		log.Printf("command execution failed: %+v", err)
 		os.Exit(1)
@@ -51,7 +52,8 @@ const (
 
 func run(query string) error {
 	awf := alfred.NewWorkflow()
-	awf.SetStreams(outStream, errStream)
+	// alfred script filter read from only stdout
+	awf.SetStreams(outStream, outStream)
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 
 	c, err := newConfig()
@@ -72,14 +74,18 @@ func run(query string) error {
 		duplicateOption = bookmarker.OptionRemoveDuplicate()
 	}
 
-	browsers := bookmarker.NewBrowsers(
+	engine, err := bookmarker.New(
 		firefoxOption,
 		chromeOption,
 		duplicateOption,
 		bookmarker.OptionCacheMaxAge(c.MaxCacheAge),
 	)
+	if err != nil {
+		awf.Fatal("fatal error occurs", err.Error())
+		return err
+	}
 
-	bookmarks, err := browsers.Bookmarks()
+	bookmarks, err := engine.Bookmarks()
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
 		return err
@@ -94,12 +100,12 @@ func run(query string) error {
 
 	for _, b := range bookmarks {
 		var image string
-		if b.Browser == bookmarker.Firefox {
+		if b.Bookmarker == bookmarker.Firefox {
 			image = firefoxImage
 		} else {
 			image = chromeImage
 		}
-		awf.Append(alfred.Item{
+		awf.Append(&alfred.Item{
 			Title:        b.Title,
 			Subtitle:     fmt.Sprintf("[%s] %s", b.Folder, b.Domain),
 			Autocomplete: b.Title,

@@ -8,63 +8,50 @@ import (
 	"github.com/pkg/errors"
 )
 
-var cacheDir string
+const cacheFile string = "alfred-bookmarks.cache"
 
-// Browser　 is a type of supported engine
-type Browser string
+var cacheDir string = os.TempDir()
 
-const (
-	// Firefox is supported
-	Firefox Browser = "firefox"
-	// Chrome is supported
-	Chrome    Browser = "chrome"
-	cacheFile string  = "alfred-bookmarks.cache"
-)
-
-// Browsers determine which bookmark read from
-type Browsers struct {
-	bookmarkers     map[Browser]Bookmarker
+// engine determine which bookmark read from
+type engine struct {
+	bookmarkers     map[name]Bookmarker
 	removeDuplicate bool
 	cacher          cacher.Cacher
 }
 
 // Option is the type to replace default parameters.
-type Option func(browsers *Browsers) error
-
-func init() {
-	cacheDir = os.TempDir()
-}
+type Option func(e *engine) error
 
 // OptionFirefox if called, search firefox bookmark
 func OptionFirefox(profile string) Option {
-	return func(b *Browsers) error {
+	return func(e *engine) error {
 		path, err := GetFirefoxBookmarkFile(profile)
 		if err != nil {
 			return err
 		}
 
-		b.bookmarkers[Firefox] = NewFirefox(path)
+		e.bookmarkers[Firefox] = NewFirefox(path)
 		return nil
 	}
 }
 
 // OptionChrome if called, search chrome bookmark
 func OptionChrome(profile string) Option {
-	return func(b *Browsers) error {
+	return func(e *engine) error {
 		path, err := GetChromeBookmarkFile(profile)
 		if err != nil {
 			return err
 		}
 
-		b.bookmarkers[Chrome] = NewChrome(path)
+		e.bookmarkers[Chrome] = NewChrome(path)
 		return nil
 	}
 }
 
-// OptionRemoveDuplicate remove same url bookmark e.g) search from multi browsers
+// OptionRemoveDuplicate remove same url bookmark e.g) search from each bookmarker
 func OptionRemoveDuplicate() Option {
-	return func(b *Browsers) error {
-		b.removeDuplicate = true
+	return func(e *engine) error {
+		e.removeDuplicate = true
 		return nil
 	}
 }
@@ -72,7 +59,7 @@ func OptionRemoveDuplicate() Option {
 // OptionCacheMaxAge is bookmark cache time. unit indicate hours
 // if passed arg is zero, set 24 hours. if passed arg is minus, disable cache
 func OptionCacheMaxAge(hour int) Option {
-	return func(b *Browsers) error {
+	return func(e *engine) error {
 		if hour == 0 {
 			hour = 24
 		} else if hour < 0 {
@@ -86,68 +73,68 @@ func OptionCacheMaxAge(hour int) Option {
 			return err
 		}
 
-		b.cacher = c
+		e.cacher = c
 		return nil
 	}
 }
 
 // OptionNone noop
 func OptionNone() Option {
-	return func(b *Browsers) error {
+	return func(e *engine) error {
 		return nil
 	}
 }
 
-// NewBrowsers is instance to get Bookmarks of multi browser
-func NewBrowsers(opts ...Option) Bookmarker {
-	b := &Browsers{
-		bookmarkers: make(map[Browser]Bookmarker),
+// New is instance to get Bookmarks of each bookmarker
+func New(opts ...Option) (Bookmarker, error) {
+	e := &engine{
+		bookmarkers: make(map[name]Bookmarker),
 		cacher:      cacher.NewNilCache(),
 	}
 
 	for _, opt := range opts {
-		if err := opt(b); err != nil {
-			panic(err)
+		if err := opt(e); err != nil {
+			return e, err
 		}
 	}
 
-	return b
+	return e, nil
 }
 
 // Bookmarks return Bookmarks struct by loading cache file
-func (browsers *Browsers) Bookmarks() (Bookmarks, error) {
+func (e *engine) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	if !browsers.cacher.Expired() {
-		if err := browsers.cacher.Load(&bookmarks); err != nil {
+	if !e.cacher.Expired() {
+		if err := e.cacher.Load(&bookmarks); err != nil {
 			return Bookmarks{}, errors.Wrap(err, "failed to load cache data")
 		}
 		return bookmarks, nil
 	}
 
-	bookmarks, err := browsers.bookmarks()
+	bookmarks, err := e.bookmarks()
 	if err != nil {
 		return Bookmarks{}, err
 	}
-	if err := browsers.cacher.Store(&bookmarks); err != nil {
+	if err := e.cacher.Store(&bookmarks); err != nil {
 		return Bookmarks{}, errors.Wrap(err, "failed to save data into cache")
 	}
 
 	return bookmarks, nil
 }
 
-// bookmarks return Bookmarks struct by loading each browser
-func (browsers *Browsers) bookmarks() (Bookmarks, error) {
+// bookmarks return Bookmarks struct by loading each bookmarker
+func (e *engine) bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	for browser, bookmarker := range browsers.bookmarkers {
+	for name, bookmarker := range e.bookmarkers {
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
-			return Bookmarks{}, errors.Wrapf(err, "failed to load bookmarks in %s", browser)
+			return Bookmarks{}, errors.Wrapf(err, "failed to load bookmarks in %s", name)
 		}
 		bookmarks = append(bookmarks, b...)
 	}
 
-	if browsers.removeDuplicate {
+	if e.removeDuplicate {
 		bookmarks = bookmarks.uniqByURI()
 	}
 
@@ -155,8 +142,8 @@ func (browsers *Browsers) bookmarks() (Bookmarks, error) {
 }
 
 // Marshal is used to serialize the type to json
-func (browsers *Browsers) Marshal() ([]byte, error) {
-	b, err := browsers.Bookmarks()
+func (e *engine) Marshal() ([]byte, error) {
+	b, err := e.Bookmarks()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -164,8 +151,8 @@ func (browsers *Browsers) Marshal() ([]byte, error) {
 }
 
 // Unmarshal is used to deserialize json types into Conditional
-func (browsers *Browsers) Unmarshal(jsonData []byte) error {
-	b, err := browsers.Bookmarks()
+func (e *engine) Unmarshal(jsonData []byte) error {
+	b, err := e.Bookmarks()
 	if err != nil {
 		return err
 	}
