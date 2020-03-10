@@ -14,7 +14,7 @@ var cacheDir string = os.TempDir()
 
 // engine determine which bookmark read from
 type engine struct {
-	bookmarkers     map[name]Bookmarker
+	bookmarkers     map[bookmarkerName]Bookmarker
 	removeDuplicate bool
 	cacher          cacher.Cacher
 }
@@ -88,7 +88,7 @@ func OptionNone() Option {
 // New is instance to get Bookmarks of each bookmarker
 func New(opts ...Option) (Bookmarker, error) {
 	e := &engine{
-		bookmarkers: make(map[name]Bookmarker),
+		bookmarkers: make(map[bookmarkerName]Bookmarker),
 		cacher:      cacher.NewNilCache(),
 	}
 
