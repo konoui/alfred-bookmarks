@@ -111,11 +111,11 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 			}
 
 			b := &Bookmark{
-				Bookmarker: Firefox,
-				Folder:     folder,
-				Title:      e.Title,
-				URI:        e.URI,
-				Domain:     u.Host,
+				BookmarkerName: Firefox,
+				Folder:         folder,
+				Title:          e.Title,
+				URI:            e.URI,
+				Domain:         u.Host,
 			}
 			bookmarks = append(bookmarks, b)
 		}

@@ -91,11 +91,11 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		}
 
 		b := &Bookmark{
-			Bookmarker: Chrome,
-			Folder:     folder,
-			Title:      entry.Name,
-			URI:        entry.URL,
-			Domain:     u.Host,
+			BookmarkerName: Chrome,
+			Folder:         folder,
+			Title:          entry.Name,
+			URI:            entry.URL,
+			Domain:         u.Host,
 		}
 		bookmarks = append(bookmarks, b)
 		return bookmarks
