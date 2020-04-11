@@ -57,7 +57,7 @@ func (c Cache) Load(v interface{}) error {
 // Store save data into cache
 func (c Cache) Store(v interface{}) error {
 	p := c.path()
-	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE, 0666)
+	f, err := os.Create(p)
 	if err != nil {
 		return err
 	}

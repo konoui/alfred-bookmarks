@@ -19,10 +19,9 @@ var (
 
 // Execute Execute root cmd
 func Execute(rootCmd *cobra.Command) {
-	// Note: result of RunE redirects etderr
-	rootCmd.SetOutput(errStream)
+	rootCmd.SetOut(outStream)
+	rootCmd.SetErr(errStream)
 	if err := rootCmd.Execute(); err != nil {
-		log.Printf("command execution failed: %+v", err)
 		os.Exit(1)
 	}
 }
@@ -33,9 +32,9 @@ func NewRootCmd() *cobra.Command {
 		Use:   "alfred-bookmarks <query>",
 		Short: "search bookmarks",
 		Args:  cobra.MinimumNArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string) {
 			query := strings.Join(args, " ")
-			return run(query)
+			run(query)
 		},
 		SilenceUsage: true,
 	}
@@ -50,16 +49,15 @@ const (
 	chromeImage    = "chrome.png"
 )
 
-func run(query string) error {
+func run(query string) {
 	awf := alfred.NewWorkflow()
 	// alfred script filter read from only stdout
-	awf.SetStreams(outStream, outStream)
+	awf.SetOut(outStream)
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 
 	c, err := newConfig()
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
-		return err
 	}
 
 	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
@@ -82,13 +80,11 @@ func run(query string) error {
 	)
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
-		return err
 	}
 
 	bookmarks, err := engine.Bookmarks()
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
-		return err
 	}
 
 	log.Printf("%d total bookmark(s)", len(bookmarks))
@@ -117,5 +113,4 @@ func run(query string) error {
 	}
 
 	awf.Output()
-	return nil
 }
