@@ -28,3 +28,6 @@ Supports following web browsers.
 ### Firefox 
 The workflow reads latest bookmark data from `~/Library/Application Support/Firefox/Profiles/<xxxxx>.default/bookmarkbackups/` directory.
 If you register a web site to bookmarks, the workflow does not read and search the web site immediately.
+
+## License
+MIT License.
