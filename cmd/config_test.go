@@ -12,7 +12,7 @@ func TestNewConfig(t *testing.T) {
 		want        *Config
 	}{
 		{
-			description: "enable all settings",
+			description: "read config file except for firefox profile, that is default value",
 			want: &Config{
 				RemoveDuplicate: true,
 				// disable cache
