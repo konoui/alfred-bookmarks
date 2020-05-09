@@ -1,6 +1,5 @@
 firefox:
     enable: true
-    path: 'default'
 chrome:
     enable: true
     profile: 'Default'

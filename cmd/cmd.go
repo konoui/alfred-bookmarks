@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
 
@@ -51,13 +50,14 @@ const (
 
 func run(query string) {
 	awf := alfred.NewWorkflow()
-	// alfred script filter read from only stdout
 	awf.SetOut(outStream)
+	awf.SetErr(errStream)
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 
 	c, err := newConfig()
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
+		return
 	}
 
 	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
@@ -80,18 +80,17 @@ func run(query string) {
 	)
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
+		return
 	}
 
 	bookmarks, err := engine.Bookmarks()
 	if err != nil {
 		awf.Fatal("fatal error occurs", err.Error())
+		return
 	}
 
-	log.Printf("%d total bookmark(s)", len(bookmarks))
-	log.Printf("query: %s", query)
 	if query != "" {
 		bookmarks = bookmarks.Filter(query)
-		log.Printf("%d total filtered bookmark(s)", len(bookmarks))
 	}
 
 	for _, b := range bookmarks {
