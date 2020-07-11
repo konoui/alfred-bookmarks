@@ -6,7 +6,7 @@ BINARY := bin/$(BIN_NAME)
 ASSETS_DIR := assets
 ASSETS := $(ASSETS_DIR)/* $(BINARY) README.md
 ARTIFACT_DIR := .artifact
-ARTIFACT_NAME := $(ARTIFACT_DIR)/$(BIN_NAME).alfredworkflow
+ARTIFACT_NAME := $(BIN_NAME).alfredworkflow
 
 ## For local test
 WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
