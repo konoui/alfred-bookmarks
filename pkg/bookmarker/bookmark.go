@@ -1,10 +1,7 @@
 package bookmarker
 
 import (
-	"encoding/json"
 	"sort"
-
-	"github.com/sahilm/fuzzy"
 )
 
 // bookmarkerName is a type of supported browser name
@@ -27,7 +24,6 @@ type Bookmark struct {
 }
 
 // Bookmarker is interface to load each bookmark file
-// TODO add Marshal/Unmarshal
 type Bookmarker interface {
 	Bookmarks() (Bookmarks, error)
 }
@@ -52,35 +48,4 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 
 	b = uniq
 	return uniq
-}
-
-// Marshal is used to serialize the type to json
-func (b Bookmarks) Marshal() ([]byte, error) {
-	return json.Marshal(b)
-}
-
-// Unmarshal is used to deserialize json types into Conditional
-func (b Bookmarks) Unmarshal(jsonData []byte) error {
-	return json.Unmarshal(jsonData, &b)
-}
-
-// String retrun a bookmark title of index for fuzzy interface
-func (b Bookmarks) String(i int) string {
-	return b[i].Title
-}
-
-// Len return length of Bookmarks for fuzzy interface
-func (b Bookmarks) Len() int {
-	return len(b)
-}
-
-// Filter fuzzy search Bookmarks using query
-func (b Bookmarks) Filter(query string) Bookmarks {
-	bookmarks := Bookmarks{}
-	results := fuzzy.FindFrom(query, b)
-	for _, r := range results {
-		bookmarks = append(bookmarks, b[r.Index])
-	}
-
-	return bookmarks
 }

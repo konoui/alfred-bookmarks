@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -44,4 +46,13 @@ func newConfig() (*Config, error) {
 	}
 
 	return &c, nil
+}
+
+func convertDefaultTTL(hour int) time.Duration {
+	if hour == 0 {
+		hour = 24
+	} else if hour < 0 {
+		hour = 0
+	}
+	return time.Duration(hour) * time.Hour
 }

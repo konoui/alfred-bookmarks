@@ -14,28 +14,36 @@ var (
 	awf       *alfred.Workflow
 	outStream io.Writer = os.Stdout
 	errStream io.Writer = os.Stderr
+	cacheDir            = os.TempDir()
+)
+
+const (
+	cacheSuffix    = "alfred-bookmarks.cache"
+	cacheKey       = "bookmarks"
+	emptySsubtitle = "There are no resources"
+	emptyTitle     = "No matching"
+	fatalError     = "Fatal errors occur"
+	firefoxImage   = "firefox.png"
+	chromeImage    = "chrome.png"
 )
 
 func init() {
 	awf = alfred.NewWorkflow()
 	awf.SetOut(outStream)
 	awf.SetErr(errStream)
+	awf.SetCacheSuffix(cacheSuffix)
+	if err := awf.SetCacheDir(cacheDir); err != nil {
+		awf.Fatal(fatalError, err.Error())
+	}
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 }
 
 // Execute runs cmd
 func Execute(args ...string) {
 	if err := run(strings.Join(args, " ")); err != nil {
-		awf.Fatal("fatal error occurs", err.Error())
+		alfred.NewWorkflow().Fatal(fatalError, err.Error())
 	}
 }
-
-const (
-	emptySsubtitle = "There are no resources"
-	emptyTitle     = "No matching"
-	firefoxImage   = "firefox.png"
-	chromeImage    = "chrome.png"
-)
 
 func run(query string) error {
 	c, err := newConfig()
@@ -55,11 +63,16 @@ func run(query string) error {
 		duplicateOption = bookmarker.OptionRemoveDuplicate()
 	}
 
+	ttl := convertDefaultTTL(c.MaxCacheAge)
+	if awf.Cache(cacheKey).MaxAge(ttl).LoadItems().Err() == nil {
+		awf.Filter(query).Output()
+		return nil
+	}
+
 	engine, err := bookmarker.New(
 		firefoxOption,
 		chromeOption,
 		duplicateOption,
-		bookmarker.OptionCacheMaxAge(c.MaxCacheAge),
 	)
 	if err != nil {
 		return err
@@ -68,10 +81,6 @@ func run(query string) error {
 	bookmarks, err := engine.Bookmarks()
 	if err != nil {
 		return err
-	}
-
-	if query != "" {
-		bookmarks = bookmarks.Filter(query)
 	}
 
 	for _, b := range bookmarks {
@@ -92,6 +101,6 @@ func run(query string) error {
 		})
 	}
 
-	awf.Output()
+	awf.Cache(cacheKey).StoreItems().Workflow().Filter(query).Output()
 	return nil
 }

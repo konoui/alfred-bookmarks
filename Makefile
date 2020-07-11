@@ -1,20 +1,22 @@
 VERSION := $(shell git describe --tags --abbrev=0)
 REVISION := $(shell git rev-parse --short HEAD)
-LDFLAGS := -X 'main. version=$(VERSION)' -X 'main. revision=$(REVISION)'
 SRC_DIR := ./
-BIN_DIR := bin
-BINARY := bin/alfred-bookmarks
-WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
+BIN_NAME := alfred-bookmarks
+BINARY := bin/$(BIN_NAME)
 ASSETS_DIR := assets
+ASSETS := $(ASSETS_DIR)/* $(BINARY) README.md
 ARTIFACT_DIR := .artifact
-ARTIFACT := ${ARTIFACT_DIR}/alfred-bookmarks.alfredworkflow
+ARTIFACT_NAME := $(ARTIFACT_DIR)/$(BIN_NAME).alfredworkflow
 
-GOLANGCI_LINT_VERSION := v1.22.2
+## For local test
+WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
+
+GOLANGCI_LINT_VERSION := v1.24.0
 export GO111MODULE=on
 
 ## Build binaries on your environment
 build:
-	CGO_ENABLED=0 go build -ldflags "${LDFLAGS}" -o ${BINARY} ./${SRC_DIR}
+	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o $(BINARY) $(SRC_DIR)
 
 ## Format source codes
 fmt:
@@ -23,42 +25,43 @@ fmt:
 
 ## Lint
 lint:
-	@(if ! type golangci-lint >/dev/null 2>&1; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin ${GOLANGCI_LINT_VERSION} ;fi)
+	@(if ! type golangci-lint >/dev/null 2>&1; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION) ;fi)
 	golangci-lint run ./...
 
 ## Build macos binaries
 darwin:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -ldflags "${LDFLAGS} -s -w" -o ${BINARY} ./${SRC_DIR}
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build  -ldflags "${LDFLAGS} -s -w" -o $(BINARY) $(SRC_DIR)
 
 ## Run tests for my project
 test:
 	go test -v ./...
 
-docker-test:
-	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.13 bash -c "./setup-test-dir.sh && make test"
-
 ## Install Binary and Assets to Workflow Directory
 install: build
-	@(cp ${BINARY} ${WORKFLOW_DIR}/)
-	@(cp ${ASSETS_DIR}/*  ${WORKFLOW_DIR}/)
+	@(cp $(ASSETS)  $(WORKFLOW_DIR)/)
+
+## create workflow artifact
+package: darwin
+	@(if ! type ghr >/dev/null 2>&1; then go get -u github.com/tcnksm/ghr ;fi)
+	@(if [ ! -e $(ARTIFACT_DIR) ]; then mkdir $(ARTIFACT_DIR) ; fi)
+	@(cp $(ASSETS) $(ARTIFACT_DIR))
+	@(zip -j $(ARTIFACT_NAME) $(ARTIFACT_DIR)/*)
 
 ## GitHub Release and uploads artifacts
-release: darwin
-	@(if ! type ghr >/dev/null 2>&1; then go get -u github.com/tcnksm/ghr ;fi)
-	@(if [ ! -e ${ARTIFACT_DIR} ]; then mkdir ${ARTIFACT_DIR} ; fi)
-	@(cp ${BINARY} ${ARTIFACT_DIR})
-	@(cp ${ASSETS_DIR}/* ${ARTIFACT_DIR})
-	@(zip -j ${ARTIFACT} ${ARTIFACT_DIR}/*)
-	@ghr -replace ${VERSION} ${ARTIFACT}
+release: package
+	@ghr -replace $(VERSION) $(ARTIFACT_NAME)
 
 ## Clean Binary
 clean:
-	rm -f ${BIN_DIR}/*
-	rm -f ${ARTIFACT_DIR}/*
+	rm -f $(BIN_NAME)
+	rm -f $(ARTIFACT_DIR)/*
+
+docker-test:
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.13 bash -c "./setup-test-dir.sh && make test"
 
 ## Show help
 help:
 	@(if ! type make2help >/dev/null 2>&1; then go get -u github.com/Songmu/make2help/cmd/make2help ;fi)
 	@make2help $(MAKEFILE_LIST)
 
-.PHONY: build test lint fmt darwin clean help
+.PHONY: build test lint fmt darwin release package clean help

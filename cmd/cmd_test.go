@@ -23,6 +23,13 @@ func TestExecute(t *testing.T) {
 			filepath:    "test-rm-duplicate-firefox-chrome.json",
 			errMsg:      "",
 		},
+		{
+			description: "flag argument. no error occurs",
+			expectErr:   false,
+			command:     "--pass-no-match-query-as-flag-format",
+			filepath:    "empty-results.json",
+			errMsg:      "",
+		},
 	}
 
 	for _, tt := range tests {
@@ -33,9 +40,10 @@ func TestExecute(t *testing.T) {
 			}
 
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
-			outStream, errStream = outBuf, errBuf
-			awf.SetOut(outStream)
-			awf.SetErr(errStream)
+			awf = alfred.NewWorkflow()
+			awf.SetOut(outBuf)
+			awf.SetErr(errBuf)
+			awf.EmptyWarning(emptyTitle, emptySsubtitle)
 			err = run(tt.command)
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
