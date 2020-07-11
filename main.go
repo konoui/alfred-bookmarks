@@ -1,10 +1,11 @@
 package main
 
 import (
+	"os"
+
 	"github.com/konoui/alfred-bookmarks/cmd"
 )
 
 func main() {
-	rootCmd := cmd.NewRootCmd()
-	cmd.Execute(rootCmd)
+	cmd.Execute(os.Args[1:]...)
 }

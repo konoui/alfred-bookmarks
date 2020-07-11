@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/konoui/go-alfred"
-	"github.com/mattn/go-shellwords"
 )
 
 func TestExecute(t *testing.T) {
@@ -35,15 +34,9 @@ func TestExecute(t *testing.T) {
 
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
 			outStream, errStream = outBuf, errBuf
-			cmdArgs, err := shellwords.Parse(tt.command)
-			if err != nil {
-				t.Fatalf("args parse error: %+v", err)
-			}
-			rootCmd := NewRootCmd()
-			rootCmd.SetOutput(outStream)
-			rootCmd.SetArgs(cmdArgs)
-
-			err = rootCmd.Execute()
+			awf.SetOut(outStream)
+			awf.SetErr(errStream)
+			err = run(tt.command)
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}

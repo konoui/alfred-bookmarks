@@ -8,37 +8,26 @@ import (
 
 	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
 	"github.com/konoui/go-alfred"
-	"github.com/spf13/cobra"
 )
 
 var (
+	awf       *alfred.Workflow
 	outStream io.Writer = os.Stdout
 	errStream io.Writer = os.Stderr
 )
 
-// Execute Execute root cmd
-func Execute(rootCmd *cobra.Command) {
-	rootCmd.SetOut(outStream)
-	rootCmd.SetErr(errStream)
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
-	}
+func init() {
+	awf = alfred.NewWorkflow()
+	awf.SetOut(outStream)
+	awf.SetErr(errStream)
+	awf.EmptyWarning(emptyTitle, emptySsubtitle)
 }
 
-// NewRootCmd create a new cmd for root
-func NewRootCmd() *cobra.Command {
-	rootCmd := &cobra.Command{
-		Use:   "alfred-bookmarks <query>",
-		Short: "search bookmarks",
-		Args:  cobra.MinimumNArgs(0),
-		Run: func(cmd *cobra.Command, args []string) {
-			query := strings.Join(args, " ")
-			run(query)
-		},
-		SilenceUsage: true,
+// Execute runs cmd
+func Execute(args ...string) {
+	if err := run(strings.Join(args, " ")); err != nil {
+		awf.Fatal("fatal error occurs", err.Error())
 	}
-
-	return rootCmd
 }
 
 const (
@@ -48,16 +37,10 @@ const (
 	chromeImage    = "chrome.png"
 )
 
-func run(query string) {
-	awf := alfred.NewWorkflow()
-	awf.SetOut(outStream)
-	awf.SetErr(errStream)
-	awf.EmptyWarning(emptyTitle, emptySsubtitle)
-
+func run(query string) error {
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal("fatal error occurs", err.Error())
-		return
+		return err
 	}
 
 	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
@@ -79,14 +62,12 @@ func run(query string) {
 		bookmarker.OptionCacheMaxAge(c.MaxCacheAge),
 	)
 	if err != nil {
-		awf.Fatal("fatal error occurs", err.Error())
-		return
+		return err
 	}
 
 	bookmarks, err := engine.Bookmarks()
 	if err != nil {
-		awf.Fatal("fatal error occurs", err.Error())
-		return
+		return err
 	}
 
 	if query != "" {
@@ -112,4 +93,5 @@ func run(query string) {
 	}
 
 	awf.Output()
+	return nil
 }
