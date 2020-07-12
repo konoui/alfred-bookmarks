@@ -48,14 +48,14 @@ const (
 	typeFolder
 )
 
-// NewFirefox return a new firefox instance to get bookmarks
+// NewFirefox returns a new firefox instance to get bookmarks
 func NewFirefox(path string) Bookmarker {
 	return &firefoxBookmark{
 		bookmarkPath: path,
 	}
 }
 
-// Bookmarks load firefox bookmark entry and return general bookmark structure
+// Bookmarks load firefox bookmark entries and return general bookmark structure
 func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
 	if err := b.load(); err != nil {
 		return Bookmarks{}, err
@@ -64,7 +64,7 @@ func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
 	return b.firefoxBookmarkEntry.convertToBookmarks(""), nil
 }
 
-// load a compressed as .jsonlz4 file
+// load a compressed .jsonlz4 file
 func (b *firefoxBookmark) load() error {
 	bookmarkMozlz4File := b.bookmarkPath
 
@@ -92,7 +92,7 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	// if entry type is folder, append folder name to current folder
 	if entry.TypeCode == typeFolder {
 		if entry.Title != "" {
-			folder = fmt.Sprintf("%s/%s", folder, entry.Title)
+			folder = filepath.Join(folder, entry.Title)
 		}
 	}
 
@@ -126,18 +126,18 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// GetFirefoxBookmarkFile return a firefox bookmark filepath in bookmarkbackups direcotory
+// GetFirefoxBookmarkFile returns a firefox bookmark filepath in bookmark-backups direcotory
 func GetFirefoxBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
-	profileDir := fmt.Sprintf("%s/Library/Application Support/Firefox/Profiles", home)
+	profileDir := filepath.Join(home, "Library/Application Support/Firefox/Profiles")
 	profileDirName, err := searchSuffixDir(profileDir, profile)
 	if err != nil {
 		return "", err
 	}
-	bookmarkDir := fmt.Sprintf("%s/%s/bookmarkbackups/", profileDir, profileDirName)
+	bookmarkDir := filepath.Join(profileDir, profileDirName, "bookmarkbackups")
 	bookmarkFile, err := getLatestFile(bookmarkDir)
 	if err != nil {
 		return "", err
@@ -146,7 +146,7 @@ func GetFirefoxBookmarkFile(profile string) (string, error) {
 	return bookmarkFile, nil
 }
 
-// getLatestFile return a path to latest files in dir
+// getLatestFile returns a path to latest files in dir
 func getLatestFile(dir string) (string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -165,7 +165,7 @@ func getLatestFile(dir string) (string, error) {
 	return filepath.Join(dir, files[latestIndex].Name()), nil
 }
 
-// searchSuffixDir return a directory name of suffix ignoring case-sensitive
+// searchSuffixDir returns a directory name of suffix ignoring case-sensitive
 func searchSuffixDir(dir, suffux string) (string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {

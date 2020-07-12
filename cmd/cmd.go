@@ -41,7 +41,7 @@ func init() {
 // Execute runs cmd
 func Execute(args ...string) {
 	if err := run(strings.Join(args, " ")); err != nil {
-		alfred.NewWorkflow().Fatal(fatalError, err.Error())
+		awf.Fatal(fatalError, err.Error())
 	}
 }
 
@@ -90,15 +90,17 @@ func run(query string) error {
 		} else {
 			image = chromeImage
 		}
-		awf.Append(&alfred.Item{
-			Title:        b.Title,
-			Subtitle:     fmt.Sprintf("[%s] %s", b.Folder, b.Domain),
-			Autocomplete: b.Title,
-			Arg:          b.URI,
-			Icon: &alfred.Icon{
-				Path: image,
-			},
-		})
+		awf.Append(
+			alfred.NewItem().
+				SetTitle(b.Title).
+				SetSubtitle(fmt.Sprintf("[%s] %s", b.Folder, b.Domain)).
+				SetAutocomplete(b.Title).
+				SetArg(b.URI).
+				SetIcon(
+					alfred.NewIcon().
+						SetPath(image),
+				),
+		)
 	}
 
 	awf.Cache(cacheKey).StoreItems().Workflow().Filter(query).Output()

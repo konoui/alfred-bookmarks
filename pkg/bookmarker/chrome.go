@@ -2,9 +2,9 @@ package bookmarker
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
 )
@@ -41,7 +41,7 @@ type chromeBookmark struct {
 	bookmarkPath       string
 }
 
-// NewChrome return a new chrome instance to get bookmarks
+// NewChrome returns a new chrome instance to get bookmarks
 func NewChrome(path string) Bookmarker {
 	return &chromeBookmark{
 		bookmarkPath: path,
@@ -103,7 +103,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 
 	if entry.Type == "folder" {
 		// we append folder name to parent folder name
-		folder = fmt.Sprintf("%s/%s", folder, entry.Name)
+		folder = filepath.Join(folder, entry.Name)
 	}
 
 	// loop folder type wihch has children
@@ -114,18 +114,18 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 	return bookmarks
 }
 
-// GetChromeBookmarkFile return a chrome bookmark filepath
+// GetChromeBookmarkFile returns a chrome bookmark filepath
 func GetChromeBookmarkFile(profile string) (string, error) {
 	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
-	chromeDir := fmt.Sprintf("%s/Library/Application Support/Google/Chrome", home)
+	chromeDir := filepath.Join(home, "Library/Application Support/Google/Chrome")
 	profileDirName, err := searchSuffixDir(chromeDir, profile)
 	if err != nil {
 		return "", err
 	}
 
-	bookmarkFile := fmt.Sprintf("%s/%s/Bookmarks", chromeDir, profileDirName)
+	bookmarkFile := filepath.Join(chromeDir, profileDirName, "Bookmarks")
 	return bookmarkFile, nil
 }

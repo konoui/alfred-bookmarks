@@ -14,7 +14,7 @@ const (
 	Chrome bookmarkerName = "chrome"
 )
 
-// Bookmark abstract each browser bookmark as the structure
+// Bookmark abstract each browser bookmark
 type Bookmark struct {
 	BookmarkerName bookmarkerName
 	Folder         string
@@ -23,7 +23,7 @@ type Bookmark struct {
 	URI            string
 }
 
-// Bookmarker is interface to load each bookmark file
+// Bookmarker is a interface to load each bookmark file
 type Bookmarker interface {
 	Bookmarks() (Bookmarks, error)
 }
@@ -35,6 +35,7 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 	m := make(map[string]bool)
 	uniq := Bookmarks{}
 
+	// Note: we sotrt by bookmarker name for making idempotency
 	sort.Slice(b, func(i, j int) bool {
 		return b[i].BookmarkerName < b[j].BookmarkerName
 	})

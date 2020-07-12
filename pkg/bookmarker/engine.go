@@ -39,7 +39,7 @@ func OptionChrome(profile string) Option {
 	}
 }
 
-// OptionRemoveDuplicate remove same url bookmark e.g) search from each bookmarker
+// OptionRemoveDuplicate removes same bookmarks by urls
 func OptionRemoveDuplicate() Option {
 	return func(e *engine) error {
 		e.removeDuplicate = true
@@ -54,7 +54,7 @@ func OptionNone() Option {
 	}
 }
 
-// New is instance to get Bookmarks of each bookmarker
+// New is a managed bookmarker to get each bookmark
 func New(opts ...Option) (Bookmarker, error) {
 	e := &engine{
 		bookmarkers: make(map[bookmarkerName]Bookmarker),
@@ -76,7 +76,7 @@ func (e *engine) Bookmarks() (Bookmarks, error) {
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
-			return Bookmarks{}, errors.Wrapf(err, "failed to load bookmarks in %s", name)
+			return bookmarks, errors.Wrapf(err, "failed to load bookmarks in %s", name)
 		}
 		bookmarks = append(bookmarks, b...)
 	}
