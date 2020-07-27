@@ -94,8 +94,12 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks 
 			// if entry type is folder, append folder name to current folder
 			folder = filepath.Join(folder, entry.Title)
 		}
+		for _, e := range entry.Children {
+			// tell the folder name to children bookmark entry
+			bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
+		}
 	case typeURI:
-		u, err := validateURL(entry.URI)
+		u, err := parseURL(entry.URI)
 		if err != nil {
 			return
 		}
@@ -108,12 +112,6 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks 
 			Domain:         u.Host,
 		}
 		bookmarks = append(bookmarks, b)
-	}
-
-	// loop folder type wihch has children
-	for _, e := range entry.Children {
-		// tell the folder name to children bookmark entry
-		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 
 	return

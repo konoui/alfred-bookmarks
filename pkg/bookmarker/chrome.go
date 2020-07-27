@@ -80,8 +80,11 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks B
 			// we append folder name to parent folder name
 			folder = filepath.Join(folder, entry.Name)
 		}
+		for _, e := range entry.Children {
+			bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
+		}
 	case "url":
-		u, err := validateURL(entry.URL)
+		u, err := parseURL(entry.URL)
 		if err != nil {
 			return
 		}
@@ -94,11 +97,6 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks B
 			Domain:         u.Host,
 		}
 		bookmarks = append(bookmarks, b)
-	}
-
-	// loop folder type wihch has children
-	for _, e := range entry.Children {
-		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 
 	return

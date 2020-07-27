@@ -40,27 +40,26 @@ func init() {
 
 // Execute runs cmd
 func Execute(args ...string) {
-	if err := run(strings.Join(args, " ")); err != nil {
+	c, err := newConfig()
+	if err != nil {
+		awf.Fatal(fatalError, err.Error())
+	}
+
+	if err := c.run(strings.Join(args, " ")); err != nil {
 		awf.Fatal(fatalError, err.Error())
 	}
 }
 
-func run(query string) error {
-	c, err := newConfig()
-	if err != nil {
-		return err
-	}
-
-	firefoxOption, chromeOption := bookmarker.OptionNone(), bookmarker.OptionNone()
-	duplicateOption := bookmarker.OptionNone()
+func (c *Config) run(query string) error {
+	var opts []bookmarker.Option
 	if c.Firefox.Enable {
-		firefoxOption = bookmarker.OptionFirefox(c.Firefox.Profile)
+		opts = append(opts, bookmarker.OptionFirefox(c.Firefox.Profile))
 	}
 	if c.Chrome.Enable {
-		chromeOption = bookmarker.OptionChrome(c.Chrome.Profile)
+		opts = append(opts, bookmarker.OptionChrome(c.Chrome.Profile))
 	}
 	if c.RemoveDuplicate {
-		duplicateOption = bookmarker.OptionRemoveDuplicate()
+		opts = append(opts, bookmarker.OptionRemoveDuplicate())
 	}
 
 	ttl := convertDefaultTTL(c.MaxCacheAge)
@@ -69,11 +68,7 @@ func run(query string) error {
 		return nil
 	}
 
-	engine, err := bookmarker.New(
-		firefoxOption,
-		chromeOption,
-		duplicateOption,
-	)
+	engine, err := bookmarker.New(opts...)
 	if err != nil {
 		return err
 	}

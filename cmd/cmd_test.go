@@ -11,27 +11,28 @@ import (
 
 const testdataPath = "testdata"
 
-func TestExecute(t *testing.T) {
+func TestRun(t *testing.T) {
 	tests := []struct {
 		description string
 		expectErr   bool
 		filepath    string
 		command     string
+		config      *Config
 		errMsg      string
 	}{
 		{
 			description: "list all bookmarks. config file exists in current directory",
 			expectErr:   false,
 			command:     "",
+			config:      testConfig,
 			filepath:    filepath.Join(testdataPath, "test-rm-duplicate-firefox-chrome.json"),
-			errMsg:      "",
 		},
 		{
-			description: "flag argument. no error occurs",
+			description: "flag format argument. no error occurs",
 			expectErr:   false,
 			command:     "--pass-no-match-query-as-flag-format",
+			config:      testConfig,
 			filepath:    filepath.Join(testdataPath, "empty-results.json"),
-			errMsg:      "",
 		},
 	}
 
@@ -47,7 +48,8 @@ func TestExecute(t *testing.T) {
 			awf.SetOut(outBuf)
 			awf.SetErr(errBuf)
 			awf.EmptyWarning(emptyTitle, emptySsubtitle)
-			err = run(tt.command)
+
+			err = tt.config.run(tt.command)
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}

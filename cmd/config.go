@@ -27,25 +27,24 @@ type Chrome struct {
 }
 
 // NewConfig return alfred bookmark configuration
-func newConfig() (*Config, error) {
-	var c Config
+func newConfig() (c *Config, err error) {
+	c = new(Config)
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(".alfred-bookmarks")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/")
 
-	// Set Default Value overwritten with config file
+	// Set default value overwritten with config file
 	viper.SetDefault("firefox.profile", "default")
 	viper.SetDefault("chrome.profile", "default")
-	if err := viper.ReadInConfig(); err != nil {
-		return &Config{}, err
+	if err = viper.ReadInConfig(); err != nil {
+		return
 	}
 
-	if err := viper.Unmarshal(&c); err != nil {
-		return &Config{}, err
+	if err = viper.Unmarshal(c); err != nil {
+		return
 	}
-
-	return &c, nil
+	return
 }
 
 func convertDefaultTTL(hour int) time.Duration {

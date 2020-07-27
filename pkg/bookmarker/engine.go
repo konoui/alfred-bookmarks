@@ -47,20 +47,17 @@ func OptionRemoveDuplicate() Option {
 	}
 }
 
-// OptionNone noop
-func OptionNone() Option {
-	return func(e *engine) error {
-		return nil
-	}
-}
-
-// New is a managed bookmarker to get each bookmark
+// New is a managed bookmarker to get each bookmarks
 func New(opts ...Option) (Bookmarker, error) {
 	e := &engine{
 		bookmarkers: make(map[bookmarkerName]Bookmarker),
 	}
 
 	for _, opt := range opts {
+		if opt == nil {
+			continue
+		}
+
 		if err := opt(e); err != nil {
 			return e, err
 		}
@@ -69,7 +66,7 @@ func New(opts ...Option) (Bookmarker, error) {
 	return e, nil
 }
 
-// bookmarks return Bookmarks struct by loading each bookmarker
+// Bookmarks return Bookmarks struct by loading each bookmarker
 func (e *engine) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
 	for name, bookmarker := range e.bookmarkers {

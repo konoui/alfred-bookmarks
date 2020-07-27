@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-func validateURL(s string) (u *url.URL, err error) {
+func parseURL(s string) (u *url.URL, err error) {
 	u, err = url.Parse(s)
 	// Ignore invalid URLs
 	if err != nil {
 		return
 	}
 	if u.Host == "" {
-		return u, errors.New("hostname is enpty")
+		return u, errors.New("hostname is empty")
 	}
 	return
 }
@@ -28,6 +28,11 @@ func getLatestFile(dir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	if len(files) == 0 {
+		return "", fmt.Errorf("no files in the directory %s", dir)
+	}
+
 	latestIndex := 0
 	for i, file := range files {
 		if file.IsDir() || strings.HasPrefix(file.Name(), ".") {
