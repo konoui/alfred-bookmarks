@@ -3,10 +3,13 @@ package cmd
 import (
 	"bytes"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"github.com/konoui/go-alfred"
 )
+
+const testdataPath = "testdata"
 
 func TestExecute(t *testing.T) {
 	tests := []struct {
@@ -20,14 +23,14 @@ func TestExecute(t *testing.T) {
 			description: "list all bookmarks. config file exists in current directory",
 			expectErr:   false,
 			command:     "",
-			filepath:    "test-rm-duplicate-firefox-chrome.json",
+			filepath:    filepath.Join(testdataPath, "test-rm-duplicate-firefox-chrome.json"),
 			errMsg:      "",
 		},
 		{
 			description: "flag argument. no error occurs",
 			expectErr:   false,
 			command:     "--pass-no-match-query-as-flag-format",
-			filepath:    "empty-results.json",
+			filepath:    filepath.Join(testdataPath, "empty-results.json"),
 			errMsg:      "",
 		},
 	}

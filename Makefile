@@ -57,7 +57,8 @@ clean:
 	rm -f $(ARTIFACT_DIR)/*
 
 docker-test:
-	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.13 bash -c "./setup-test-dir.sh && make test"
+	go mod vendor
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.14 bash -c "./setup-test-dir.sh && make test"
 
 ## Show help
 help:

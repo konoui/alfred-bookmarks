@@ -2,13 +2,8 @@ package bookmarker
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
 
 	"github.com/frioux/leatherman/pkg/mozlz4"
 	"github.com/mitchellh/go-homedir"
@@ -37,16 +32,15 @@ type firefoxBookmarkEntry struct {
 	Children []*firefoxBookmarkEntry `json:"children,omitempty"`
 }
 
-type firefoxBookmark struct {
-	firefoxBookmarkEntry firefoxBookmarkEntry
-	bookmarkPath         string
+// firefoxBookmarkRoot has a single entry as root which has childrens
+type firefoxBookmarkRoot struct {
+	firefoxBookmarkEntry
 }
 
-// firefoxBookmarkEntry.TypeCode
-const (
-	typeURI = iota + 1
-	typeFolder
-)
+type firefoxBookmark struct {
+	bookmarkRoot firefoxBookmarkRoot
+	bookmarkPath string
+}
 
 // NewFirefox returns a new firefox instance to get bookmarks
 func NewFirefox(path string) Bookmarker {
@@ -56,12 +50,12 @@ func NewFirefox(path string) Bookmarker {
 }
 
 // Bookmarks load firefox bookmark entries and return general bookmark structure
-func (b *firefoxBookmark) Bookmarks() (Bookmarks, error) {
-	if err := b.load(); err != nil {
-		return Bookmarks{}, err
+func (b *firefoxBookmark) Bookmarks() (bookmarks Bookmarks, err error) {
+	if err = b.load(); err != nil {
+		return
 	}
 
-	return b.firefoxBookmarkEntry.convertToBookmarks(""), nil
+	return b.bookmarkRoot.convertToBookmarks("/"), nil
 }
 
 // load a compressed .jsonlz4 file
@@ -79,51 +73,50 @@ func (b *firefoxBookmark) load() error {
 		return err
 	}
 
-	return json.NewDecoder(r).Decode(&b.firefoxBookmarkEntry)
+	return json.NewDecoder(r).Decode(&b.bookmarkRoot)
 }
 
-// convertToBookmarks parse a top of root entry
-// we assume firefox has one root entry that has many children
-func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
-	if entry.Children == nil {
-		return Bookmarks{}
-	}
+// convertToBookmarks parse a entry and children of the entry
+func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks Bookmarks) {
+	// firefoxBookmarkEntry.TypeCode
+	const (
+		typeURI = iota + 1
+		typeFolder
+	)
 
-	// if entry type is folder, append folder name to current folder
-	if entry.TypeCode == typeFolder {
+	switch entry.TypeCode {
+	case typeFolder:
+		if entry.Children == nil {
+			// if node has no entry, stop recursive
+			return
+		}
 		if entry.Title != "" {
+			// if entry type is folder, append folder name to current folder
 			folder = filepath.Join(folder, entry.Title)
 		}
+	case typeURI:
+		u, err := validateURL(entry.URI)
+		if err != nil {
+			return
+		}
+
+		b := &Bookmark{
+			BookmarkerName: Firefox,
+			Folder:         folder,
+			Title:          entry.Title,
+			URI:            entry.URI,
+			Domain:         u.Host,
+		}
+		bookmarks = append(bookmarks, b)
 	}
 
-	bookmarks := Bookmarks{}
+	// loop folder type wihch has children
 	for _, e := range entry.Children {
-		switch e.TypeCode {
-		case typeFolder:
-		case typeURI:
-			u, err := url.Parse(e.URI)
-			// Ignore invalid URLs
-			if err != nil {
-				continue
-			}
-			if u.Host == "" {
-				continue
-			}
-
-			b := &Bookmark{
-				BookmarkerName: Firefox,
-				Folder:         folder,
-				Title:          e.Title,
-				URI:            e.URI,
-				Domain:         u.Host,
-			}
-			bookmarks = append(bookmarks, b)
-		}
 		// tell the folder name to children bookmark entry
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 
-	return bookmarks
+	return
 }
 
 // GetFirefoxBookmarkFile returns a firefox bookmark filepath in bookmark-backups direcotory
@@ -144,40 +137,4 @@ func GetFirefoxBookmarkFile(profile string) (string, error) {
 	}
 
 	return bookmarkFile, nil
-}
-
-// getLatestFile returns a path to latest files in dir
-func getLatestFile(dir string) (string, error) {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return "", err
-	}
-	latestIndex := 0
-	for i, file := range files {
-		if file.IsDir() || strings.HasPrefix(file.Name(), ".") {
-			continue
-		}
-		if time.Since(file.ModTime()) <= time.Since(files[latestIndex].ModTime()) {
-			latestIndex = i
-		}
-	}
-
-	return filepath.Join(dir, files[latestIndex].Name()), nil
-}
-
-// searchSuffixDir returns a directory name of suffix ignoring case-sensitive
-func searchSuffixDir(dir, suffux string) (string, error) {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		return "", err
-	}
-
-	for _, file := range files {
-		if name := file.Name(); file.IsDir() &&
-			strings.HasSuffix(strings.ToLower(name), strings.ToLower(suffux)) {
-			return name, nil
-		}
-	}
-
-	return "", fmt.Errorf("not found a directory of suffix (%s) in %s directory", suffux, dir)
 }

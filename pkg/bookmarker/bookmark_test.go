@@ -6,6 +6,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+const testdataPath = "testdata"
+
 // DiffBookmark is helper function that compare unsorted Bookmarks
 // return "" if got is equal to want regardless of sorted or unsorted
 func DiffBookmark(want, got Bookmarks) string {

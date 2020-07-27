@@ -8,70 +8,68 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/pierrec/lz4"
 )
 
-const (
-	testFirefoxBookmarkJsonlz4File = "test-firefox-bookmarks.jsonlz4"
-	testFirefoxBookmarkJSONFile    = "test-firefox-bookmarks.json"
-)
-
+var testFirefoxBookmarkJsonlz4File = filepath.Join(testdataPath, "test-firefox-bookmarks.jsonlz4")
+var testFirefoxBookmarkJSONFile = filepath.Join(testdataPath, "test-firefox-bookmarks.json")
 var testFirefoxBookmarks = Bookmarks{
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu",
+		Folder:         "/Bookmark Menu",
 		Title:          "Google",
 		Domain:         "www.google.com",
 		URI:            "https://www.google.com/",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-a",
+		Folder:         "/Bookmark Menu/1-hierarchy-a",
 		Title:          "GitHub",
 		Domain:         "github.com",
 		URI:            "https://github.com/",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
+		Folder:         "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
 		Title:          "Stack Overflow",
 		Domain:         "stackoverflow.com",
 		URI:            "https://stackoverflow.com/",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
+		Folder:         "/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a",
 		Title:          "Amazon Web Services",
 		Domain:         "aws.amazon.com",
 		URI:            "https://aws.amazon.com/?nc1=h_ls",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-b",
+		Folder:         "/Bookmark Menu/1-hierarchy-b",
 		Title:          "Yahoo",
 		Domain:         "www.yahoo.com",
 		URI:            "https://www.yahoo.com/",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
+		Folder:         "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
 		Title:          "Facebook",
 		Domain:         "www.facebook.com",
 		URI:            "https://www.facebook.com/",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
+		Folder:         "/Bookmark Menu/1-hierarchy-b/2-hierarchy-a",
 		Title:          "Twitter",
 		Domain:         "twitter.com",
 		URI:            "https://twitter.com/login",
 	},
 	&Bookmark{
 		BookmarkerName: Firefox,
-		Folder:         "Bookmark Menu/1-hierarchy-b/2-hierarchy-b",
+		Folder:         "/Bookmark Menu/1-hierarchy-b/2-hierarchy-b",
 		Title:          "Amazon.com",
 		Domain:         "www.amazon.com",
 		URI:            "https://www.amazon.com/",
@@ -150,8 +148,8 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 	}
 
 	b := firefoxBookmark{
-		bookmarkPath:         path,
-		firefoxBookmarkEntry: firefoxBookmarkEntry{},
+		bookmarkPath: path,
+		bookmarkRoot: firefoxBookmarkRoot{},
 	}
 
 	err = b.load()
@@ -159,7 +157,7 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 		return "", err
 	}
 
-	jsonData, err := json.Marshal(b.firefoxBookmarkEntry)
+	jsonData, err := json.Marshal(b.bookmarkRoot)
 	if err != nil {
 		return "", err
 	}

@@ -2,7 +2,6 @@ package bookmarker
 
 import (
 	"encoding/json"
-	"net/url"
 	"os"
 	"path/filepath"
 
@@ -23,22 +22,16 @@ type chromeBookmarkEntry struct {
 type chromeBookmarkRoot struct {
 	Checksum string `json:"checksum"`
 	Roots    struct {
-		BookmarkBar struct {
-			BookmarkEntries []*chromeBookmarkEntry `json:"children"`
-		} `json:"bookmark_bar"`
-		Other struct {
-			BookmarkEntries []*chromeBookmarkEntry `json:"children"`
-		} `json:"other"`
-		Synced struct {
-			BookmarkEntries []*chromeBookmarkEntry `json:"children"`
-		} `json:"synced"`
+		BookmarkBar *chromeBookmarkEntry `json:"bookmark_bar"`
+		Other       *chromeBookmarkEntry `json:"other"`
+		Synced      *chromeBookmarkEntry `json:"synced"`
 	} `json:"roots"`
 	Version int `json:"version"`
 }
 
 type chromeBookmark struct {
-	chromeBookmarkRoot chromeBookmarkRoot
-	bookmarkPath       string
+	bookmarkRoot chromeBookmarkRoot
+	bookmarkPath string
 }
 
 // NewChrome returns a new chrome instance to get bookmarks
@@ -49,16 +42,17 @@ func NewChrome(path string) Bookmarker {
 }
 
 // Bookmarks load chrome bookmark entries and return general bookmark structure
-func (b *chromeBookmark) Bookmarks() (Bookmarks, error) {
-	if err := b.load(); err != nil {
-		return Bookmarks{}, err
+func (b *chromeBookmark) Bookmarks() (bookmarks Bookmarks, err error) {
+	if err = b.load(); err != nil {
+		return
 	}
 
-	bookmarks := Bookmarks{}
-	// Note: only iterate `BookmarkBar`
-	for _, entry := range b.chromeBookmarkRoot.Roots.BookmarkBar.BookmarkEntries {
-		bookmarks = append(bookmarks, entry.convertToBookmarks("")...)
-	}
+	barBookmarks := b.bookmarkRoot.Roots.BookmarkBar.convertToBookmarks("/")
+	syncedBookmarks := b.bookmarkRoot.Roots.Synced.convertToBookmarks("/")
+	othersBookmarks := b.bookmarkRoot.Roots.Other.convertToBookmarks("/")
+	bookmarks = append(bookmarks, barBookmarks...)
+	bookmarks = append(bookmarks, syncedBookmarks...)
+	bookmarks = append(bookmarks, othersBookmarks...)
 
 	return bookmarks, nil
 }
@@ -71,23 +65,25 @@ func (b *chromeBookmark) load() error {
 	}
 	defer f.Close()
 
-	return json.NewDecoder(f).Decode(&b.chromeBookmarkRoot)
+	return json.NewDecoder(f).Decode(&b.bookmarkRoot)
 }
 
 // convertToBookmarks parse a entry and children of the entry
-func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
-	if entry.Type == "folder" && entry.Children == nil {
-		return Bookmarks{}
-	}
-
-	bookmarks := Bookmarks{}
-	if entry.Type == "url" {
-		u, err := url.Parse(entry.URL)
-		if err != nil {
-			return Bookmarks{}
+func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks Bookmarks) {
+	switch entry.Type {
+	case "folder":
+		if entry.Children == nil {
+			// if node has no entry, stop recursive
+			return
 		}
-		if u.Host == "" {
-			return Bookmarks{}
+		if entry.Name != "" {
+			// we append folder name to parent folder name
+			folder = filepath.Join(folder, entry.Name)
+		}
+	case "url":
+		u, err := validateURL(entry.URL)
+		if err != nil {
+			return
 		}
 
 		b := &Bookmark{
@@ -98,12 +94,6 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 			Domain:         u.Host,
 		}
 		bookmarks = append(bookmarks, b)
-		return bookmarks
-	}
-
-	if entry.Type == "folder" {
-		// we append folder name to parent folder name
-		folder = filepath.Join(folder, entry.Name)
 	}
 
 	// loop folder type wihch has children
@@ -111,7 +101,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) Bookmarks {
 		bookmarks = append(bookmarks, e.convertToBookmarks(folder)...)
 	}
 
-	return bookmarks
+	return
 }
 
 // GetChromeBookmarkFile returns a chrome bookmark filepath
