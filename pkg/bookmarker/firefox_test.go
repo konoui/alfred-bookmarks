@@ -96,6 +96,7 @@ func TestFirefoxBookmarks(t *testing.T) {
 		},
 	}
 
+	setupFirefox(t)
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
 			b := firefoxBookmark{
@@ -118,29 +119,43 @@ func TestFirefoxBookmarks(t *testing.T) {
 	}
 }
 
-// Create Jsonlz4 from jsonfile
-func TestCreateTestFirefoxJsonlz4(t *testing.T) {
+func setupFirefox(t *testing.T) {
+	t.Helper()
+	if err := createTestFirefoxJsonlz4(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// create Jsonlz4 from jsonfile
+func createTestFirefoxJsonlz4() error {
 	// switch readDefaultFirefoxBookmarksJSON or readTestFirefoxBookmarkJSON
 	_, _ = readDefaultFirefoxBookmarksJSON()
 	str, err := readTestFirefoxBookmarkJSON()
 	if err != nil {
-		t.Fatal(err)
+		return err
 	}
 
-	r := strings.NewReader(str)
 	w, err := os.Create(testFirefoxBookmarkJsonlz4File)
 	if err != nil {
-		t.Fatal(err)
+		return err
 	}
 	defer w.Close()
 
+	r := strings.NewReader(str)
 	err = compress(r, w, len(str))
 	if err != nil {
-		t.Fatalf("Failed to compress data: %s\n", err)
+		return err
 	}
+	return nil
 }
 
-// return json string from .jsonlz4
+func readTestFirefoxBookmarkJSON() (string, error) {
+	jsonData, err := ioutil.ReadFile(testFirefoxBookmarkJSONFile)
+
+	return string(jsonData), err
+}
+
+// return json string of .jsonlz4 loading from local profile
 func readDefaultFirefoxBookmarksJSON() (string, error) {
 	path, err := GetFirefoxBookmarkFile("default")
 	if err != nil {
@@ -157,7 +172,7 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 		return "", err
 	}
 
-	jsonData, err := json.Marshal(b.bookmarkRoot)
+	jsonData, err := json.Marshal(b.bookmarkRoot.root)
 	if err != nil {
 		return "", err
 	}
@@ -165,12 +180,7 @@ func readDefaultFirefoxBookmarksJSON() (string, error) {
 	return string(jsonData), nil
 }
 
-func readTestFirefoxBookmarkJSON() (string, error) {
-	jsonData, err := ioutil.ReadFile(testFirefoxBookmarkJSONFile)
-
-	return string(jsonData), err
-}
-
+// encode json to .jsonlz4
 func compress(src io.Reader, dst io.Writer, intendedSize int) error {
 	const magicHeader = "mozLz40\x00"
 	_, err := dst.Write([]byte(magicHeader))

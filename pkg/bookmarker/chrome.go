@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 type chromeBookmarkEntry struct {
@@ -104,7 +102,7 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks B
 
 // GetChromeBookmarkFile returns a chrome bookmark filepath
 func GetChromeBookmarkFile(profile string) (string, error) {
-	home, err := homedir.Dir()
+	home, err := getHomeDir()
 	if err != nil {
 		return "", err
 	}

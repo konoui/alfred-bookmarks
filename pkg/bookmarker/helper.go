@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -18,6 +19,14 @@ func parseURL(s string) (u *url.URL, err error) {
 	}
 	if u.Host == "" {
 		return u, errors.New("hostname is empty")
+	}
+	return
+}
+
+func getHomeDir() (dir string, err error) {
+	dir, err = os.UserHomeDir()
+	if err != nil {
+		return
 	}
 	return
 }

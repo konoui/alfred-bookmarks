@@ -30,10 +30,19 @@ func TestEngineBookmarks(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			description: "enable firefox, chrome, remove dupulication. return chrome bookmark",
+			description: "enable safari bookmark",
+			options: []Option{
+				OptionSafari(),
+			},
+			want:      testSafariBookmarks,
+			expectErr: false,
+		},
+		{
+			description: "enable firefox, chrome, safari and remove dupulication. return chrome bookmark",
 			options: []Option{
 				OptionFirefox(testProfile),
 				OptionChrome(testProfile),
+				OptionSafari(),
 				OptionRemoveDuplicate(),
 			},
 			want:      testChromeBookmarks,

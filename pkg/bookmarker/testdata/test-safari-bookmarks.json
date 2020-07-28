@@ -1,0 +1,147 @@
+{
+    "Title": "",
+    "WebBookmarkType": "WebBookmarkTypeList",
+    "URLString": "",
+    "WebBookmarkUUID": "8CA513C9-1A33-4F70-AB16-CF627F68C843",
+    "URIDictionary": null,
+    "Children": [
+        {
+            "Title": "履歴",
+            "WebBookmarkType": "WebBookmarkTypeProxy",
+            "URLString": "",
+            "WebBookmarkUUID": "A3FB6A4A-267B-402E-A20E-035BCBC29411",
+            "URIDictionary": null,
+            "Children": null
+        },
+        {
+            "Title": "BookmarksBar",
+            "WebBookmarkType": "WebBookmarkTypeList",
+            "URLString": "",
+            "WebBookmarkUUID": "10EEDBFD-C866-4E65-9F6E-0BDDD440D510",
+            "URIDictionary": null,
+            "Children": null
+        },
+        {
+            "Title": "BookmarksMenu",
+            "WebBookmarkType": "WebBookmarkTypeList",
+            "URLString": "",
+            "WebBookmarkUUID": "CB5DA59B-FFD1-4C9E-8C95-3A92850C86DD",
+            "URIDictionary": null,
+            "Children": null
+        },
+        {
+            "Title": "1-hierarchy-a",
+            "WebBookmarkType": "WebBookmarkTypeList",
+            "URLString": "",
+            "WebBookmarkUUID": "D549A815-4E13-4D90-AE12-CDDDAF953ADA",
+            "URIDictionary": null,
+            "Children": [
+                {
+                    "Title": "2-hierarchy-a",
+                    "WebBookmarkType": "WebBookmarkTypeList",
+                    "URLString": "",
+                    "WebBookmarkUUID": "D6E63265-7E5C-4C87-85D0-41250BDCD207",
+                    "URIDictionary": null,
+                    "Children": [
+                        {
+                            "Title": "3-hierarchy-a",
+                            "WebBookmarkType": "WebBookmarkTypeList",
+                            "URLString": "",
+                            "WebBookmarkUUID": "85B789D7-0D6D-4B8F-BA65-DC242E6B598D",
+                            "URIDictionary": null,
+                            "Children": [
+                                {
+                                    "Title": "",
+                                    "WebBookmarkType": "WebBookmarkTypeLeaf",
+                                    "URLString": "https://stackoverflow.com/",
+                                    "WebBookmarkUUID": "3858345F-C3F9-4C0A-B458-F25EE39D7913",
+                                    "URIDictionary": {
+                                        "title": "Stack Overflow"
+                                    },
+                                    "Children": null
+                                },
+                                {
+                                    "Title": "",
+                                    "WebBookmarkType": "WebBookmarkTypeLeaf",
+                                    "URLString": "https://aws.amazon.com/?nc1=h_ls",
+                                    "WebBookmarkUUID": "3773D85C-8A04-40BA-89BE-6A95AE50C38E",
+                                    "URIDictionary": {
+                                        "title": "Amazon Web Services"
+                                    },
+                                    "Children": null
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Title": "1-hierarchy-b",
+            "WebBookmarkType": "WebBookmarkTypeList",
+            "URLString": "",
+            "WebBookmarkUUID": "F951B4BD-1980-452E-99F2-EE6E66CCDF8E",
+            "URIDictionary": null,
+            "Children": [
+                {
+                    "Title": "",
+                    "WebBookmarkType": "WebBookmarkTypeLeaf",
+                    "URLString": "https://www.yahoo.com/",
+                    "WebBookmarkUUID": "05D3D439-3AE6-4821-813A-B53285ED4BD3",
+                    "URIDictionary": {
+                        "title": "Yahoo"
+                    },
+                    "Children": null
+                },
+                {
+                    "Title": "2-hierarchy-a",
+                    "WebBookmarkType": "WebBookmarkTypeList",
+                    "URLString": "",
+                    "WebBookmarkUUID": "1FB85C53-9ACA-4430-8A35-9A0C3E8108EA",
+                    "URIDictionary": null,
+                    "Children": [
+                        {
+                            "Title": "",
+                            "WebBookmarkType": "WebBookmarkTypeLeaf",
+                            "URLString": "https://www.facebook.com/",
+                            "WebBookmarkUUID": "63F45D02-32EF-4292-BAC1-375A41FBE759",
+                            "URIDictionary": {
+                                "title": "Facebook"
+                            },
+                            "Children": null
+                        },
+                        {
+                            "Title": "",
+                            "WebBookmarkType": "WebBookmarkTypeLeaf",
+                            "URLString": "https://twitter.com/login",
+                            "WebBookmarkUUID": "C08948A6-2E7D-42A4-8948-514ED0BAA55F",
+                            "URIDictionary": {
+                                "title": "Twitter"
+                            },
+                            "Children": null
+                        }
+                    ]
+                },
+                {
+                    "Title": "2-hierarchy-b",
+                    "WebBookmarkType": "WebBookmarkTypeList",
+                    "URLString": "",
+                    "WebBookmarkUUID": "AA0AF936-8CEC-4DC7-B4EA-228DC32BA12E",
+                    "URIDictionary": null,
+                    "Children": [
+                        {
+                            "Title": "",
+                            "WebBookmarkType": "WebBookmarkTypeLeaf",
+                            "URLString": "https://www.amazon.com/",
+                            "WebBookmarkUUID": "7332DD7E-04DE-4981-823A-2FEB4B193515",
+                            "URIDictionary": {
+                                "title": "Amazon.com"
+                            },
+                            "Children": null
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

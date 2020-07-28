@@ -12,6 +12,8 @@ const (
 	Firefox bookmarkerName = "firefox"
 	// Chrome is supported
 	Chrome bookmarkerName = "chrome"
+	// Safari is supported
+	Safari bookmarkerName = "safari"
 )
 
 // Bookmark abstract each browser bookmark

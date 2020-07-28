@@ -9,7 +9,8 @@ import (
 const testdataPath = "testdata"
 
 // DiffBookmark is helper function that compare unsorted Bookmarks
-// return "" if got is equal to want regardless of sorted or unsorted
+// return "" if got is equal to want regardless of sorted or unsorted.
+// format is "+want -got"
 func DiffBookmark(want, got Bookmarks) string {
 	sort.Slice(want, func(i, j int) bool {
 		return want[i].URI < want[j].URI
@@ -17,7 +18,7 @@ func DiffBookmark(want, got Bookmarks) string {
 	sort.Slice(got, func(i, j int) bool {
 		return got[i].URI < got[j].URI
 	})
-	diff := cmp.Diff(got, want)
+	diff := cmp.Diff(want, got)
 
 	return diff
 }

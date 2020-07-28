@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Firefox         Firefox `mapstructure:"firefox"`
 	Chrome          Chrome  `mapstructure:"chrome"`
+	Safari          Safari  `mapstructure:"safari"`
 	RemoveDuplicate bool    `mapstructure:"remove_duplicate"`
 	MaxCacheAge     int     `mapstructure:"cache_age_hours"`
 }
@@ -24,6 +25,11 @@ type Firefox struct {
 type Chrome struct {
 	Enable  bool   `mapstructure:"enable"`
 	Profile string `mapstructure:"profile,omitempty"`
+}
+
+// Safari Configuration
+type Safari struct {
+	Enable bool `mapstructure:"enable"`
 }
 
 // NewConfig return alfred bookmark configuration

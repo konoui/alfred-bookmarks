@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/frioux/leatherman/pkg/mozlz4"
-	"github.com/mitchellh/go-homedir"
 )
 
 // firefoxBookmarkEntry a bookmark structure of decompressed .jsonlz4
@@ -34,7 +33,7 @@ type firefoxBookmarkEntry struct {
 
 // firefoxBookmarkRoot has a single entry as root which has childrens
 type firefoxBookmarkRoot struct {
-	firefoxBookmarkEntry
+	root firefoxBookmarkEntry
 }
 
 type firefoxBookmark struct {
@@ -55,7 +54,7 @@ func (b *firefoxBookmark) Bookmarks() (bookmarks Bookmarks, err error) {
 		return
 	}
 
-	return b.bookmarkRoot.convertToBookmarks("/"), nil
+	return b.bookmarkRoot.root.convertToBookmarks("/"), nil
 }
 
 // load a compressed .jsonlz4 file
@@ -73,7 +72,7 @@ func (b *firefoxBookmark) load() error {
 		return err
 	}
 
-	return json.NewDecoder(r).Decode(&b.bookmarkRoot)
+	return json.NewDecoder(r).Decode(&b.bookmarkRoot.root)
 }
 
 // convertToBookmarks parse a entry and children of the entry
@@ -119,7 +118,7 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks 
 
 // GetFirefoxBookmarkFile returns a firefox bookmark filepath in bookmark-backups direcotory
 func GetFirefoxBookmarkFile(profile string) (string, error) {
-	home, err := homedir.Dir()
+	home, err := getHomeDir()
 	if err != nil {
 		return "", err
 	}

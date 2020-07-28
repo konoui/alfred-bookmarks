@@ -39,6 +39,19 @@ func OptionChrome(profile string) Option {
 	}
 }
 
+// OptionSafari if called, search chrome bookmark
+func OptionSafari() Option {
+	return func(e *engine) error {
+		path, err := GetSafariBookmarkFile()
+		if err != nil {
+			return err
+		}
+
+		e.bookmarkers[Safari] = NewSafari(path)
+		return nil
+	}
+}
+
 // OptionRemoveDuplicate removes same bookmarks by urls
 func OptionRemoveDuplicate() Option {
 	return func(e *engine) error {

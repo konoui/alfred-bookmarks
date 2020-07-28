@@ -1,6 +1,6 @@
 ![Generic badge](https://github.com/konoui/alfred-bookmarks/workflows/test/badge.svg)
 ## alfred bookmarks
-Alfred workflow to search bookmarks in Firefox and Google Chrome.
+Alfred workflow to search bookmarks in Firefox, Google Chrome and Safari.
 
 ## Install
 Download the workflow form [latest release](https://github.com/konoui/alfred-bookmarks/releases).
@@ -12,6 +12,8 @@ firefox:
     enable: true
 chrome:
     enable: true
+safari:
+    enable: false
 remove_duplicate: true
 ```
 
@@ -23,6 +25,7 @@ Supports fuzzy search.
 Supports following web browsers.
 - Firefox
 - Google Chrome
+- Safari
 
 ## Limitation
 ### Firefox 

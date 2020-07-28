@@ -25,6 +25,7 @@ const (
 	fatalError     = "Fatal errors occur"
 	firefoxImage   = "firefox.png"
 	chromeImage    = "chrome.png"
+	safariImage    = "safari.png"
 )
 
 func init() {
@@ -58,6 +59,9 @@ func (c *Config) run(query string) error {
 	if c.Chrome.Enable {
 		opts = append(opts, bookmarker.OptionChrome(c.Chrome.Profile))
 	}
+	if c.Safari.Enable {
+		opts = append(opts, bookmarker.OptionSafari())
+	}
 	if c.RemoveDuplicate {
 		opts = append(opts, bookmarker.OptionRemoveDuplicate())
 	}
@@ -80,10 +84,13 @@ func (c *Config) run(query string) error {
 
 	for _, b := range bookmarks {
 		var image string
-		if b.BookmarkerName == bookmarker.Firefox {
+		switch b.BookmarkerName {
+		case bookmarker.Firefox:
 			image = firefoxImage
-		} else {
+		case bookmarker.Chrome:
 			image = chromeImage
+		case bookmarker.Safari:
+			image = safariImage
 		}
 		awf.Append(
 			alfred.NewItem().
