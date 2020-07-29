@@ -39,7 +39,7 @@ func OptionChrome(profile string) Option {
 	}
 }
 
-// OptionSafari if called, search chrome bookmark
+// OptionSafari if called, search safari bookmark
 func OptionSafari() Option {
 	return func(e *engine) error {
 		path, err := GetSafariBookmarkFile()

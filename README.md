@@ -1,9 +1,9 @@
 ![Generic badge](https://github.com/konoui/alfred-bookmarks/workflows/test/badge.svg)
 ## alfred bookmarks
-Alfred workflow to search bookmarks in Firefox, Google Chrome and Safari.
+The workflow is a cross-browser bookmark searcher across Firefox, Google Chrome and Safari.
 
 ## Install
-Download the workflow form [latest release](https://github.com/konoui/alfred-bookmarks/releases).
+Download the workflow from [latest release](https://github.com/konoui/alfred-bookmarks/releases).
 
 ## Configuration
 Please create configuration file as `.alfred-bookmarks` in home directory (`~/`).

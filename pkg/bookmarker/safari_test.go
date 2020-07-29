@@ -69,7 +69,6 @@ func TestSafariBookmarks(t *testing.T) {
 			name:         "valid bookmark file",
 			bookmarkPath: testSafariBookmarkPlist,
 			want:         testSafariBookmarks,
-			expectErr:    false,
 		},
 		{
 			name:         "invalid bookmark file",

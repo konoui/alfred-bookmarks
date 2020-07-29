@@ -1,0 +1,76 @@
+{
+	"items": [
+		{
+			"title": "Yahoo",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-b] www.yahoo.com",
+			"arg": "https://www.yahoo.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Yahoo"
+		},
+		{
+			"title": "Amazon Web Services",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] aws.amazon.com",
+			"arg": "https://aws.amazon.com/?nc1=h_ls",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Amazon Web Services"
+		},
+		{
+			"title": "Stack Overflow",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] stackoverflow.com",
+			"arg": "https://stackoverflow.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Stack Overflow"
+		},
+		{
+			"title": "GitHub",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-a] github.com",
+			"arg": "https://github.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "GitHub"
+		},
+		{
+			"title": "Amazon.com",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-b/2-hierarchy-b] www.amazon.com",
+			"arg": "https://www.amazon.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Amazon.com"
+		},
+		{
+			"title": "Twitter",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-b/2-hierarchy-a] twitter.com",
+			"arg": "https://twitter.com/login",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Twitter"
+		},
+		{
+			"title": "Facebook",
+			"subtitle": "[/Bookmarks Bar/1-hierarchy-b/2-hierarchy-a] www.facebook.com",
+			"arg": "https://www.facebook.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Facebook"
+		},
+		{
+			"title": "Google",
+			"subtitle": "[/Bookmarks Bar] www.google.com",
+			"arg": "https://www.google.com/",
+			"icon": {
+				"path": "chrome.png"
+			},
+			"autocomplete": "Google"
+		}
+	]
+}

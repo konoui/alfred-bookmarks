@@ -18,7 +18,6 @@ func DiffBookmark(want, got Bookmarks) string {
 	sort.Slice(got, func(i, j int) bool {
 		return got[i].URI < got[j].URI
 	})
-	diff := cmp.Diff(want, got)
 
-	return diff
+	return cmp.Diff(want, got)
 }

@@ -1,0 +1,76 @@
+{
+    "items": [
+        {
+            "title": "Stack Overflow",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] stackoverflow.com",
+            "arg": "https://stackoverflow.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Stack Overflow"
+        },
+        {
+            "title": "Amazon Web Services",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] aws.amazon.com",
+            "arg": "https://aws.amazon.com/?nc1=h_ls",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Amazon Web Services"
+        },
+        {
+            "title": "GitHub",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-a] github.com",
+            "arg": "https://github.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "GitHub"
+        },
+        {
+            "title": "Google",
+            "subtitle": "[/Bookmark Menu] www.google.com",
+            "arg": "https://www.google.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Google"
+        },
+        {
+            "title": "Yahoo",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-b] www.yahoo.com",
+            "arg": "https://www.yahoo.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Yahoo"
+        },
+        {
+            "title": "Facebook",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-b/2-hierarchy-a] www.facebook.com",
+            "arg": "https://www.facebook.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Facebook"
+        },
+        {
+            "title": "Twitter",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-b/2-hierarchy-a] twitter.com",
+            "arg": "https://twitter.com/login",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Twitter"
+        },
+        {
+            "title": "Amazon.com",
+            "subtitle": "[/Bookmark Menu/1-hierarchy-b/2-hierarchy-b] www.amazon.com",
+            "arg": "https://www.amazon.com/",
+            "icon": {
+                "path": "firefox.png"
+            },
+            "autocomplete": "Amazon.com"
+        }
+    ]
+}

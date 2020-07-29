@@ -21,15 +21,54 @@ func TestRun(t *testing.T) {
 		errMsg      string
 	}{
 		{
-			description: "list all bookmarks. config file exists in current directory",
-			expectErr:   false,
-			command:     "",
-			config:      testConfig,
-			filepath:    filepath.Join(testdataPath, "test-rm-duplicate-firefox-chrome.json"),
+			description: "enbale only firefox",
+			config: &Config{
+				MaxCacheAge: -1,
+				Firefox: Firefox{
+					Enable: true,
+				},
+			},
+			filepath: filepath.Join(testdataPath, "test-firefox.json"),
 		},
 		{
-			description: "flag format argument. no error occurs",
-			expectErr:   false,
+			description: "enbale only chrome",
+			config: &Config{
+				MaxCacheAge: -1,
+				Chrome: Chrome{
+					Enable: true,
+				},
+			},
+			filepath: filepath.Join(testdataPath, "test-chrome.json"),
+		},
+		{
+			description: "enbale only safari",
+			config: &Config{
+				MaxCacheAge: -1,
+				Safari: Safari{
+					Enable: true,
+				},
+			},
+			filepath: filepath.Join(testdataPath, "test-safari.json"),
+		},
+		{
+			description: "enable firefox, chrome, safari. duplicate bookmarks should be removed ",
+			config: &Config{
+				RemoveDuplicate: true,
+				MaxCacheAge:     -1,
+				Firefox: Firefox{
+					Enable: true,
+				},
+				Chrome: Chrome{
+					Enable: true,
+				},
+				Safari: Safari{
+					Enable: true,
+				},
+			},
+			filepath: filepath.Join(testdataPath, "test-rm-duplicate-firefox-chrome-safari.json"),
+		},
+		{
+			description: "pass flag format argument. no errors should occur",
 			command:     "--pass-no-match-query-as-flag-format",
 			config:      testConfig,
 			filepath:    filepath.Join(testdataPath, "empty-results.json"),

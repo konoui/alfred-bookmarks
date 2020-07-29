@@ -87,7 +87,6 @@ func TestFirefoxBookmarks(t *testing.T) {
 			description:  "valid bookmark file",
 			bookmarkPath: testFirefoxBookmarkJsonlz4File,
 			want:         testFirefoxBookmarks,
-			expectErr:    false,
 		},
 		{
 			description:  "invalid bookmark file",

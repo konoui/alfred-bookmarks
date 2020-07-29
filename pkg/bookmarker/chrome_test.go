@@ -77,7 +77,6 @@ func TestChromeBookmarks(t *testing.T) {
 			description:  "valid bookmark file",
 			bookmarkPath: testChromeBookmarkJSONFile,
 			want:         testChromeBookmarks,
-			expectErr:    false,
 		},
 		{
 			description:  "invalid bookmark file",

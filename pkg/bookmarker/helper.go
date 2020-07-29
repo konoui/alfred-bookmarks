@@ -23,12 +23,8 @@ func parseURL(s string) (u *url.URL, err error) {
 	return
 }
 
-func getHomeDir() (dir string, err error) {
-	dir, err = os.UserHomeDir()
-	if err != nil {
-		return
-	}
-	return
+func getHomeDir() (string, error) {
+	return os.UserHomeDir()
 }
 
 // getLatestFile returns a path to latest files in dir
