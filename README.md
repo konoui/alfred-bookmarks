@@ -5,8 +5,8 @@ The workflow is a cross-browser bookmark searcher across Firefox, Google Chrome 
 ## Install
 Download the workflow from [latest release](https://github.com/konoui/alfred-bookmarks/releases).
 
-## Configuration
-Please create configuration file as `.alfred-bookmarks` in home directory (`~/`).
+## Customize Configuration
+Please create configuration file as `.alfred-bookmarks` in home directory (`~/`) if you want to customize.
 ```
 firefox:
     enable: true
@@ -16,6 +16,8 @@ safari:
     enable: false
 remove_duplicate: true
 ```
+
+If the configuration file does not exists, the workflow try to use available bookmark files of web browsers.
 
 ## Usage
 Please type `bs <query>` and select your desired bookmark to open on default web browser.

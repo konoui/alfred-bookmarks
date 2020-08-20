@@ -45,6 +45,44 @@ func TestNewConfig(t *testing.T) {
 	}
 }
 
+func Test_availableConfig(t *testing.T) {
+	tests := []struct {
+		name    string
+		want    *Config
+		wantErr bool
+	}{
+		{
+			name: "all available as setup-test-dir.sh prepares directories",
+			want: &Config{
+				RemoveDuplicate: true,
+				Firefox: Firefox{
+					Enable:  true,
+					Profile: "default",
+				},
+				Chrome: Chrome{
+					Enable:  true,
+					Profile: "default",
+				},
+				Safari: Safari{
+					Enable: true,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := availableConfig()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("availableConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("availableConfig() = %#v, want %#v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_convertDefaultTTL(t *testing.T) {
 	type args struct {
 		hour int

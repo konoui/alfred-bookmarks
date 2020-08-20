@@ -1,9 +1,16 @@
 package cmd
 
 import (
+	"errors"
 	"time"
 
+	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
 	"github.com/spf13/viper"
+)
+
+const (
+	firefoxDefaultProfile = "default"
+	chromeDefaultProfile  = "default"
 )
 
 // Config configuration which browser bookmark read
@@ -41,16 +48,45 @@ func newConfig() (c *Config, err error) {
 	viper.AddConfigPath("$HOME/")
 
 	// Set default value overwritten with config file
-	viper.SetDefault("firefox.profile", "default")
-	viper.SetDefault("chrome.profile", "default")
+	viper.SetDefault("firefox.profile", firefoxDefaultProfile)
+	viper.SetDefault("chrome.profile", chromeDefaultProfile)
 	if err = viper.ReadInConfig(); err != nil {
-		return
+		// Try to continue using available bookmarks if config file does not exist
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return
+		}
+		return availableConfig()
 	}
 
 	if err = viper.Unmarshal(c); err != nil {
 		return
 	}
 	return
+}
+
+func availableConfig() (*Config, error) {
+	c := new(Config)
+	_, firefoxErr := bookmarker.GetFirefoxBookmarkFile(firefoxDefaultProfile)
+	_, chromeErr := bookmarker.GetChromeBookmarkFile(chromeDefaultProfile)
+	_, safariErr := bookmarker.GetSafariBookmarkFile()
+	if firefoxErr != nil && chromeErr != nil && safariErr != nil {
+		return c, errors.New("found no available bookmarks on your computer")
+	}
+
+	c.RemoveDuplicate = true
+	if firefoxErr == nil {
+		c.Firefox.Enable = true
+		c.Firefox.Profile = firefoxDefaultProfile
+	}
+	if chromeErr == nil {
+		c.Chrome.Enable = true
+		c.Chrome.Profile = chromeDefaultProfile
+	}
+	if safariErr == nil {
+		c.Safari.Enable = true
+	}
+
+	return c, nil
 }
 
 func convertDefaultTTL(hour int) time.Duration {
