@@ -82,7 +82,12 @@ func New(opts ...Option) (Bookmarker, error) {
 // Bookmarks return Bookmarks struct by loading each bookmarker
 func (e *engine) Bookmarks() (Bookmarks, error) {
 	bookmarks := Bookmarks{}
-	for name, bookmarker := range e.bookmarkers {
+	for _, name := range getSupportedBookmarkerNames() {
+		bookmarker, ok := e.bookmarkers[name]
+		if !ok {
+			continue
+		}
+
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs

@@ -1,8 +1,6 @@
 package bookmarker
 
-import (
-	"sort"
-)
+import "sort"
 
 // bookmarkerName is a type of supported browser name
 type bookmarkerName string
@@ -15,6 +13,20 @@ const (
 	// Safari is supported
 	Safari bookmarkerName = "safari"
 )
+
+func getSupportedBookmarkerNames() []bookmarkerName {
+	names := []bookmarkerName{
+		Firefox,
+		Chrome,
+		Safari,
+	}
+	// sort by name asc for making idempotency result
+	sort.Slice(names, func(i, j int) bool {
+		return names[i] < names[j]
+	})
+
+	return names
+}
 
 // Bookmark abstract each browser bookmark
 type Bookmark struct {
@@ -37,11 +49,6 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 	m := make(map[string]bool)
 	uniq := Bookmarks{}
 
-	// Note: we sotrt by bookmarker name for making idempotency
-	sort.Slice(b, func(i, j int) bool {
-		return b[i].BookmarkerName < b[j].BookmarkerName
-	})
-
 	for _, e := range b {
 		if !m[e.URI] {
 			m[e.URI] = true
@@ -50,5 +57,5 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 	}
 
 	b = uniq
-	return uniq
+	return b
 }

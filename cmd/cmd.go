@@ -52,6 +52,12 @@ func Execute(args ...string) {
 }
 
 func (c *Config) run(query string) error {
+	ttl := convertDefaultTTL(c.MaxCacheAge)
+	if awf.Cache(cacheKey).MaxAge(ttl).LoadItems().Err() == nil {
+		awf.Filter(query).Output()
+		return nil
+	}
+
 	var opts []bookmarker.Option
 	if c.Firefox.Enable {
 		opts = append(opts, bookmarker.OptionFirefox(c.Firefox.Profile))
@@ -64,12 +70,6 @@ func (c *Config) run(query string) error {
 	}
 	if c.RemoveDuplicate {
 		opts = append(opts, bookmarker.OptionRemoveDuplicate())
-	}
-
-	ttl := convertDefaultTTL(c.MaxCacheAge)
-	if awf.Cache(cacheKey).MaxAge(ttl).LoadItems().Err() == nil {
-		awf.Filter(query).Output()
-		return nil
 	}
 
 	engine, err := bookmarker.New(opts...)
