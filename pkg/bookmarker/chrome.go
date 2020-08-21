@@ -101,17 +101,16 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks B
 }
 
 // GetChromeBookmarkFile returns a chrome bookmark filepath
-func GetChromeBookmarkFile(profile string) (string, error) {
-	home, err := getHomeDir()
-	if err != nil {
-		return "", err
-	}
-	chromeDir := filepath.Join(home, "Library/Application Support/Google/Chrome")
-	profileDirName, err := searchSuffixDir(chromeDir, profile)
+func GetChromeBookmarkFile(profilePath, profileName string) (string, error) {
+	profileDirName, err := searchSuffixDir(profilePath, profileName)
 	if err != nil {
 		return "", err
 	}
 
-	bookmarkFile := filepath.Join(chromeDir, profileDirName, "Bookmarks")
+	bookmarkFile := filepath.Join(profilePath, profileDirName, "Bookmarks")
+	if _, err := os.Stat(bookmarkFile); err != nil {
+		return "", err
+	}
+
 	return bookmarkFile, nil
 }

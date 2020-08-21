@@ -10,6 +10,8 @@ Please create configuration file as `.alfred-bookmarks` in home directory (`~/`)
 ```
 firefox:
     enable: true
+    profile_name: "default"
+    profile_path: "${HOME}/Library/Application Support/Firefox/Profiles"
 chrome:
     enable: true
 safari:

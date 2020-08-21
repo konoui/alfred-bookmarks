@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
@@ -9,8 +10,13 @@ import (
 )
 
 const (
-	firefoxDefaultProfile = "default"
-	chromeDefaultProfile  = "default"
+	firefoxDefaultProfileName = "default"
+	chromeDefaultProfileName  = "default"
+)
+
+var (
+	firefoxDefaultProfilePath = os.ExpandEnv("${HOME}/Library/Application Support/Firefox/Profiles")
+	chromeDefaultProfilePath  = os.ExpandEnv("${HOME}/Library/Application Support/Google/Chrome")
 )
 
 // Config configuration which browser bookmark read
@@ -24,14 +30,16 @@ type Config struct {
 
 // Firefox Configuration
 type Firefox struct {
-	Enable  bool   `mapstructure:"enable"`
-	Profile string `mapstructure:"profile,omitempty"`
+	Enable      bool   `mapstructure:"enable"`
+	ProfileName string `mapstructure:"profile_name,omitempty"`
+	ProfilePath string `mapstructure:"profile_path,omitempty"`
 }
 
 // Chrome Configuration
 type Chrome struct {
-	Enable  bool   `mapstructure:"enable"`
-	Profile string `mapstructure:"profile,omitempty"`
+	Enable      bool   `mapstructure:"enable"`
+	ProfileName string `mapstructure:"profile_name,omitempty"`
+	ProfilePath string `mapstructure:"profile_path,omitempty"`
 }
 
 // Safari Configuration
@@ -48,8 +56,11 @@ func newConfig() (c *Config, err error) {
 	viper.AddConfigPath("$HOME/")
 
 	// Set default value overwritten with config file
-	viper.SetDefault("firefox.profile", firefoxDefaultProfile)
-	viper.SetDefault("chrome.profile", chromeDefaultProfile)
+	viper.SetDefault("firefox.profile_name", firefoxDefaultProfileName)
+	viper.SetDefault("firefox.profile_path", firefoxDefaultProfilePath)
+	viper.SetDefault("chrome.profile_name", chromeDefaultProfileName)
+	viper.SetDefault("chrome.profile_path", chromeDefaultProfilePath)
+	defer c.resolvePath()
 	if err = viper.ReadInConfig(); err != nil {
 		// Try to continue using available bookmarks if config file does not exist
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
@@ -61,13 +72,14 @@ func newConfig() (c *Config, err error) {
 	if err = viper.Unmarshal(c); err != nil {
 		return
 	}
+
 	return
 }
 
 func availableConfig() (*Config, error) {
 	c := new(Config)
-	_, firefoxErr := bookmarker.GetFirefoxBookmarkFile(firefoxDefaultProfile)
-	_, chromeErr := bookmarker.GetChromeBookmarkFile(chromeDefaultProfile)
+	_, firefoxErr := bookmarker.GetFirefoxBookmarkFile(firefoxDefaultProfilePath, firefoxDefaultProfileName)
+	_, chromeErr := bookmarker.GetChromeBookmarkFile(chromeDefaultProfilePath, chromeDefaultProfileName)
 	_, safariErr := bookmarker.GetSafariBookmarkFile()
 	if firefoxErr != nil && chromeErr != nil && safariErr != nil {
 		return c, errors.New("found no available bookmarks on your computer")
@@ -76,17 +88,24 @@ func availableConfig() (*Config, error) {
 	c.RemoveDuplicate = true
 	if firefoxErr == nil {
 		c.Firefox.Enable = true
-		c.Firefox.Profile = firefoxDefaultProfile
+		c.Firefox.ProfileName = firefoxDefaultProfileName
+		c.Firefox.ProfilePath = firefoxDefaultProfilePath
 	}
 	if chromeErr == nil {
 		c.Chrome.Enable = true
-		c.Chrome.Profile = chromeDefaultProfile
+		c.Chrome.ProfileName = chromeDefaultProfileName
+		c.Chrome.ProfilePath = chromeDefaultProfilePath
 	}
 	if safariErr == nil {
 		c.Safari.Enable = true
 	}
 
 	return c, nil
+}
+
+func (c *Config) resolvePath() {
+	c.Firefox.ProfilePath = os.ExpandEnv(c.Firefox.ProfilePath)
+	c.Chrome.ProfilePath = os.ExpandEnv(c.Chrome.ProfilePath)
 }
 
 func convertDefaultTTL(hour int) time.Duration {

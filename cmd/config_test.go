@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -14,12 +15,14 @@ var testConfig = &Config{
 	// disable cache
 	MaxCacheAge: -1,
 	Firefox: Firefox{
-		Enable:  true,
-		Profile: "default",
+		Enable:      true,
+		ProfileName: "default",
+		ProfilePath: firefoxDefaultProfilePath,
 	},
 	Chrome: Chrome{
-		Enable:  true,
-		Profile: "Default",
+		Enable:      true,
+		ProfileName: "Default",
+		ProfilePath: os.ExpandEnv("${HOME}/Library/mydir/Google/Chrome"),
 	},
 }
 
@@ -56,12 +59,14 @@ func Test_availableConfig(t *testing.T) {
 			want: &Config{
 				RemoveDuplicate: true,
 				Firefox: Firefox{
-					Enable:  true,
-					Profile: "default",
+					Enable:      true,
+					ProfileName: "default",
+					ProfilePath: firefoxDefaultProfilePath,
 				},
 				Chrome: Chrome{
-					Enable:  true,
-					Profile: "default",
+					Enable:      true,
+					ProfileName: "default",
+					ProfilePath: chromeDefaultProfilePath,
 				},
 				Safari: Safari{
 					Enable: true,

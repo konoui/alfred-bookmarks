@@ -1,12 +1,13 @@
 package bookmarker
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 )
 
 var testChromeBookmarkJSONFile = filepath.Join(testdataPath, "test-chrome-bookmarks.json")
-
+var defaultChromeProfilePath = os.ExpandEnv("${HOME}/Library/Application Support/Google/Chrome")
 var testChromeBookmarks = Bookmarks{
 	&Bookmark{
 		BookmarkerName: Chrome,

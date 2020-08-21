@@ -14,9 +14,9 @@ type engine struct {
 type Option func(e *engine) error
 
 // OptionFirefox if called, search firefox bookmark
-func OptionFirefox(profile string) Option {
+func OptionFirefox(profilePath, profileName string) Option {
 	return func(e *engine) error {
-		path, err := GetFirefoxBookmarkFile(profile)
+		path, err := GetFirefoxBookmarkFile(profilePath, profileName)
 		if err != nil {
 			return err
 		}
@@ -27,9 +27,9 @@ func OptionFirefox(profile string) Option {
 }
 
 // OptionChrome if called, search chrome bookmark
-func OptionChrome(profile string) Option {
+func OptionChrome(profilePath, profileName string) Option {
 	return func(e *engine) error {
-		path, err := GetChromeBookmarkFile(profile)
+		path, err := GetChromeBookmarkFile(profilePath, profileName)
 		if err != nil {
 			return err
 		}

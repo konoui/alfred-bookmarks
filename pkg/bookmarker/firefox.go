@@ -117,19 +117,18 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks 
 }
 
 // GetFirefoxBookmarkFile returns a firefox bookmark filepath in bookmark-backups direcotory
-func GetFirefoxBookmarkFile(profile string) (string, error) {
-	home, err := getHomeDir()
+func GetFirefoxBookmarkFile(profileAbsPath, profileName string) (string, error) {
+	profileDirName, err := searchSuffixDir(profileAbsPath, profileName)
 	if err != nil {
 		return "", err
 	}
-	profileDir := filepath.Join(home, "Library/Application Support/Firefox/Profiles")
-	profileDirName, err := searchSuffixDir(profileDir, profile)
+	bookmarkPath := filepath.Join(profileAbsPath, profileDirName, "bookmarkbackups")
+	bookmarkFile, err := getLatestFile(bookmarkPath)
 	if err != nil {
 		return "", err
 	}
-	bookmarkDir := filepath.Join(profileDir, profileDirName, "bookmarkbackups")
-	bookmarkFile, err := getLatestFile(bookmarkDir)
-	if err != nil {
+
+	if _, err := os.Stat(bookmarkFile); err != nil {
 		return "", err
 	}
 

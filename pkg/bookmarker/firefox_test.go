@@ -15,6 +15,7 @@ import (
 	"github.com/pierrec/lz4"
 )
 
+var defaultFirefoxProfilePath = os.ExpandEnv("${HOME}/Library/Application Support/Firefox/Profiles")
 var testFirefoxBookmarkJsonlz4File = filepath.Join(testdataPath, "test-firefox-bookmarks.jsonlz4")
 var testFirefoxBookmarkJSONFile = filepath.Join(testdataPath, "test-firefox-bookmarks.json")
 var testFirefoxBookmarks = Bookmarks{
@@ -156,7 +157,9 @@ func readTestFirefoxBookmarkJSON() (string, error) {
 
 // return json string of .jsonlz4 loading from local profile
 func readDefaultFirefoxBookmarksJSON() (string, error) {
-	path, err := GetFirefoxBookmarkFile("default")
+	path, err := GetFirefoxBookmarkFile(
+		defaultFirefoxProfilePath,
+		"default")
 	if err != nil {
 		return "", err
 	}

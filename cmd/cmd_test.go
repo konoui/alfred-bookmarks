@@ -25,7 +25,9 @@ func TestRun(t *testing.T) {
 			config: &Config{
 				MaxCacheAge: -1,
 				Firefox: Firefox{
-					Enable: true,
+					Enable:      true,
+					ProfileName: firefoxDefaultProfileName,
+					ProfilePath: firefoxDefaultProfilePath,
 				},
 			},
 			filepath: filepath.Join(testdataPath, "test-firefox.json"),
@@ -35,7 +37,9 @@ func TestRun(t *testing.T) {
 			config: &Config{
 				MaxCacheAge: -1,
 				Chrome: Chrome{
-					Enable: true,
+					Enable:      true,
+					ProfileName: chromeDefaultProfileName,
+					ProfilePath: chromeDefaultProfilePath,
 				},
 			},
 			filepath: filepath.Join(testdataPath, "test-chrome.json"),
@@ -56,10 +60,14 @@ func TestRun(t *testing.T) {
 				RemoveDuplicate: true,
 				MaxCacheAge:     -1,
 				Firefox: Firefox{
-					Enable: true,
+					Enable:      true,
+					ProfileName: firefoxDefaultProfileName,
+					ProfilePath: firefoxDefaultProfilePath,
 				},
 				Chrome: Chrome{
-					Enable: true,
+					Enable:      true,
+					ProfileName: chromeDefaultProfileName,
+					ProfilePath: chromeDefaultProfilePath,
 				},
 				Safari: Safari{
 					Enable: true,
@@ -70,7 +78,7 @@ func TestRun(t *testing.T) {
 		{
 			description: "pass flag format argument. no errors should occur",
 			command:     "--pass-no-match-query-as-flag-format",
-			config:      testConfig,
+			config:      &Config{},
 			filepath:    filepath.Join(testdataPath, "empty-results.json"),
 		},
 	}

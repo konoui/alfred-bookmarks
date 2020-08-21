@@ -60,10 +60,10 @@ func (c *Config) run(query string) error {
 
 	var opts []bookmarker.Option
 	if c.Firefox.Enable {
-		opts = append(opts, bookmarker.OptionFirefox(c.Firefox.Profile))
+		opts = append(opts, bookmarker.OptionFirefox(c.Firefox.ProfilePath, c.Firefox.ProfileName))
 	}
 	if c.Chrome.Enable {
-		opts = append(opts, bookmarker.OptionChrome(c.Chrome.Profile))
+		opts = append(opts, bookmarker.OptionChrome(c.Chrome.ProfilePath, c.Chrome.ProfileName))
 	}
 	if c.Safari.Enable {
 		opts = append(opts, bookmarker.OptionSafari())
