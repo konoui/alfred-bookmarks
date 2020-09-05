@@ -14,7 +14,6 @@ var (
 	awf       *alfred.Workflow
 	outStream io.Writer = os.Stdout
 	errStream io.Writer = os.Stderr
-	cacheDir            = os.TempDir()
 )
 
 const (
@@ -33,7 +32,7 @@ func init() {
 	awf.SetOut(outStream)
 	awf.SetErr(errStream)
 	awf.SetCacheSuffix(cacheSuffix)
-	if err := awf.SetCacheDir(cacheDir); err != nil {
+	if err := awf.SetCacheDir(os.TempDir()); err != nil {
 		awf.Fatal(fatalError, err.Error())
 	}
 	awf.EmptyWarning(emptyTitle, emptySsubtitle)
