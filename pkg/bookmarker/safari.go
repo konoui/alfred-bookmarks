@@ -98,6 +98,6 @@ func GetSafariBookmarkFile() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	bookmarkFile := filepath.Join(home, "Library/Safari", "Bookmarks.plist")
+	bookmarkFile := filepath.Join(home, "Library", "Safari", "Bookmarks.plist")
 	return bookmarkFile, nil
 }
