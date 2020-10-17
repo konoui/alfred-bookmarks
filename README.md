@@ -3,7 +3,11 @@
 The workflow is a cross-browser bookmark searcher across Firefox, Google Chrome and Safari.
 
 ## Install
-- Download the workflow from [latest release](https://github.com/konoui/alfred-bookmarks/releases).
+- Download and open the workflow with terminal.
+```
+$ curl -O -L https://github.com/konoui/alfred-bookmarks/releases/latest/download/alfred-bookmarks.alfredworkflow && open alfred-bookmarks.alfredworkflow
+```
+
 - Build the workflow on your computer.
 ```
 $ make package
