@@ -15,6 +15,11 @@ $ ls
 alfred-bookmarks.alfredworkflow (snip)
 ```
 
+## Usage
+Please type `bs <query>` and select your desired bookmark to open on default web browser.
+
+![alfred-bookmarks](./alfred-bookmarks.gif)
+
 ## Customize Configuration
 Please create configuration file as `.alfred-bookmarks` in home directory (`~/`) if you want to customize.
 ```
@@ -30,9 +35,6 @@ remove_duplicate: true
 ```
 
 If the configuration file does not exists, the workflow try to use available bookmark files of web browsers.
-
-## Usage
-Please type `bs <query>` and select your desired bookmark to open on default web browser.
 
 ## Feature
 Supports fuzzy search.   
