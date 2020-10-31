@@ -19,8 +19,8 @@ var (
 const (
 	cacheSuffix    = "alfred-bookmarks.cache"
 	cacheKey       = "bookmarks"
-	emptySsubtitle = "There are no resources"
 	emptyTitle     = "No matching"
+	emptySsubtitle = ""
 	fatalError     = "Fatal errors occur"
 	firefoxImage   = "firefox.png"
 	chromeImage    = "chrome.png"

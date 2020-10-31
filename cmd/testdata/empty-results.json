@@ -1,1 +1,11 @@
-{"items":[{"title":"No matching","subtitle":"There are no resources","valid":true}]}
+{
+    "items": [
+        {
+            "title": "No matching",
+            "valid": true,
+            "Icon": {
+                "Path": "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertNoteIcon.icns"
+            }
+        }
+    ]
+}
