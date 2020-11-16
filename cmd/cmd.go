@@ -17,14 +17,14 @@ var (
 )
 
 const (
-	cacheSuffix    = "alfred-bookmarks.cache"
-	cacheKey       = "bookmarks"
-	emptyTitle     = "No matching"
-	emptySsubtitle = ""
-	fatalError     = "Fatal errors occur"
-	firefoxImage   = "firefox.png"
-	chromeImage    = "chrome.png"
-	safariImage    = "safari.png"
+	cacheSuffix   = "alfred-bookmarks.cache"
+	cacheKey      = "bookmarks"
+	emptyTitle    = "No matching"
+	emptySubtitle = ""
+	fatalError    = "Fatal errors occur"
+	firefoxImage  = "firefox.png"
+	chromeImage   = "chrome.png"
+	safariImage   = "safari.png"
 )
 
 func init() {
@@ -35,7 +35,7 @@ func init() {
 	if err := awf.SetCacheDir(os.TempDir()); err != nil {
 		awf.Fatal(fatalError, err.Error())
 	}
-	awf.EmptyWarning(emptyTitle, emptySsubtitle)
+	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }
 
 // Execute runs cmd
@@ -52,7 +52,7 @@ func Execute(args ...string) {
 
 func (c *Config) run(query string) error {
 	ttl := convertDefaultTTL(c.MaxCacheAge)
-	if awf.Cache(cacheKey).MaxAge(ttl).LoadItems().Err() == nil {
+	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Filter(query).Output()
 		return nil
 	}
@@ -93,13 +93,13 @@ func (c *Config) run(query string) error {
 		}
 		awf.Append(
 			alfred.NewItem().
-				SetTitle(b.Title).
-				SetSubtitle(fmt.Sprintf("[%s] %s", b.Folder, b.Domain)).
-				SetAutocomplete(b.Title).
-				SetArg(b.URI).
-				SetIcon(
+				Title(b.Title).
+				Subtitle(fmt.Sprintf("[%s] %s", b.Folder, b.Domain)).
+				Autocomplete(b.Title).
+				Arg(b.URI).
+				Icon(
 					alfred.NewIcon().
-						SetPath(image),
+						Path(image),
 				),
 		)
 	}

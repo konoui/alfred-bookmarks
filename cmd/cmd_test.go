@@ -94,7 +94,7 @@ func TestRun(t *testing.T) {
 			awf = alfred.NewWorkflow()
 			awf.SetOut(outBuf)
 			awf.SetErr(errBuf)
-			awf.EmptyWarning(emptyTitle, emptySsubtitle)
+			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			err = tt.config.run(tt.command)
 			if tt.expectErr && err == nil {

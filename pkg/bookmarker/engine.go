@@ -1,8 +1,6 @@
 package bookmarker
 
-import (
-	"github.com/pkg/errors"
-)
+import "fmt"
 
 // engine determine which bookmark read from
 type engine struct {
@@ -91,7 +89,7 @@ func (e *engine) Bookmarks() (Bookmarks, error) {
 		b, err := bookmarker.Bookmarks()
 		if err != nil {
 			// Note： not continue but return err if error occurs
-			return bookmarks, errors.Wrapf(err, "failed to load bookmarks in %s", name)
+			return bookmarks, fmt.Errorf("failed to load bookmarks in %s: %w", name, err)
 		}
 		bookmarks = append(bookmarks, b...)
 	}
