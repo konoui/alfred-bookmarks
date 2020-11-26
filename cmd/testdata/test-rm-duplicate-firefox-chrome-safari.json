@@ -1,4 +1,7 @@
 {
+    "variables": {
+        "nextAction": "open"
+      },
 	"items": [
 		{
 			"title": "Yahoo",

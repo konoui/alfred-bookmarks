@@ -21,7 +21,6 @@ const (
 	cacheKey      = "bookmarks"
 	emptyTitle    = "No matching"
 	emptySubtitle = ""
-	fatalError    = "Fatal errors occur"
 	firefoxImage  = "firefox.png"
 	chromeImage   = "chrome.png"
 	safariImage   = "safari.png"
@@ -32,9 +31,6 @@ func init() {
 	awf.SetOut(outStream)
 	awf.SetErr(errStream)
 	awf.SetCacheSuffix(cacheSuffix)
-	if err := awf.SetCacheDir(os.TempDir()); err != nil {
-		awf.Fatal(fatalError, err.Error())
-	}
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }
 
@@ -42,17 +38,18 @@ func init() {
 func Execute(args ...string) {
 	c, err := newConfig()
 	if err != nil {
-		awf.Fatal(fatalError, err.Error())
+		fatal(err)
 	}
 
 	if err := c.run(strings.Join(args, " ")); err != nil {
-		awf.Fatal(fatalError, err.Error())
+		fatal(err)
 	}
 }
 
 func (c *Config) run(query string) error {
 	ttl := convertDefaultTTL(c.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
+		awf.Logf("loading from cache file\n")
 		awf.Filter(query).Output()
 		return nil
 	}
@@ -101,9 +98,13 @@ func (c *Config) run(query string) error {
 					alfred.NewIcon().
 						Path(image),
 				),
-		)
+		).Variable("nextAction", "open")
 	}
 
 	awf.Cache(cacheKey).StoreItems().Workflow().Filter(query).Output()
 	return nil
+}
+
+func fatal(err error) {
+	awf.Fatal("Fatal errors occur", err.Error())
 }

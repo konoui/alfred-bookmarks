@@ -2,6 +2,7 @@ package bookmarker
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -110,6 +111,10 @@ func GetChromeBookmarkFile(profilePath, profileName string) (string, error) {
 	bookmarkFile := filepath.Join(profilePath, profileDirName, "Bookmarks")
 	if _, err := os.Stat(bookmarkFile); err != nil {
 		return "", err
+	}
+
+	if err := hasReadCapability(bookmarkFile); err != nil {
+		return "", fmt.Errorf("chrome error: %w", err)
 	}
 
 	return bookmarkFile, nil

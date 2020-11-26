@@ -2,6 +2,7 @@ package bookmarker
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -128,8 +129,8 @@ func GetFirefoxBookmarkFile(profileAbsPath, profileName string) (string, error) 
 		return "", err
 	}
 
-	if _, err := os.Stat(bookmarkFile); err != nil {
-		return "", err
+	if err := hasReadCapability(bookmarkFile); err != nil {
+		return "", fmt.Errorf("firefox error: %w", err)
 	}
 
 	return bookmarkFile, nil

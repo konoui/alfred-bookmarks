@@ -12,6 +12,19 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
+				<string>FA62426D-811A-445F-BAAC-4BAE28C27959</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>FA62426D-811A-445F-BAAC-4BAE28C27959</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
 				<string>5DA9C5C4-1D50-4138-BB5A-49AB95D32F54</string>
 				<key>modifiers</key>
 				<integer>0</integer>
@@ -58,6 +71,8 @@
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -96,7 +111,26 @@
 			<key>uid</key>
 			<string>AE2C1D0C-4C99-4EFA-92B7-B773E963E242</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{var:nextAction}</string>
+				<key>matchcasesensitive</key>
+				<false/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>open</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>FA62426D-811A-445F-BAAC-4BAE28C27959</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -116,6 +150,13 @@
 			<integer>170</integer>
 			<key>ypos</key>
 			<integer>50</integer>
+		</dict>
+		<key>FA62426D-811A-445F-BAAC-4BAE28C27959</key>
+		<dict>
+			<key>xpos</key>
+			<integer>325</integer>
+			<key>ypos</key>
+			<integer>225</integer>
 		</dict>
 	</dict>
 	<key>webaddress</key>

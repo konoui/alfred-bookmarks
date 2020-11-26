@@ -85,6 +85,12 @@ func availableConfig() (*Config, error) {
 		return c, errors.New("found no available bookmarks on your computer")
 	}
 
+	for _, err := range []error{firefoxErr, chromeErr, safariErr} {
+		if err != nil {
+			awf.Logf(err.Error() + "\n")
+		}
+	}
+
 	c.RemoveDuplicate = true
 	if firefoxErr == nil {
 		c.Firefox.Enable = true

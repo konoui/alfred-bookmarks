@@ -1,6 +1,7 @@
 package bookmarker
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -98,6 +99,11 @@ func GetSafariBookmarkFile() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	bookmarkFile := filepath.Join(home, "Library", "Safari", "Bookmarks.plist")
+	if err := hasReadCapability(bookmarkFile); err != nil {
+		return "", fmt.Errorf("safari error: %w", err)
+	}
+
 	return bookmarkFile, nil
 }

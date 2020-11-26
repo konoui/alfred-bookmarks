@@ -67,3 +67,32 @@ func searchSuffixDir(dir, suffux string) (string, error) {
 
 	return "", fmt.Errorf("not found a directory of suffix (%s) in %s directory", suffux, dir)
 }
+
+// hasReadCapability return nil if the filepath stats and has read permission
+func hasReadCapability(path string) error {
+	const (
+		setuid uint32 = 1 << (12 - 1 - iota)
+		setgid
+		sticky
+		userRead
+		userWrite
+		userExecute
+		groupRead
+		groupWrite
+		groupExecute
+		otherRead
+		otherWrite
+		otherExecute
+	)
+
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+
+	if perm := info.Mode().Perm(); perm&os.FileMode(userRead|groupRead|otherRead) == 0 {
+		return fmt.Errorf("%s does not have read permission(%s)", filepath.Base(path), perm)
+	}
+
+	return nil
+}
