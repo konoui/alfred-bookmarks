@@ -87,7 +87,7 @@ func availableConfig() (*Config, error) {
 
 	for _, err := range []error{firefoxErr, chromeErr, safariErr} {
 		if err != nil {
-			awf.Logf(err.Error() + "\n")
+			awf.Logger().Infoln(err)
 		}
 	}
 

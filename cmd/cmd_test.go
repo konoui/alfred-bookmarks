@@ -93,7 +93,7 @@ func TestRun(t *testing.T) {
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
 			awf = alfred.NewWorkflow()
 			awf.SetOut(outBuf)
-			awf.SetErr(errBuf)
+			awf.SetLogger(errBuf)
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			err = tt.config.run(tt.command)

@@ -29,7 +29,7 @@ const (
 func init() {
 	awf = alfred.NewWorkflow()
 	awf.SetOut(outStream)
-	awf.SetErr(errStream)
+	awf.SetLogger(errStream)
 	awf.SetCacheSuffix(cacheSuffix)
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }
@@ -49,7 +49,7 @@ func Execute(args ...string) {
 func (c *Config) run(query string) error {
 	ttl := convertDefaultTTL(c.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
-		awf.Logf("loading from cache file\n")
+		awf.Logger().Infoln("loading from cache file")
 		awf.Filter(query).Output()
 		return nil
 	}
