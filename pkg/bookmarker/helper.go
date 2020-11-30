@@ -94,5 +94,11 @@ func hasReadCapability(path string) error {
 		return fmt.Errorf("%s does not have read permission(%s)", filepath.Base(path), perm)
 	}
 
+	f, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("unable to open %s: %w", filepath.Base(path), err)
+	}
+	f.Close()
+
 	return nil
 }
