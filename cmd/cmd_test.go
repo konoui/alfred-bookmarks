@@ -91,9 +91,10 @@ func TestRun(t *testing.T) {
 			}
 
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
-			awf = alfred.NewWorkflow()
-			awf.SetOut(outBuf)
-			awf.SetLogger(errBuf)
+			awf = alfred.NewWorkflow(
+				alfred.WithOutStream(outBuf),
+				alfred.WithLogStream(errBuf),
+			)
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			err = tt.config.run(tt.command)
@@ -106,7 +107,7 @@ func TestRun(t *testing.T) {
 			}
 
 			got := outBuf.Bytes()
-			if diff := alfred.DiffScriptFilter(want, got); diff != "" {
+			if diff := alfred.DiffOutput(want, got); diff != "" {
 				t.Errorf("+want -got\n%+v", diff)
 			}
 		})

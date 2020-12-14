@@ -27,9 +27,11 @@ const (
 )
 
 func init() {
-	awf = alfred.NewWorkflow()
-	awf.SetOut(outStream)
-	awf.SetLogger(errStream)
+	awf = alfred.NewWorkflow(
+		alfred.WithMaxResults(40),
+		alfred.WithLogStream(outStream),
+		alfred.WithLogStream(errStream),
+	)
 	awf.SetCacheSuffix(cacheSuffix)
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }

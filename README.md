@@ -21,7 +21,7 @@ Please type `bs <query>` and select your desired bookmark to open on default web
 ![alfred-bookmarks](./alfred-bookmarks.gif)
 
 ## Customize Configuration
-Please create configuration file as `.alfred-bookmarks` in home directory (`~/`) if you want to customize.
+Please create configuration file as `.alfred-bookmarks.yaml` in home directory (`~/`) if you want to customize.
 ```
 firefox:
     enable: true
