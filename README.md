@@ -37,16 +37,17 @@ remove_duplicate: true
 If the configuration file does not exists, the workflow try to use available bookmark files of web browsers.
 
 ## Feature
-Supports fuzzy search.   
-Supports following web browsers.
-- Firefox
-- Google Chrome
-- Safari
-
+- Supports fuzzy search.
+- Supports following web browsers.
+    - Firefox
+    - Google Chrome
+    - Safari
+- Supports filter by folder name.
+    - `-f` option. e.g) `bs -f <folder-name> <query>`
 ## Limitation
 ### Firefox 
 The workflow reads latest bookmark data from `~/Library/Application Support/Firefox/Profiles/<xxxxx>.default/bookmarkbackups/` directory.
-If you register a web site to bookmarks, the workflow does not read and search the web site immediately.
+If you register a web site to bookmarks, the workflow does not search the web site immediately.
 
 ## License
 MIT License.

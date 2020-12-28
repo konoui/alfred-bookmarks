@@ -2,18 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
-	"strings"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
 	"github.com/konoui/go-alfred"
 )
 
 var (
-	awf       *alfred.Workflow
-	outStream io.Writer = os.Stdout
-	errStream io.Writer = os.Stderr
+	awf *alfred.Workflow
 )
 
 const (
@@ -29,9 +28,9 @@ const (
 func init() {
 	awf = alfred.NewWorkflow(
 		alfred.WithMaxResults(40),
-		alfred.WithLogStream(outStream),
-		alfred.WithLogStream(errStream),
 	)
+	awf.SetOut(os.Stdout)
+	awf.SetLog(os.Stderr)
 	awf.SetCacheSuffix(cacheSuffix)
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }
@@ -43,12 +42,30 @@ func Execute(args ...string) {
 		fatal(err)
 	}
 
-	if err := c.run(strings.Join(args, " ")); err != nil {
+	query, folderPrefix, err := parseQuery(args...)
+	if err != nil {
+		awf.Clear().
+			SetEmptyWarning("-f option: filster by folder name", err.Error()).
+			Output()
+		return
+	}
+	if err := c.run(query, folderPrefix); err != nil {
 		fatal(err)
 	}
 }
 
-func (c *Config) run(query string) error {
+func parseQuery(args ...string) (query, folderPrefix string, err error) {
+	fs := flag.NewFlagSet("bs", flag.ContinueOnError)
+	fs.SetOutput(ioutil.Discard)
+	fs.StringVarP(&folderPrefix, "folder", "f", "", "filter by folder")
+	if err := fs.Parse(args); err != nil {
+		return "", "", err
+	}
+	query = fs.Arg(0)
+	return alfred.Normalize(query), alfred.Normalize(folderPrefix), nil
+}
+
+func (c *Config) run(query, folderPrefix string) error {
 	ttl := convertDefaultTTL(c.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Logger().Infoln("loading from cache file")
@@ -66,8 +83,13 @@ func (c *Config) run(query string) error {
 	if c.Safari.Enable {
 		opts = append(opts, bookmarker.OptionSafari())
 	}
+
 	if c.RemoveDuplicate {
-		opts = append(opts, bookmarker.OptionRemoveDuplicate())
+		opts = append(opts, bookmarker.OptionRemoveDuplicates())
+	}
+
+	if folderPrefix != "" {
+		opts = append(opts, bookmarker.OptionFilterByFolder(folderPrefix))
 	}
 
 	engine, err := bookmarker.New(opts...)
@@ -103,8 +125,7 @@ func (c *Config) run(query string) error {
 		).Variable("nextAction", "open")
 	}
 
-	awf.Cache(cacheKey).StoreItems().Workflow().Filter(query).Output()
-	return nil
+	return awf.Filter(query).Output().Cache(cacheKey).StoreItems().Err()
 }
 
 func fatal(err error) {

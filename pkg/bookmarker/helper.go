@@ -52,7 +52,7 @@ func getLatestFile(dir string) (string, error) {
 }
 
 // searchSuffixDir returns a directory name of suffix ignoring case-sensitive
-func searchSuffixDir(dir, suffux string) (string, error) {
+func searchSuffixDir(dir, suffix string) (string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return "", err
@@ -60,12 +60,12 @@ func searchSuffixDir(dir, suffux string) (string, error) {
 
 	for _, file := range files {
 		if name := file.Name(); file.IsDir() &&
-			strings.HasSuffix(strings.ToLower(name), strings.ToLower(suffux)) {
+			strings.HasSuffix(strings.ToLower(name), strings.ToLower(suffix)) {
 			return name, nil
 		}
 	}
 
-	return "", fmt.Errorf("not found a directory of suffix (%s) in %s directory", suffux, dir)
+	return "", fmt.Errorf("not found a directory of suffix (%s) in %s directory", suffix, dir)
 }
 
 // hasReadCapability return nil if the filepath stats and has read permission

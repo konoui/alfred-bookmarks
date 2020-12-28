@@ -4,8 +4,9 @@ import "fmt"
 
 // engine determine which bookmark read from
 type engine struct {
-	bookmarkers     map[bookmarkerName]Bookmarker
-	removeDuplicate bool
+	bookmarkers      map[bookmarkerName]Bookmarker
+	removeDuplicates bool
+	folderQuery      string
 }
 
 // Option is the type to replace default parameters.
@@ -50,10 +51,18 @@ func OptionSafari() Option {
 	}
 }
 
-// OptionRemoveDuplicate removes same bookmarks by urls
-func OptionRemoveDuplicate() Option {
+// OptionRemoveDuplicates removes same bookmarks by urls
+func OptionRemoveDuplicates() Option {
 	return func(e *engine) error {
-		e.removeDuplicate = true
+		e.removeDuplicates = true
+		return nil
+	}
+}
+
+// OptionFilterByFolder filter by bookmark folder name
+func OptionFilterByFolder(folderQuery string) Option {
+	return func(e *engine) error {
+		e.folderQuery = folderQuery
 		return nil
 	}
 }
@@ -94,7 +103,13 @@ func (e *engine) Bookmarks() (Bookmarks, error) {
 		bookmarks = append(bookmarks, b...)
 	}
 
-	if e.removeDuplicate {
+	// TODO folder filter should implement in each bookmark for performance
+	if q := e.folderQuery; q != "" {
+		bookmarks = bookmarks.filterByFolderPrefix(q)
+	}
+
+	// Note: execute uniq after folder filter
+	if e.removeDuplicates {
 		bookmarks = bookmarks.uniqByURI()
 	}
 

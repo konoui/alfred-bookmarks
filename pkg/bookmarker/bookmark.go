@@ -1,6 +1,9 @@
 package bookmarker
 
-import "sort"
+import (
+	"sort"
+	"strings"
+)
 
 // bookmarkerName is a type of supported browser name
 type bookmarkerName string
@@ -45,9 +48,8 @@ type Bookmarker interface {
 // Bookmarks a slice of Bookmark struct
 type Bookmarks []*Bookmark
 
-func (b Bookmarks) uniqByURI() Bookmarks {
+func (b Bookmarks) uniqByURI() (uniq Bookmarks) {
 	m := make(map[string]bool)
-	uniq := Bookmarks{}
 
 	for _, e := range b {
 		if !m[e.URI] {
@@ -56,6 +58,35 @@ func (b Bookmarks) uniqByURI() Bookmarks {
 		}
 	}
 
-	b = uniq
-	return b
+	return
+}
+
+func (b Bookmarks) filterByFolderPrefix(query string) (fb Bookmarks) {
+	if query == "" {
+		return b
+	}
+
+	for _, e := range b {
+		if hasFolderPrefix(e.Folder, query) {
+			fb = append(fb, e)
+		}
+	}
+
+	return
+}
+
+func hasFolderPrefix(folder, prefix string) bool {
+	folder = strings.ToLower(folder)
+	folder = strings.ReplaceAll(folder, " ", "")
+	prefix = strings.ToLower(prefix)
+	prefix = strings.ReplaceAll(prefix, " ", "")
+	if !strings.HasPrefix(prefix, "/") {
+		prefix = "/" + prefix
+	}
+
+	if strings.HasPrefix(folder, prefix) {
+		return true
+	}
+
+	return strings.HasPrefix(folder+"/", prefix)
 }

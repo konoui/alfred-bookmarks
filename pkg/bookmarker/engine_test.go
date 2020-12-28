@@ -34,16 +34,6 @@ func TestEngineBookmarks(t *testing.T) {
 			},
 			want: testSafariBookmarks,
 		},
-		{
-			description: "enable firefox, chrome, safari and remove dupulication. return chrome bookmark",
-			options: []Option{
-				OptionFirefox(defaultFirefoxProfilePath, testProfile),
-				OptionChrome(defaultChromeProfilePath, testProfile),
-				OptionSafari(),
-				OptionRemoveDuplicate(),
-			},
-			want: testChromeBookmarks,
-		},
 	}
 
 	for _, tt := range tests {
