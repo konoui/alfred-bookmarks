@@ -61,8 +61,8 @@ func TestRun(t *testing.T) {
 		{
 			description: "enable firefox, chrome, safari. duplicate bookmarks should be removed ",
 			config: &Config{
-				RemoveDuplicate: true,
-				MaxCacheAge:     -1,
+				RemoveDuplicates: true,
+				MaxCacheAge:      -1,
 				Firefox: Firefox{
 					Enable:      true,
 					ProfileName: firefoxDefaultProfileName,
@@ -94,8 +94,8 @@ func TestRun(t *testing.T) {
 				folder: "Bookmark Menu",
 			},
 			config: &Config{
-				RemoveDuplicate: true,
-				MaxCacheAge:     -1,
+				RemoveDuplicates: true,
+				MaxCacheAge:      -1,
 				Firefox: Firefox{
 					Enable:      true,
 					ProfileName: firefoxDefaultProfileName,

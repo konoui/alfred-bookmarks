@@ -21,11 +21,11 @@ var (
 
 // Config configuration which browser bookmark read
 type Config struct {
-	Firefox         Firefox `mapstructure:"firefox"`
-	Chrome          Chrome  `mapstructure:"chrome"`
-	Safari          Safari  `mapstructure:"safari"`
-	RemoveDuplicate bool    `mapstructure:"remove_duplicate"`
-	MaxCacheAge     int     `mapstructure:"cache_age_hours"`
+	Firefox          Firefox `mapstructure:"firefox"`
+	Chrome           Chrome  `mapstructure:"chrome"`
+	Safari           Safari  `mapstructure:"safari"`
+	RemoveDuplicates bool    `mapstructure:"remove_duplicates"`
+	MaxCacheAge      int     `mapstructure:"cache_age_hours"`
 }
 
 // Firefox Configuration
@@ -91,7 +91,7 @@ func availableConfig() (*Config, error) {
 		}
 	}
 
-	c.RemoveDuplicate = true
+	c.RemoveDuplicates = true
 	if firefoxErr == nil {
 		c.Firefox.Enable = true
 		c.Firefox.ProfileName = firefoxDefaultProfileName

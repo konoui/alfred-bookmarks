@@ -17,7 +17,6 @@ var (
 
 const (
 	cacheSuffix   = "alfred-bookmarks.cache"
-	cacheKey      = "bookmarks"
 	emptyTitle    = "No matching"
 	emptySubtitle = ""
 	firefoxImage  = "firefox.png"
@@ -66,6 +65,7 @@ func parseQuery(args ...string) (query, folderPrefix string, err error) {
 }
 
 func (c *Config) run(query, folderPrefix string) error {
+	cacheKey := "bookmarks"
 	ttl := convertDefaultTTL(c.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Logger().Infoln("loading from cache file")
@@ -84,11 +84,12 @@ func (c *Config) run(query, folderPrefix string) error {
 		opts = append(opts, bookmarker.OptionSafari())
 	}
 
-	if c.RemoveDuplicate {
+	if c.RemoveDuplicates {
 		opts = append(opts, bookmarker.OptionRemoveDuplicates())
 	}
 
 	if folderPrefix != "" {
+		cacheKey = cacheKey + "-" + folderPrefix
 		opts = append(opts, bookmarker.OptionFilterByFolder(folderPrefix))
 	}
 

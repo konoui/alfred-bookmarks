@@ -11,7 +11,7 @@ import (
 
 // testConfig is the same value as .alfred-bookmarks
 var testConfig = &Config{
-	RemoveDuplicate: true,
+	RemoveDuplicates: true,
 	// disable cache
 	MaxCacheAge: -1,
 	Firefox: Firefox{
@@ -57,7 +57,7 @@ func Test_availableConfig(t *testing.T) {
 		{
 			name: "all available as setup-test-dir.sh prepares directories",
 			want: &Config{
-				RemoveDuplicate: true,
+				RemoveDuplicates: true,
 				Firefox: Firefox{
 					Enable:      true,
 					ProfileName: "default",

@@ -31,7 +31,7 @@ chrome:
     enable: true
 safari:
     enable: false
-remove_duplicate: true
+remove_duplicates: true
 ```
 
 If the configuration file does not exists, the workflow try to use available bookmark files of web browsers.

@@ -4,5 +4,5 @@ chrome:
     enable: true
     profile_name: 'Default'
     profile_path: "${HOME}/Library/mydir/Google/Chrome"
-remove_duplicate: true
+remove_duplicates: true
 cache_age_hours: -1
