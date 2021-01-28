@@ -38,12 +38,12 @@ func TestEngineBookmarks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.description, func(t *testing.T) {
-			e, err := New(tt.options...)
+			m, err := New(tt.options...)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			bookmarks, err := e.Bookmarks()
+			bookmarks, err := m.Bookmarks()
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}
