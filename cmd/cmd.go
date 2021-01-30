@@ -93,12 +93,12 @@ func (c *Config) run(query, folderPrefix string) error {
 		opts = append(opts, bookmarker.OptionFilterByFolder(folderPrefix))
 	}
 
-	engine, err := bookmarker.New(opts...)
+	manager, err := bookmarker.New(opts...)
 	if err != nil {
 		return err
 	}
 
-	bookmarks, err := engine.Bookmarks()
+	bookmarks, err := manager.Bookmarks()
 	if err != nil {
 		return err
 	}
@@ -130,5 +130,5 @@ func (c *Config) run(query, folderPrefix string) error {
 }
 
 func fatal(err error) {
-	awf.Fatal("Fatal errors occur", err.Error())
+	awf.Fatal("a fatal error occurred", err.Error())
 }
