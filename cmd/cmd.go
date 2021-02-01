@@ -89,7 +89,8 @@ func (c *Config) run(query, folderPrefix string) error {
 	}
 
 	if folderPrefix != "" {
-		cacheKey = cacheKey + "-" + folderPrefix
+		// Note set empty key as to disable saving data into cache
+		cacheKey = ""
 		opts = append(opts, bookmarker.OptionFilterByFolder(folderPrefix))
 	}
 
