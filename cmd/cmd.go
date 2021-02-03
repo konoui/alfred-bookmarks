@@ -148,7 +148,10 @@ func (r *runtime) run() error {
 		).Variable("nextAction", "open")
 	}
 
-	return awf.Filter(r.query).Output().Cache(cacheKey).StoreItems().Err()
+	defer func() {
+		awf.Filter(r.query).Output()
+	}()
+	return awf.Cache(cacheKey).StoreItems().Err()
 }
 
 func fatal(err error) {
