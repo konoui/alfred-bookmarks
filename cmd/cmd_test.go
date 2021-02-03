@@ -127,7 +127,15 @@ func TestRun(t *testing.T) {
 			awf.SetLog(errBuf)
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
-			err = tt.config.run(tt.args.query, tt.args.folder)
+			r := &runtime{
+				cfg:          tt.config,
+				query:        tt.args.query,
+				folderPrefix: tt.args.folder,
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = r.run()
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")
 			}
@@ -144,7 +152,7 @@ func TestRun(t *testing.T) {
 	}
 }
 
-func Test_parseQuery(t *testing.T) {
+func Test_parse(t *testing.T) {
 	type args struct {
 		args []string
 	}
@@ -184,7 +192,7 @@ func Test_parseQuery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, _, err := parseQuery(tt.args.args...)
+			_, err := parse(nil, tt.args.args...)
 			if tt.expectedErr && err == nil {
 				t.Errorf("unexpected error\n")
 			}

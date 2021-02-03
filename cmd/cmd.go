@@ -34,64 +34,85 @@ func init() {
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 }
 
+type runtime struct {
+	cfg          *Config
+	query        string
+	folderPrefix string
+	clear        bool
+}
+
 // Execute runs cmd
 func Execute(args ...string) {
-	c, err := newConfig()
+	cfg, err := newConfig()
 	if err != nil {
 		fatal(err)
 	}
 
-	query, folderPrefix, err := parseQuery(args...)
+	r, err := parse(cfg, args...)
 	if err != nil {
 		awf.Clear().
 			SetEmptyWarning("-f option: filster by folder name", err.Error()).
 			Output()
 		return
 	}
-	if err := c.run(query, folderPrefix); err != nil {
+	if err := r.run(); err != nil {
 		fatal(err)
 	}
 }
 
-func parseQuery(args ...string) (query, folderPrefix string, err error) {
+func parse(cfg *Config, args ...string) (*runtime, error) {
+	var folderPrefix string
+	var clear bool
 	fs := flag.NewFlagSet("bs", flag.ContinueOnError)
 	fs.SetOutput(ioutil.Discard)
 	fs.StringVarP(&folderPrefix, "folder", "f", "", "filter by folder")
+	fs.BoolVar(&clear, "clear", false, "clear cache")
 	if err := fs.Parse(args); err != nil {
-		return "", "", err
+		return nil, err
 	}
-	query = fs.Arg(0)
-	return alfred.Normalize(query), alfred.Normalize(folderPrefix), nil
+	return &runtime{
+		cfg:          cfg,
+		query:        alfred.Normalize(fs.Arg(0)),
+		folderPrefix: alfred.Normalize(folderPrefix),
+		clear:        clear,
+	}, nil
 }
 
-func (c *Config) run(query, folderPrefix string) error {
+func (r *runtime) run() error {
 	cacheKey := "bookmarks"
-	ttl := convertDefaultTTL(c.MaxCacheAge)
+	if r.clear {
+		if err := awf.Cache(cacheKey).ClearItems().Err(); err != nil {
+			awf.Logger().Warnln(err.Error())
+		}
+		awf.Logger().Infoln("cache cleared!")
+	}
+
+	ttl := convertDefaultTTL(r.cfg.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Logger().Infoln("loading from cache file")
-		awf.Filter(query).Output()
+		awf.Filter(r.query).Output()
 		return nil
 	}
 
 	var opts []bookmarker.Option
-	if c.Firefox.Enable {
-		opts = append(opts, bookmarker.OptionFirefox(c.Firefox.ProfilePath, c.Firefox.ProfileName))
+	if r.cfg.Firefox.Enable {
+		opts = append(opts, bookmarker.OptionFirefox(r.cfg.Firefox.ProfilePath, r.cfg.Firefox.ProfileName))
 	}
-	if c.Chrome.Enable {
-		opts = append(opts, bookmarker.OptionChrome(c.Chrome.ProfilePath, c.Chrome.ProfileName))
+	if r.cfg.Chrome.Enable {
+		opts = append(opts, bookmarker.OptionChrome(r.cfg.Chrome.ProfilePath, r.cfg.Chrome.ProfileName))
 	}
-	if c.Safari.Enable {
+	if r.cfg.Safari.Enable {
 		opts = append(opts, bookmarker.OptionSafari())
 	}
 
-	if c.RemoveDuplicates {
+	if r.cfg.RemoveDuplicates {
 		opts = append(opts, bookmarker.OptionRemoveDuplicates())
 	}
 
-	if folderPrefix != "" {
+	if r.folderPrefix != "" {
 		// Note set empty key as to disable saving data into cache
 		cacheKey = ""
-		opts = append(opts, bookmarker.OptionFilterByFolder(folderPrefix))
+		opts = append(opts, bookmarker.OptionFilterByFolder(r.folderPrefix))
 	}
 
 	manager, err := bookmarker.New(opts...)
@@ -127,7 +148,7 @@ func (c *Config) run(query, folderPrefix string) error {
 		).Variable("nextAction", "open")
 	}
 
-	return awf.Filter(query).Output().Cache(cacheKey).StoreItems().Err()
+	return awf.Filter(r.query).Output().Cache(cacheKey).StoreItems().Err()
 }
 
 func fatal(err error) {
