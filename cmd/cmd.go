@@ -88,8 +88,9 @@ func (r *runtime) run() error {
 	if r.clear {
 		if err := awf.Cache(cacheKey).ClearItems().Err(); err != nil {
 			awf.Logger().Warnln(err.Error())
+		} else {
+			awf.Logger().Infoln("cache cleared!")
 		}
-		awf.Logger().Infoln("cache cleared!")
 	}
 
 	ttl := convertDefaultTTL(r.cfg.MaxCacheAge)
