@@ -50,9 +50,14 @@ func Execute(args ...string) {
 
 	r, err := parse(cfg, args...)
 	if err != nil {
-		awf.Clear().
-			SetEmptyWarning("-f option: filster by folder name", err.Error()).
-			Output()
+		awf.Clear().Append(
+			alfred.NewItem().
+				Title("-f option: filster by folder name").
+				Icon(alfred.IconAlertNote),
+			alfred.NewItem().
+				Title("--clear option: clear existing cache data").
+				Icon(alfred.IconAlertNote),
+		).Output()
 		return
 	}
 	if err := r.run(); err != nil {
