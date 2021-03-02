@@ -1,6 +1,6 @@
 module github.com/konoui/alfred-bookmarks
 
-go 1.14
+go 1.16
 
 require (
 	github.com/frioux/leatherman v0.0.0-20200721002700-06899856e483
