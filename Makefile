@@ -61,7 +61,7 @@ clean:
 
 docker-test:
 	go mod vendor
-	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.14 bash -c "./setup-test-dir.sh && make test"
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.16 bash -c "./setup-test-dir.sh && make test"
 
 ## Show help
 help:

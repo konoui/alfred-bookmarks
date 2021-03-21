@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -17,15 +18,15 @@ func TestRun(t *testing.T) {
 		folder string
 	}
 	tests := []struct {
-		description string
-		expectErr   bool
-		filepath    string
-		args        args
-		config      *Config
-		errMsg      string
+		name      string
+		filepath  string
+		args      args
+		config    *Config
+		expectErr bool
+		update    bool
 	}{
 		{
-			description: "enbale only firefox",
+			name: "enbale only firefox",
 			config: &Config{
 				MaxCacheAge: -1,
 				Firefox: Firefox{
@@ -37,7 +38,7 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "test-firefox.json"),
 		},
 		{
-			description: "enbale only chrome",
+			name: "enbale only chrome",
 			config: &Config{
 				MaxCacheAge: -1,
 				Chrome: Chrome{
@@ -49,7 +50,7 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "test-chrome.json"),
 		},
 		{
-			description: "enbale only safari",
+			name: "enbale only safari",
 			config: &Config{
 				MaxCacheAge: -1,
 				Safari: Safari{
@@ -59,7 +60,7 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "test-safari.json"),
 		},
 		{
-			description: "enable firefox, chrome, safari. duplicate bookmarks should be removed ",
+			name: "enable firefox, chrome, safari. duplicate bookmarks should be removed ",
 			config: &Config{
 				RemoveDuplicates: true,
 				MaxCacheAge:      -1,
@@ -80,7 +81,7 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "test-rm-duplicate-firefox-chrome-safari.json"),
 		},
 		{
-			description: "pass flag format argument. no errors should occur",
+			name: "pass flag format argument. no errors should occur",
 			args: args{
 				query: "--pass-no-match-query-as-flag-format",
 			},
@@ -88,7 +89,7 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "empty-results.json"),
 		},
 		{
-			description: "fildter by folder name. return firefox when RemoveDuplicate is true",
+			name: "fildter by folder name. return firefox when RemoveDuplicate is true",
 			args: args{
 				query:  "",
 				folder: "Bookmark Menu",
@@ -115,7 +116,7 @@ func TestRun(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.description, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			want, err := ioutil.ReadFile(tt.filepath)
 			if err != nil {
 				t.Fatal(err)
@@ -148,6 +149,14 @@ func TestRun(t *testing.T) {
 			if diff := alfred.DiffOutput(want, got); diff != "" {
 				t.Errorf("+want -got\n%+v", diff)
 			}
+
+			// automatically update test data
+			if tt.update {
+				if err := writeFile(tt.filepath, got); err != nil {
+					t.Fatal(err)
+				}
+			}
+
 		})
 	}
 }
@@ -201,4 +210,16 @@ func Test_parse(t *testing.T) {
 			}
 		})
 	}
+}
+
+func writeFile(filename string, data []byte) error {
+	pretty := new(bytes.Buffer)
+	if err := json.Indent(pretty, data, "", "  "); err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(filename, pretty.Bytes(), 0600); err != nil {
+		return err
+	}
+	return nil
 }

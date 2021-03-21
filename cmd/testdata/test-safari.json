@@ -1,61 +1,76 @@
 {
-    "variables": {
+  "items": [
+    {
+      "variables": {
         "nextAction": "open"
       },
-    "items": [
-        {
-            "title": "Stack Overflow",
-            "subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] stackoverflow.com",
-            "arg": "https://stackoverflow.com/",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Stack Overflow"
-        },
-        {
-            "title": "Amazon Web Services",
-            "subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] aws.amazon.com",
-            "arg": "https://aws.amazon.com/?nc1=h_ls",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Amazon Web Services"
-        },
-        {
-            "title": "Yahoo",
-            "subtitle": "[/1-hierarchy-b] www.yahoo.com",
-            "arg": "https://www.yahoo.com/",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Yahoo"
-        },
-        {
-            "title": "Facebook",
-            "subtitle": "[/1-hierarchy-b/2-hierarchy-a] www.facebook.com",
-            "arg": "https://www.facebook.com/",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Facebook"
-        },
-        {
-            "title": "Twitter",
-            "subtitle": "[/1-hierarchy-b/2-hierarchy-a] twitter.com",
-            "arg": "https://twitter.com/login",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Twitter"
-        },
-        {
-            "title": "Amazon.com",
-            "subtitle": "[/1-hierarchy-b/2-hierarchy-b] www.amazon.com",
-            "arg": "https://www.amazon.com/",
-            "icon": {
-                "path": "safari.png"
-            },
-            "autocomplete": "Amazon.com"
-        }
-    ]
+      "title": "Stack Overflow",
+      "subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] stackoverflow.com",
+      "arg": "https://stackoverflow.com/",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Stack Overflow"
+    },
+    {
+      "variables": {
+        "nextAction": "open"
+      },
+      "title": "Amazon Web Services",
+      "subtitle": "[/1-hierarchy-a/2-hierarchy-a/3-hierarchy-a] aws.amazon.com",
+      "arg": "https://aws.amazon.com/?nc1=h_ls",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Amazon Web Services"
+    },
+    {
+      "variables": {
+        "nextAction": "open"
+      },
+      "title": "Yahoo",
+      "subtitle": "[/1-hierarchy-b] www.yahoo.com",
+      "arg": "https://www.yahoo.com/",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Yahoo"
+    },
+    {
+      "variables": {
+        "nextAction": "open"
+      },
+      "title": "Facebook",
+      "subtitle": "[/1-hierarchy-b/2-hierarchy-a] www.facebook.com",
+      "arg": "https://www.facebook.com/",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Facebook"
+    },
+    {
+      "variables": {
+        "nextAction": "open"
+      },
+      "title": "Twitter",
+      "subtitle": "[/1-hierarchy-b/2-hierarchy-a] twitter.com",
+      "arg": "https://twitter.com/login",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Twitter"
+    },
+    {
+      "variables": {
+        "nextAction": "open"
+      },
+      "title": "Amazon.com",
+      "subtitle": "[/1-hierarchy-b/2-hierarchy-b] www.amazon.com",
+      "arg": "https://www.amazon.com/",
+      "icon": {
+        "path": "safari.png"
+      },
+      "autocomplete": "Amazon.com"
+    }
+  ]
 }

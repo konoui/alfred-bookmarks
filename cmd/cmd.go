@@ -53,10 +53,12 @@ func Execute(args ...string) {
 		awf.Clear().Append(
 			alfred.NewItem().
 				Title("-f option: filster by folder name").
-				Icon(alfred.IconAlertNote),
+				Icon(alfred.IconAlertNote).
+				Valid(false),
 			alfred.NewItem().
 				Title("--clear option: clear existing cache data").
-				Icon(alfred.IconAlertNote),
+				Icon(alfred.IconAlertNote).
+				Valid(false),
 		).Output()
 		return
 	}
@@ -150,8 +152,9 @@ func (r *runtime) run() error {
 				Icon(
 					alfred.NewIcon().
 						Path(image),
-				),
-		).Variable("nextAction", "open")
+				).
+				Variable("nextAction", "open"),
+		)
 	}
 
 	defer func() {
