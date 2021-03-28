@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	flag "github.com/spf13/pflag"
 
@@ -77,12 +78,13 @@ func parse(cfg *Config, args ...string) (*runtime, error) {
 	if err := fs.Parse(args); err != nil {
 		return nil, err
 	}
-	return &runtime{
+	r := &runtime{
 		cfg:          cfg,
-		query:        alfred.Normalize(fs.Arg(0)),
+		query:        alfred.Normalize(strings.Join(fs.Args(), " ")),
 		folderPrefix: alfred.Normalize(folderPrefix),
 		clear:        clear,
-	}, nil
+	}
+	return r, nil
 }
 
 func (r *runtime) run() error {
