@@ -1,4 +1,5 @@
 ![Generic badge](https://github.com/konoui/alfred-bookmarks/workflows/test/badge.svg)
+![Code Grade](https://www.code-inspector.com/project/20714/status/svg)
 
 ## alfred bookmarks
 
