@@ -9,6 +9,9 @@ ASSETS := $(ASSETS_DIR)/* $(BINARY) README.md
 ARTIFACT_DIR := .artifact
 ARTIFACT_NAME := $(BIN_NAME).alfredworkflow
 
+CMD_PACKAGE_DIR := github.com/konoui/alfred-bookmarks/cmd
+LDFLAGS := -X '$(CMD_PACKAGE_DIR).version=$(VERSION)' -X '$(CMD_PACKAGE_DIR).revision=$(REVISION)'
+
 ## For local test
 WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
 
@@ -37,14 +40,22 @@ darwin:
 
 ## Run tests for my project
 test:
+	export alfred_workflow_data=$(shell mktemp -d); \
+	export alfred_workflow_data=$(shell mktemp -d); \
+	export alfred_workflow_cache=$(shell mktemp -d); \
+	export alfred_workflow_bundleid=$(shell date +%s); \
 	go test -v ./...
 
 ## Install Binary and Assets to Workflow Directory
-install: build
+install: build embed-version
 	@(cp $(ASSETS)  $(WORKFLOW_DIR)/)
 
+## embed current version into workflow config
+embed-version:
+	@(plutil -replace version -string $(VERSION) $(ASSETS_DIR)/info.plist)
+
 ## create workflow artifact
-package: darwin
+package: darwin embed-version
 	@(if [ ! -e $(ARTIFACT_DIR) ]; then mkdir $(ARTIFACT_DIR) ; fi)
 	@(cp $(ASSETS) $(ARTIFACT_DIR))
 	@(zip -j $(ARTIFACT_NAME) $(ARTIFACT_DIR)/*)

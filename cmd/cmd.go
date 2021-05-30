@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	flag "github.com/spf13/pflag"
 
@@ -13,7 +15,8 @@ import (
 )
 
 var (
-	awf *alfred.Workflow
+	awf     *alfred.Workflow
+	version = "*"
 )
 
 const (
@@ -28,6 +31,11 @@ const (
 func init() {
 	awf = alfred.NewWorkflow(
 		alfred.WithMaxResults(40),
+		alfred.WithGitHubUpdater(
+			"konoui", "alfred-bookmarks",
+			version,
+			14*24*time.Hour,
+		),
 	)
 	awf.SetOut(os.Stdout)
 	awf.SetLog(os.Stderr)
@@ -88,6 +96,23 @@ func parse(cfg *Config, args ...string) (*runtime, error) {
 }
 
 func (r *runtime) run() error {
+	if err := awf.OnInitialize(); err != nil {
+		return err
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if !alfred.HasUpdateArg() && awf.Updater().NewerVersionAvailable(c) {
+		awf.SetSystemInfo(
+			alfred.NewItem().
+				Title("Newer wrokflow is available!").
+				Subtitle("Please Enter!").
+				Autocomplete(alfred.ArgWorkflowUpdate).
+				Valid(false).
+				Icon(alfred.IconAlertNote),
+		)
+	}
+
 	cacheKey := "bookmarks"
 	if r.clear {
 		if err := awf.Cache(cacheKey).ClearItems().Err(); err != nil {
