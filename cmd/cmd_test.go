@@ -89,13 +89,13 @@ func TestRun(t *testing.T) {
 			filepath: filepath.Join(testdataPath, "empty-results.json"),
 		},
 		{
-			name: "fildter by folder name. return firefox when RemoveDuplicate is true",
+			name: "filter by folder name from all bookmarks. return firefox",
 			args: args{
 				query:  "",
 				folder: "Bookmark Menu",
 			},
 			config: &Config{
-				RemoveDuplicates: true,
+				RemoveDuplicates: false,
 				MaxCacheAge:      -1,
 				Firefox: Firefox{
 					Enable:      true,
@@ -129,9 +129,9 @@ func TestRun(t *testing.T) {
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			r := &runtime{
-				cfg:          tt.config,
-				query:        tt.args.query,
-				folderPrefix: tt.args.folder,
+				cfg:           tt.config,
+				query:         tt.args.query,
+				folderPrefixF: filterBySubtitle(tt.args.folder),
 			}
 			if err != nil {
 				t.Fatal(err)
@@ -147,7 +147,7 @@ func TestRun(t *testing.T) {
 
 			got := outBuf.Bytes()
 			if diff := alfred.DiffOutput(want, got); diff != "" {
-				t.Errorf("+want -got\n%+v", diff)
+				t.Errorf("-want +got\n%+v", diff)
 			}
 
 			// automatically update test data

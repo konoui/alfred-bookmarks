@@ -44,50 +44,6 @@ func TestBookmarks_UniqByURI(t *testing.T) {
 	}
 }
 
-func TestBookmarks_FilterByFolderPrefix(t *testing.T) {
-	type args struct {
-		query string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		options []Option
-		want    Bookmarks
-	}{
-		{
-			name: "if empty string, return all bookmarks",
-			want: testChromeBookmarks,
-			options: []Option{
-				OptionChrome(defaultChromeProfilePath, testProfile),
-			},
-			args: args{
-				query: "",
-			},
-		},
-		{
-			name: "filter by folder prefix with chrome folder name",
-			want: testChromeBookmarks,
-			options: []Option{
-				OptionFirefox(defaultFirefoxProfilePath, testProfile),
-				OptionChrome(defaultChromeProfilePath, testProfile),
-				OptionSafari(),
-			},
-			args: args{
-				query: "Bookmarks bar",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			b := getTestBookmarks(t, tt.options...)
-			got := b.filterByFolderPrefix(tt.args.query)
-			if diff := DiffBookmark(got, tt.want); diff != "" {
-				t.Errorf("+want/-got: %s", diff)
-			}
-		})
-	}
-}
-
 func getTestBookmarks(t *testing.T, opts ...Option) Bookmarks {
 	bookmarer, err := New(opts...)
 	if err != nil {
