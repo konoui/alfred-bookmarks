@@ -66,7 +66,7 @@ func Execute(args ...string) {
 	if err != nil {
 		awf.Clear().Append(
 			alfred.NewItem().
-				Title("-f option: filster by folder name").
+				Title("-f option: filter by bookmark folder name").
 				Icon(alfred.IconAlertNote).
 				Valid(false),
 			alfred.NewItem().
@@ -101,12 +101,12 @@ func parse(cfg *Config, args ...string) (*runtime, error) {
 }
 
 func (r *runtime) run() error {
-	c, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	if !alfred.HasUpdateArg() && awf.Updater().NewerVersionAvailable(c) {
+	if !alfred.HasUpdateArg() && awf.Updater().NewerVersionAvailable(ctx) {
 		awf.SetSystemInfo(
 			alfred.NewItem().
-				Title("Newer wrokflow is available!").
+				Title("Newer workflow is available!").
 				Subtitle("Please Enter!").
 				Autocomplete(alfred.ArgWorkflowUpdate).
 				Valid(false).
