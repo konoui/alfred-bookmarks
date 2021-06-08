@@ -44,15 +44,20 @@ func init() {
 }
 
 type runtime struct {
-	cfg          *Config
-	query        string
-	folderPrefix string
-	clear        bool
+	cfg           *Config
+	query         string
+	folderPrefixF func(subtitle string) bool
+	clear         bool
 }
 
 // Execute runs cmd
 func Execute(args ...string) {
 	cfg, err := newConfig()
+	if err != nil {
+		fatal(err)
+	}
+
+	err = awf.OnInitialize()
 	if err != nil {
 		fatal(err)
 	}
@@ -87,19 +92,15 @@ func parse(cfg *Config, args ...string) (*runtime, error) {
 		return nil, err
 	}
 	r := &runtime{
-		cfg:          cfg,
-		query:        alfred.Normalize(strings.Join(fs.Args(), " ")),
-		folderPrefix: alfred.Normalize(folderPrefix),
-		clear:        clear,
+		cfg:           cfg,
+		query:         strings.Join(fs.Args(), " "),
+		folderPrefixF: filterBySubtitle(folderPrefix),
+		clear:         clear,
 	}
 	return r, nil
 }
 
 func (r *runtime) run() error {
-	if err := awf.OnInitialize(); err != nil {
-		return err
-	}
-
 	c, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	if !alfred.HasUpdateArg() && awf.Updater().NewerVersionAvailable(c) {
@@ -125,7 +126,8 @@ func (r *runtime) run() error {
 	ttl := convertDefaultTTL(r.cfg.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Logger().Infoln("loading from cache file")
-		awf.Filter(r.query).Output()
+		awf.FilterByItemProperty(r.folderPrefixF, alfred.FilterSubtitle).
+			Filter(r.query).Output()
 		return nil
 	}
 
@@ -142,12 +144,6 @@ func (r *runtime) run() error {
 
 	if r.cfg.RemoveDuplicates {
 		opts = append(opts, bookmarker.OptionRemoveDuplicates())
-	}
-
-	if r.folderPrefix != "" {
-		// Note set empty key as to disable saving data into cache
-		cacheKey = ""
-		opts = append(opts, bookmarker.OptionFilterByFolder(r.folderPrefix))
 	}
 
 	manager, err := bookmarker.New(opts...)
@@ -185,11 +181,46 @@ func (r *runtime) run() error {
 	}
 
 	defer func() {
-		awf.Filter(r.query).Output()
+		awf.FilterByItemProperty(r.folderPrefixF, alfred.FilterSubtitle).
+			Filter(r.query).Output()
 	}()
 	return awf.Cache(cacheKey).StoreItems().Err()
 }
 
 func fatal(err error) {
 	awf.Fatal("a fatal error occurred", err.Error())
+}
+
+func filterBySubtitle(prefixQuery string) func(subtitle string) bool {
+	f := func(subtitle string) bool {
+		// Note: if input is empty return true
+		if prefixQuery == "" {
+			return true
+		}
+
+		leftTrimedSubtitle := strings.TrimLeft(subtitle, "[")
+		idx := strings.LastIndex(leftTrimedSubtitle, "]")
+		if idx < 0 {
+			return false
+		}
+		folder := leftTrimedSubtitle[:idx]
+		return hasFolderPrefix(folder, prefixQuery)
+	}
+	return f
+}
+
+func hasFolderPrefix(folder, prefix string) bool {
+	folder = strings.ToLower(folder)
+	folder = strings.ReplaceAll(folder, " ", "")
+	prefix = strings.ToLower(prefix)
+	prefix = strings.ReplaceAll(prefix, " ", "")
+	if !strings.HasPrefix(prefix, "/") {
+		prefix = "/" + prefix
+	}
+
+	if strings.HasPrefix(folder, prefix) {
+		return true
+	}
+
+	return strings.HasPrefix(folder+"/", prefix)
 }

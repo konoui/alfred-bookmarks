@@ -6,7 +6,6 @@ import "fmt"
 type Manager struct {
 	bookmarkers      map[bookmarkerName]Bookmarker
 	removeDuplicates bool
-	folderQuery      string
 }
 
 // Option is the type to replace default parameters.
@@ -59,14 +58,6 @@ func OptionRemoveDuplicates() Option {
 	}
 }
 
-// OptionFilterByFolder filter by bookmark folder name
-func OptionFilterByFolder(folderQuery string) Option {
-	return func(m *Manager) error {
-		m.folderQuery = folderQuery
-		return nil
-	}
-}
-
 // New is a managed bookmarker to get each bookmarks
 func New(opts ...Option) (Bookmarker, error) {
 	m := &Manager{
@@ -101,12 +92,6 @@ func (m *Manager) Bookmarks() (Bookmarks, error) {
 			return bookmarks, fmt.Errorf("failed to load bookmarks in %s: %w", name, err)
 		}
 		bookmarks = append(bookmarks, b...)
-	}
-
-	// TODO folder filter should implement in each bookmark for performance
-	// But there are caching problem. the workflow uses alfred library caching
-	if q := m.folderQuery; q != "" {
-		bookmarks = bookmarks.filterByFolderPrefix(q)
 	}
 
 	// Note: execute uniq after folder filter
