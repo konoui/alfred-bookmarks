@@ -78,8 +78,7 @@ func New(opts ...Option) (Bookmarker, error) {
 }
 
 // Bookmarks return Bookmarks struct by loading each bookmarker
-func (m *Manager) Bookmarks() (Bookmarks, error) {
-	bookmarks := Bookmarks{}
+func (m *Manager) Bookmarks() (bookmarks Bookmarks, err error) {
 	for _, name := range getSupportedBookmarkerNames() {
 		bookmarker, ok := m.bookmarkers[name]
 		if !ok {

@@ -1,11 +1,11 @@
 {
-  "items": [
-    {
-      "title": "No matching",
-      "icon": {
-        "path": "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertNoteIcon.icns"
-      },
-      "valid": false
-    }
-  ]
+    "items": [
+        {
+            "title": "No matching",
+            "icon": {
+                "path": "/tmp/assets/AlertNoteIcon.icns"
+            },
+            "valid": false
+        }
+    ]
 }

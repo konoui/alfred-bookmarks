@@ -47,9 +47,9 @@ type Bookmarker interface {
 // Bookmarks a slice of Bookmark struct
 type Bookmarks []*Bookmark
 
-func (b Bookmarks) uniqByURI() (uniq Bookmarks) {
+func (b Bookmarks) uniqByURI() Bookmarks {
 	m := make(map[string]bool)
-
+	uniq := make(Bookmarks, 0, len(b))
 	for _, e := range b {
 		if !m[e.URI] {
 			m[e.URI] = true
@@ -57,5 +57,5 @@ func (b Bookmarks) uniqByURI() (uniq Bookmarks) {
 		}
 	}
 
-	return
+	return uniq
 }

@@ -41,6 +41,10 @@ func init() {
 	awf.SetLog(os.Stderr)
 	awf.SetCacheSuffix(cacheSuffix)
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
+	err := awf.OnInitialize()
+	if err != nil {
+		fatal(err)
+	}
 }
 
 type runtime struct {
@@ -57,21 +61,16 @@ func Execute(args ...string) {
 		fatal(err)
 	}
 
-	err = awf.OnInitialize()
-	if err != nil {
-		fatal(err)
-	}
-
 	r, err := parse(cfg, args...)
 	if err != nil {
 		awf.Clear().Append(
 			alfred.NewItem().
 				Title("-f option: filter by bookmark folder name").
-				Icon(alfred.IconAlertNote).
+				Icon(awf.Assets().IconAlertNote()).
 				Valid(false),
 			alfred.NewItem().
 				Title("--clear option: clear existing cache data").
-				Icon(alfred.IconAlertNote).
+				Icon(awf.Assets().IconAlertNote()).
 				Valid(false),
 		).Output()
 		return
@@ -110,7 +109,7 @@ func (r *runtime) run() error {
 				Subtitle("Please Enter!").
 				Autocomplete(alfred.ArgWorkflowUpdate).
 				Valid(false).
-				Icon(alfred.IconAlertNote),
+				Icon(awf.Assets().IconAlertNote()),
 		)
 	}
 
@@ -126,12 +125,12 @@ func (r *runtime) run() error {
 	ttl := convertDefaultTTL(r.cfg.MaxCacheAge)
 	if awf.Cache(cacheKey).LoadItems(ttl).Err() == nil {
 		awf.Logger().Infoln("loading from cache file")
-		awf.FilterByItemProperty(r.folderPrefixF, alfred.FilterSubtitle).
+		awf.FilterByItemProperty(r.folderPrefixF, alfred.ItemPropertySubtitle).
 			Filter(r.query).Output()
 		return nil
 	}
 
-	var opts []bookmarker.Option
+	opts := make([]bookmarker.Option, 0, 4)
 	if r.cfg.Firefox.Enable {
 		opts = append(opts, bookmarker.OptionFirefox(r.cfg.Firefox.ProfilePath, r.cfg.Firefox.ProfileName))
 	}
@@ -181,7 +180,7 @@ func (r *runtime) run() error {
 	}
 
 	defer func() {
-		awf.FilterByItemProperty(r.folderPrefixF, alfred.FilterSubtitle).
+		awf.FilterByItemProperty(r.folderPrefixF, alfred.ItemPropertySubtitle).
 			Filter(r.query).Output()
 	}()
 	return awf.Cache(cacheKey).StoreItems().Err()

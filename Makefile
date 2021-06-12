@@ -40,8 +40,7 @@ darwin:
 
 ## Run tests for my project
 test:
-	export alfred_workflow_data=$(shell mktemp -d); \
-	export alfred_workflow_data=$(shell mktemp -d); \
+	export alfred_workflow_data="/tmp/"; \
 	export alfred_workflow_cache=$(shell mktemp -d); \
 	export alfred_workflow_bundleid=$(shell date +%s); \
 	go test -v ./...
