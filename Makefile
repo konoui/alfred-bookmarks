@@ -51,7 +51,8 @@ install: build embed-version
 
 ## embed current version into workflow config
 embed-version:
-	@(plutil -replace version -string $(VERSION) $(ASSETS_DIR)/info.plist)
+	$(eval SEMVER := $(shell echo $(VERSION) | tr -cd '[0-9.]'))
+	@(plutil -replace version -string $(SEMVER) $(ASSETS_DIR)/info.plist)
 
 ## create workflow artifact
 package: darwin embed-version
