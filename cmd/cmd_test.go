@@ -123,9 +123,10 @@ func TestRun(t *testing.T) {
 			}
 
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
-			awf = alfred.NewWorkflow()
-			awf.SetOut(outBuf)
-			awf.SetLog(errBuf)
+			awf = alfred.NewWorkflow(
+				alfred.WithLogWriter(errBuf),
+				alfred.WithOutWriter(outBuf),
+			)
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			r := &runtime{
@@ -134,13 +135,13 @@ func TestRun(t *testing.T) {
 				folderPrefixF: filterBySubtitle(tt.args.folder),
 			}
 
-			err = r.run()
-			if tt.expectErr && err == nil {
+			exitCode := awf.RunSimple(r.run)
+			if tt.expectErr && exitCode == 0 {
 				t.Errorf("expect error happens, but got response")
 			}
 
-			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error happens %+v", err.Error())
+			if !tt.expectErr && exitCode != 0 {
+				t.Errorf("unexpected error happens %d", exitCode)
 			}
 
 			got := outBuf.Bytes()

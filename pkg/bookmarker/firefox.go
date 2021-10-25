@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/frioux/leatherman/pkg/mozlz4"
+	"github.com/konoui/alfred-bookmarks/pkg/mozlz4"
 )
 
 // firefoxBookmarkEntry a bookmark structure of decompressed .jsonlz4

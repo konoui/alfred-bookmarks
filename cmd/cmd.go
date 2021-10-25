@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/konoui/alfred-bookmarks/pkg/bookmarker"
 	"github.com/konoui/go-alfred"
+	"github.com/konoui/go-alfred/initialize"
 )
 
 var (
@@ -20,7 +20,6 @@ var (
 )
 
 const (
-	cacheSuffix   = "alfred-bookmarks.cache"
 	emptyTitle    = "No matching"
 	emptySubtitle = ""
 	firefoxImage  = "firefox.png"
@@ -30,21 +29,21 @@ const (
 
 func init() {
 	awf = alfred.NewWorkflow(
-		alfred.WithMaxResults(40),
+		alfred.WithMaxResults(20),
 		alfred.WithGitHubUpdater(
 			"konoui", "alfred-bookmarks",
 			version,
 			14*24*time.Hour,
 		),
+		alfred.WithCacheSuffix("-alfred-bookmarks.cache"),
+		alfred.WithOutWriter(os.Stdout),
+		alfred.WithLogWriter(os.Stderr),
+		alfred.WithInitializers(
+			initialize.NewUpdateRecommendation(5*time.Second),
+			initialize.NewUpdateExecution(2*time.Minute),
+		),
 	)
-	awf.SetOut(os.Stdout)
-	awf.SetLog(os.Stderr)
-	awf.SetCacheSuffix(cacheSuffix)
 	awf.SetEmptyWarning(emptyTitle, emptySubtitle)
-	err := awf.OnInitialize()
-	if err != nil {
-		fatal(err)
-	}
 }
 
 type runtime struct {
@@ -58,7 +57,7 @@ type runtime struct {
 func Execute(args ...string) {
 	cfg, err := newConfig()
 	if err != nil {
-		fatal(err)
+		awf.Fatal("a fatal error occurred", err.Error())
 	}
 
 	r, err := parse(cfg, args...)
@@ -75,9 +74,7 @@ func Execute(args ...string) {
 		).Output()
 		return
 	}
-	if err := r.run(); err != nil {
-		fatal(err)
-	}
+	os.Exit(awf.RunSimple(r.run))
 }
 
 func parse(cfg *Config, args ...string) (*runtime, error) {
@@ -100,19 +97,6 @@ func parse(cfg *Config, args ...string) (*runtime, error) {
 }
 
 func (r *runtime) run() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-	if !alfred.HasUpdateArg() && awf.Updater().NewerVersionAvailable(ctx) {
-		awf.SetSystemInfo(
-			alfred.NewItem().
-				Title("Newer workflow is available!").
-				Subtitle("Please Enter!").
-				Autocomplete(alfred.ArgWorkflowUpdate).
-				Valid(false).
-				Icon(awf.Assets().IconAlertNote()),
-		)
-	}
-
 	cacheKey := "bookmarks"
 	if r.clear {
 		if err := awf.Cache(cacheKey).ClearItems().Err(); err != nil {
@@ -184,10 +168,6 @@ func (r *runtime) run() error {
 			Filter(r.query).Output()
 	}()
 	return awf.Cache(cacheKey).StoreItems().Err()
-}
-
-func fatal(err error) {
-	awf.Fatal("a fatal error occurred", err.Error())
 }
 
 func filterBySubtitle(prefixQuery string) func(subtitle string) bool {
