@@ -133,9 +133,7 @@ func TestRun(t *testing.T) {
 				query:         tt.args.query,
 				folderPrefixF: filterBySubtitle(tt.args.folder),
 			}
-			if err != nil {
-				t.Fatal(err)
-			}
+
 			err = r.run()
 			if tt.expectErr && err == nil {
 				t.Errorf("expect error happens, but got response")

@@ -22,11 +22,6 @@ export GO111MODULE=on
 build:
 	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o $(BINARY) $(SRC_DIR)
 
-## Format source codes
-fmt:
-	@(if ! type goimports >/dev/null 2>&1; then go get -u golang.org/x/tools/cmd/goimports ;fi)
-	goimports -w $$(go list -f {{.Dir}} ./... | grep -v /vendor/)
-
 ## Lint
 lint:
 	@(if ! type golangci-lint >/dev/null 2>&1; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION) ;fi)
@@ -62,7 +57,7 @@ package: darwin embed-version
 
 ## GitHub Release and uploads artifacts
 release: package
-	@(if ! type ghr >/dev/null 2>&1; then go get -u github.com/tcnksm/ghr ;fi)
+	@(if ! type ghr >/dev/null 2>&1; then go install github.com/tcnksm/ghr ;fi)
 	@ghr -replace $(VERSION) $(ARTIFACT_NAME)
 
 ## Clean Binary
@@ -72,11 +67,6 @@ clean:
 
 docker-test:
 	go mod vendor
-	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.16 bash -c "./setup-test-dir.sh && make test"
-
-## Show help
-help:
-	@(if ! type make2help >/dev/null 2>&1; then go get -u github.com/Songmu/make2help/cmd/make2help ;fi)
-	@make2help $(MAKEFILE_LIST)
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.17 bash -c "./setup-test-dir.sh && make test"
 
 .PHONY: build test lint fmt darwin release package clean help

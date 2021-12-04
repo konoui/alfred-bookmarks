@@ -53,6 +53,7 @@ func newConfig() (c *Config, err error) {
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(".alfred-bookmarks")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("$HOME/.config/")
 	viper.AddConfigPath("$HOME/")
 
 	// Set default value overwritten with config file

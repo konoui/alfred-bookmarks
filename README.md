@@ -1,5 +1,5 @@
 ![Generic badge](https://github.com/konoui/alfred-bookmarks/workflows/test/badge.svg)
-![Code Grade](https://www.code-inspector.com/project/20714/status/svg)
+[![Code Grade](https://api.codiga.io/project/20714/status/svg)](https://www.codiga.io)
 
 ## alfred bookmarks
 
@@ -29,7 +29,7 @@ Please type `bs <query>` and select your desired bookmark to open on default web
 
 ## Customize Configuration
 
-Please create configuration file as `.alfred-bookmarks.yaml` in home directory (`~/`) if you want to customize.
+Please create configuration file as `.alfred-bookmarks.yaml` in home directory (`~/`) or config directory (`~/.config/`) if you want to customize.
 
 ```
 firefox:
