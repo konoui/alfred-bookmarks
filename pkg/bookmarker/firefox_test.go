@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -150,7 +149,7 @@ func createTestFirefoxJsonlz4() error {
 }
 
 func readTestFirefoxBookmarkJSON() (string, error) {
-	jsonData, err := ioutil.ReadFile(testFirefoxBookmarkJSONFile)
+	jsonData, err := os.ReadFile(testFirefoxBookmarkJSONFile)
 
 	return string(jsonData), err
 }
@@ -187,23 +186,23 @@ func compress(src io.Reader, dst io.Writer, intendedSize int) error {
 	const magicHeader = "mozLz40\x00"
 	_, err := dst.Write([]byte(magicHeader))
 	if err != nil {
-		return fmt.Errorf("couldn't Write header: %w", err)
+		return fmt.Errorf("failed to write header: %w", err)
 	}
 
-	b, err := ioutil.ReadAll(src)
+	b, err := io.ReadAll(src)
 	if err != nil {
-		return fmt.Errorf("couldn't ReadAll to Compress: %w", err)
+		return fmt.Errorf("failed to read compress data: %w", err)
 	}
 
 	err = binary.Write(dst, binary.LittleEndian, uint32(intendedSize))
 	if err != nil {
-		return fmt.Errorf("couldn't encode length: %w", err)
+		return fmt.Errorf("failed to write encoded length: %w", err)
 	}
 
 	dstBytes := make([]byte, 10*len(b))
 	sz, err := lz4.CompressBlockHC(b, dstBytes, -1)
 	if err != nil {
-		return fmt.Errorf("couldn't CompressBlock: %w", err)
+		return fmt.Errorf("failed to create compress block: %w", err)
 	}
 	if sz == 0 {
 		return errors.New("data incompressible")
@@ -211,7 +210,7 @@ func compress(src io.Reader, dst io.Writer, intendedSize int) error {
 
 	_, err = dst.Write(dstBytes[:sz])
 	if err != nil {
-		return fmt.Errorf("couldn't Write compressed data: %w", err)
+		return fmt.Errorf("failed to write compressed data: %w", err)
 	}
 
 	return nil

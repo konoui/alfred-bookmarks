@@ -3,7 +3,6 @@ package bookmarker
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -29,7 +28,7 @@ func getHomeDir() (string, error) {
 
 // getLatestFile returns a path to latest files in dir
 func getLatestFile(dir string) (string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return "", err
 	}
@@ -43,7 +42,16 @@ func getLatestFile(dir string) (string, error) {
 		if file.IsDir() || strings.HasPrefix(file.Name(), ".") {
 			continue
 		}
-		if time.Since(file.ModTime()) <= time.Since(files[latestIndex].ModTime()) {
+
+		info, err := file.Info()
+		if err != nil {
+			return "", err
+		}
+		latestInfo, err := files[latestIndex].Info()
+		if err != nil {
+			return "", err
+		}
+		if time.Since(info.ModTime()) <= time.Since(latestInfo.ModTime()) {
 			latestIndex = i
 		}
 	}
@@ -53,7 +61,7 @@ func getLatestFile(dir string) (string, error) {
 
 // searchSuffixDir returns a directory name of suffix ignoring case-sensitive
 func searchSuffixDir(dir, suffix string) (string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return "", err
 	}

@@ -43,7 +43,7 @@ safari:
 remove_duplicates: true
 ```
 
-If the configuration file does not exists, the workflow try to use available bookmark files of web browsers.
+If the configuration file does not exist, the workflow try to use available bookmark files of web browsers.
 
 ## Feature
 

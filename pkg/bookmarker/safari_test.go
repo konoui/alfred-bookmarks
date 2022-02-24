@@ -3,7 +3,6 @@ package bookmarker
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -107,7 +106,7 @@ func setupSafari(t *testing.T) {
 
 func createTestSafariPlistFile() error {
 	_, _ = readLocalBookmarkPlist()
-	jsonData, err := ioutil.ReadFile(testSafariBookmarkJSONFile)
+	jsonData, err := os.ReadFile(testSafariBookmarkJSONFile)
 	if err != nil {
 		return err
 	}

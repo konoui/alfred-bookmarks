@@ -3,11 +3,12 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/konoui/go-alfred"
+	"github.com/konoui/go-alfred/initialize"
 )
 
 const testdataPath = "testdata"
@@ -117,15 +118,19 @@ func TestRun(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			want, err := ioutil.ReadFile(tt.filepath)
+			want, err := os.ReadFile(tt.filepath)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			outBuf, errBuf := new(bytes.Buffer), new(bytes.Buffer)
-			awf = alfred.NewWorkflow()
-			awf.SetOut(outBuf)
-			awf.SetLog(errBuf)
+			awf = alfred.NewWorkflow(
+				alfred.WithLogWriter(errBuf),
+				alfred.WithOutWriter(outBuf),
+				alfred.WithInitializers(
+					initialize.NewEmbedAssets(),
+				),
+			)
 			awf.SetEmptyWarning(emptyTitle, emptySubtitle)
 
 			r := &runtime{
@@ -134,13 +139,13 @@ func TestRun(t *testing.T) {
 				folderPrefixF: filterBySubtitle(tt.args.folder),
 			}
 
-			err = r.run()
-			if tt.expectErr && err == nil {
+			exitCode := awf.RunSimple(r.run)
+			if tt.expectErr && exitCode == 0 {
 				t.Errorf("expect error happens, but got response")
 			}
 
-			if !tt.expectErr && err != nil {
-				t.Errorf("unexpected error happens %+v", err.Error())
+			if !tt.expectErr && exitCode != 0 {
+				t.Errorf("unexpected error happens %d", exitCode)
 			}
 
 			got := outBuf.Bytes()
@@ -216,7 +221,7 @@ func writeFile(filename string, data []byte) error {
 		return err
 	}
 
-	if err := ioutil.WriteFile(filename, pretty.Bytes(), 0600); err != nil {
+	if err := os.WriteFile(filename, pretty.Bytes(), 0o600); err != nil {
 		return err
 	}
 	return nil

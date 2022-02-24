@@ -12,10 +12,9 @@ ARTIFACT_NAME := $(BIN_NAME).alfredworkflow
 CMD_PACKAGE_DIR := github.com/konoui/alfred-bookmarks/cmd
 LDFLAGS := -X '$(CMD_PACKAGE_DIR).version=$(VERSION)' -X '$(CMD_PACKAGE_DIR).revision=$(REVISION)'
 
-## For local test
 WORKFLOW_DIR := "$${HOME}/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.7C42A657-124F-46B8-89EE-7A1C06594E13"
 
-GOLANGCI_LINT_VERSION := v1.30.0
+GOLANGCI_LINT_VERSION := v1.48.0
 export GO111MODULE=on
 
 ## Build binaries on your environment
@@ -25,7 +24,7 @@ build:
 ## Lint
 lint:
 	@(if ! type golangci-lint >/dev/null 2>&1; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(GOLANGCI_LINT_VERSION) ;fi)
-	golangci-lint run ./...
+	$$(go env GOPATH)/bin/golangci-lint run ./...
 
 ## Build macos binaries
 darwin:
@@ -42,6 +41,7 @@ test:
 
 ## Install Binary and Assets to Workflow Directory
 install: build embed-version
+	@(mkdir -p $(WORKFLOW_DIR))
 	@(cp $(ASSETS)  $(WORKFLOW_DIR)/)
 
 ## embed current version into workflow config
@@ -67,6 +67,6 @@ clean:
 
 docker-test:
 	go mod vendor
-	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.17 bash -c "./setup-test-dir.sh && make test"
+	docker run --rm -it -v $(PWD):/usr/src/myapp -w /usr/src/myapp golang:1.19 bash -c "./setup-test-dir.sh && make test"
 
 .PHONY: build test lint fmt darwin release package clean help
