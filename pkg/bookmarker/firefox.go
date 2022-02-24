@@ -118,6 +118,9 @@ func (entry *firefoxBookmarkEntry) convertToBookmarks(folder string) (bookmarks 
 }
 
 // GetFirefoxBookmarkFile returns a firefox bookmark filepath in bookmark-backups direcotory
+// e.g.) GetFirefoxBookmarkFile(
+//	 os.ExpandEnv("${HOME}/Library/Application Support/Google/Chrome"),
+//	"default")
 func GetFirefoxBookmarkFile(profileAbsPath, profileName string) (string, error) {
 	profileDirName, err := searchSuffixDir(profileAbsPath, profileName)
 	if err != nil {

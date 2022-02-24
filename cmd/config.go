@@ -48,8 +48,8 @@ type Safari struct {
 }
 
 // NewConfig return alfred bookmark configuration
-func newConfig() (c *Config, err error) {
-	c = new(Config)
+func newConfig() (*Config, error) {
+	c := new(Config)
 	viper.SetConfigType("yaml")
 	viper.SetConfigName(".alfred-bookmarks")
 	viper.AddConfigPath(".")
@@ -62,23 +62,25 @@ func newConfig() (c *Config, err error) {
 	viper.SetDefault("chrome.profile_name", chromeDefaultProfileName)
 	viper.SetDefault("chrome.profile_path", chromeDefaultProfilePath)
 	defer c.resolvePath()
-	if err = viper.ReadInConfig(); err != nil {
+	if err := viper.ReadInConfig(); err != nil {
 		// Try to continue using available bookmarks if config file does not exist
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return availableConfig()
 		}
-		return availableConfig()
+		return nil, err
 	}
 
-	if err = viper.Unmarshal(c); err != nil {
-		return
+	if err := viper.Unmarshal(c); err != nil {
+		return nil, err
 	}
 
-	return
+	return c, nil
 }
 
 func availableConfig() (*Config, error) {
-	c := new(Config)
+	c := &Config{
+		RemoveDuplicates: true,
+	}
 	_, firefoxErr := bookmarker.GetFirefoxBookmarkFile(firefoxDefaultProfilePath, firefoxDefaultProfileName)
 	_, chromeErr := bookmarker.GetChromeBookmarkFile(chromeDefaultProfilePath, chromeDefaultProfileName)
 	_, safariErr := bookmarker.GetSafariBookmarkFile()
@@ -86,27 +88,40 @@ func availableConfig() (*Config, error) {
 		return c, errors.New("found no available bookmarks on your computer")
 	}
 
-	for _, err := range []error{firefoxErr, chromeErr, safariErr} {
-		if err != nil {
-			awf.Logger().Infoln(err)
+	handlers := []struct {
+		err      error
+		activate func()
+	}{
+		{
+			err: firefoxErr,
+			activate: func() {
+				c.Firefox.Enable = true
+				c.Firefox.ProfileName = firefoxDefaultProfileName
+				c.Firefox.ProfilePath = firefoxDefaultProfilePath
+			},
+		},
+		{
+			err: chromeErr,
+			activate: func() {
+				c.Chrome.Enable = true
+				c.Chrome.ProfileName = chromeDefaultProfileName
+				c.Chrome.ProfilePath = chromeDefaultProfilePath
+			},
+		},
+		{
+			err: safariErr,
+			activate: func() {
+				c.Safari.Enable = true
+			},
+		},
+	}
+	for _, h := range handlers {
+		if err := h.err; err != nil {
+			awf.Logger().Infof("unavailable %s\n", err)
+			continue
 		}
+		h.activate()
 	}
-
-	c.RemoveDuplicates = true
-	if firefoxErr == nil {
-		c.Firefox.Enable = true
-		c.Firefox.ProfileName = firefoxDefaultProfileName
-		c.Firefox.ProfilePath = firefoxDefaultProfilePath
-	}
-	if chromeErr == nil {
-		c.Chrome.Enable = true
-		c.Chrome.ProfileName = chromeDefaultProfileName
-		c.Chrome.ProfilePath = chromeDefaultProfilePath
-	}
-	if safariErr == nil {
-		c.Safari.Enable = true
-	}
-
 	return c, nil
 }
 

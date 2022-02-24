@@ -132,17 +132,17 @@ func (r *runtime) run() error {
 
 	opts := make([]bookmarker.Option, 0, 4)
 	if r.cfg.Firefox.Enable {
-		opts = append(opts, bookmarker.OptionFirefox(r.cfg.Firefox.ProfilePath, r.cfg.Firefox.ProfileName))
+		opts = append(opts, bookmarker.WithFirefox(r.cfg.Firefox.ProfilePath, r.cfg.Firefox.ProfileName))
 	}
 	if r.cfg.Chrome.Enable {
-		opts = append(opts, bookmarker.OptionChrome(r.cfg.Chrome.ProfilePath, r.cfg.Chrome.ProfileName))
+		opts = append(opts, bookmarker.WithChrome(r.cfg.Chrome.ProfilePath, r.cfg.Chrome.ProfileName))
 	}
 	if r.cfg.Safari.Enable {
-		opts = append(opts, bookmarker.OptionSafari())
+		opts = append(opts, bookmarker.WithSafari())
 	}
 
 	if r.cfg.RemoveDuplicates {
-		opts = append(opts, bookmarker.OptionRemoveDuplicates())
+		opts = append(opts, bookmarker.WithRemoveDuplicates())
 	}
 
 	manager, err := bookmarker.New(opts...)

@@ -59,9 +59,9 @@ func getTestBookmarks(t *testing.T, opts ...Option) Bookmarks {
 
 func getTestAllBookmarks(t *testing.T) Bookmarks {
 	options := []Option{
-		OptionFirefox(defaultFirefoxProfilePath, testProfile),
-		OptionChrome(defaultChromeProfilePath, testProfile),
-		OptionSafari(),
+		WithFirefox(defaultFirefoxProfilePath, testProfile),
+		WithChrome(defaultChromeProfilePath, testProfile),
+		WithSafari(),
 	}
 	return getTestBookmarks(t, options...)
 }

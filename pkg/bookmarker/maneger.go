@@ -11,8 +11,8 @@ type Manager struct {
 // Option is the type to replace default parameters.
 type Option func(m *Manager) error
 
-// OptionFirefox if called, search firefox bookmark
-func OptionFirefox(profilePath, profileName string) Option {
+// WithFirefox if called, search firefox bookmark
+func WithFirefox(profilePath, profileName string) Option {
 	return func(m *Manager) error {
 		path, err := GetFirefoxBookmarkFile(profilePath, profileName)
 		if err != nil {
@@ -24,8 +24,8 @@ func OptionFirefox(profilePath, profileName string) Option {
 	}
 }
 
-// OptionChrome if called, search chrome bookmark
-func OptionChrome(profilePath, profileName string) Option {
+// WithChrome if called, search chrome bookmark
+func WithChrome(profilePath, profileName string) Option {
 	return func(m *Manager) error {
 		path, err := GetChromeBookmarkFile(profilePath, profileName)
 		if err != nil {
@@ -37,8 +37,8 @@ func OptionChrome(profilePath, profileName string) Option {
 	}
 }
 
-// OptionSafari if called, search safari bookmark
-func OptionSafari() Option {
+// WithSafari if called, search safari bookmark
+func WithSafari() Option {
 	return func(m *Manager) error {
 		path, err := GetSafariBookmarkFile()
 		if err != nil {
@@ -50,8 +50,8 @@ func OptionSafari() Option {
 	}
 }
 
-// OptionRemoveDuplicates removes same bookmarks by urls
-func OptionRemoveDuplicates() Option {
+// WithRemoveDuplicates removes same bookmarks by urls
+func WithRemoveDuplicates() Option {
 	return func(m *Manager) error {
 		m.removeDuplicates = true
 		return nil
@@ -93,7 +93,6 @@ func (m *Manager) Bookmarks() (bookmarks Bookmarks, err error) {
 		bookmarks = append(bookmarks, b...)
 	}
 
-	// Note: execute uniq after folder filter
 	if m.removeDuplicates {
 		bookmarks = bookmarks.uniqByURI()
 	}

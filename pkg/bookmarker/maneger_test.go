@@ -16,21 +16,21 @@ func TestEngineBookmarks(t *testing.T) {
 		{
 			description: "enable firefox bookmark",
 			options: []Option{
-				OptionFirefox(defaultFirefoxProfilePath, testProfile),
+				WithFirefox(defaultFirefoxProfilePath, testProfile),
 			},
 			want: testFirefoxBookmarks,
 		},
 		{
 			description: "enable chrome bookmark",
 			options: []Option{
-				OptionChrome(defaultChromeProfilePath, testProfile),
+				WithChrome(defaultChromeProfilePath, testProfile),
 			},
 			want: testChromeBookmarks,
 		},
 		{
 			description: "enable safari bookmark",
 			options: []Option{
-				OptionSafari(),
+				WithSafari(),
 			},
 			want: testSafariBookmarks,
 		},
@@ -67,15 +67,15 @@ func TestOptionFirefoxChrome(t *testing.T) {
 		{
 			description: "Lower default profile name",
 			options: []Option{
-				OptionFirefox(defaultFirefoxProfilePath, "default"),
-				OptionChrome(defaultChromeProfilePath, "default"),
+				WithFirefox(defaultFirefoxProfilePath, "default"),
+				WithChrome(defaultChromeProfilePath, "default"),
 			},
 		},
 		{
 			description: "Upper default profile name",
 			options: []Option{
-				OptionFirefox(defaultFirefoxProfilePath, "Default"),
-				OptionChrome(defaultChromeProfilePath, "Default"),
+				WithFirefox(defaultFirefoxProfilePath, "Default"),
+				WithChrome(defaultChromeProfilePath, "Default"),
 			},
 		},
 	}

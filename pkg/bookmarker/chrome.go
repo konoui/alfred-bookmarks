@@ -102,6 +102,9 @@ func (entry *chromeBookmarkEntry) convertToBookmarks(folder string) (bookmarks B
 }
 
 // GetChromeBookmarkFile returns a chrome bookmark filepath
+// e.g.) GetChromeBookmarkFile(
+//	os.ExpandEnv("${HOME}/Library/Application Support/Firefox/Profiles"),
+//	"default")
 func GetChromeBookmarkFile(profilePath, profileName string) (string, error) {
 	profileDirName, err := searchSuffixDir(profilePath, profileName)
 	if err != nil {
